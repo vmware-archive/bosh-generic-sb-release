@@ -1,0 +1,21 @@
+---
+name: destroy-broker
+templates:
+  destroy.sh.erb: bin/run
+packages:
+- cf_cli
+properties:
+  ssl.skip_cert_verify:
+    description: 'Whether to verify SSL certs when making web requests'
+  domain:
+    description: 'The CF top-level domain'
+  app_name:
+    description: 'App Name'
+  generic_sb.cf.admin_user:
+    description: 'Username of the CF admin user'
+  generic_sb.cf.admin_password:
+    description: 'Password of the CF admin user'
+  generic_sb.broker.user:
+    description: 'Broker basic auth user'
+  generic_sb.broker.password:
+    description: 'Broker basic auth password'

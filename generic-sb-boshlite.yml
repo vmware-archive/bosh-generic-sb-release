@@ -1,0 +1,426 @@
+meta:
+  stemcell:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+
+director_uuid: 35b3e645-7b07-435a-bfab-69f718e0e8ef
+
+name: generic-sb
+
+releases:
+- name: generic-sb
+  version: latest
+
+compilation:
+  cloud_properties:
+    name: random
+  network: generic-sb-network
+  reuse_compilation_vms: true
+  workers: 1
+
+update:
+  canaries: 1
+  canary_watch_time: 1000-900000
+  max_in_flight: 3
+  update_watch_time: 1000-900000
+
+jobs:
+- instances: 1
+  lifecycle: errand
+  name: deploy-service-broker
+  release: generic-sb
+  networks:
+  - name: generic-sb-network
+  resource_pool: generic-sb-resource-pool
+  templates:
+  - name: deploy-service-broker
+- instances: 1
+  lifecycle: errand
+  name: register-broker
+  release: generic-sb
+  networks:
+  - name: generic-sb-network
+  resource_pool: generic-sb-resource-pool
+  templates:
+  - name: register-broker
+- instances: 1
+  lifecycle: errand
+  name: destroy-broker
+  release: generic-sb
+  networks:
+  - name: generic-sb-network
+  resource_pool: generic-sb-resource-pool
+  templates:
+  - name: destroy-broker
+
+networks:
+- name: generic-sb-network
+  subnets:
+  - cloud_properties:
+      name: random
+    range: 10.244.4.0/30
+    reserved:
+    - 10.244.4.1
+    static:
+    - 10.244.4.2
+  - cloud_properties:
+      name: random
+    range: 10.244.4.4/30
+    reserved:
+    - 10.244.4.5
+    static:
+    - 10.244.4.6
+  - cloud_properties:
+      name: random
+    range: 10.244.4.8/30
+    reserved:
+    - 10.244.4.9
+    static:
+    - 10.244.4.10
+  - cloud_properties:
+      name: random
+    range: 10.244.4.12/30
+    reserved:
+    - 10.244.4.13
+    static:
+    - 10.244.4.14
+  - cloud_properties:
+      name: random
+    range: 10.244.4.16/30
+    reserved:
+    - 10.244.4.17
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.20/30
+    reserved:
+    - 10.244.4.21
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.24/30
+    reserved:
+    - 10.244.4.25
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.28/30
+    reserved:
+    - 10.244.4.29
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.32/30
+    reserved:
+    - 10.244.4.33
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.36/30
+    reserved:
+    - 10.244.4.37
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.40/30
+    reserved:
+    - 10.244.4.41
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.44/30
+    reserved:
+    - 10.244.4.45
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.48/30
+    reserved:
+    - 10.244.4.49
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.52/30
+    reserved:
+    - 10.244.4.53
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.56/30
+    reserved:
+    - 10.244.4.57
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.60/30
+    reserved:
+    - 10.244.4.61
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.64/30
+    reserved:
+    - 10.244.4.65
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.68/30
+    reserved:
+    - 10.244.4.69
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.72/30
+    reserved:
+    - 10.244.4.73
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.76/30
+    reserved:
+    - 10.244.4.77
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.80/30
+    reserved:
+    - 10.244.4.81
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.84/30
+    reserved:
+    - 10.244.4.85
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.88/30
+    reserved:
+    - 10.244.4.89
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.92/30
+    reserved:
+    - 10.244.4.93
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.96/30
+    reserved:
+    - 10.244.4.97
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.100/30
+    reserved:
+    - 10.244.4.101
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.104/30
+    reserved:
+    - 10.244.4.105
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.108/30
+    reserved:
+    - 10.244.4.109
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.112/30
+    reserved:
+    - 10.244.4.113
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.116/30
+    reserved:
+    - 10.244.4.117
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.120/30
+    reserved:
+    - 10.244.4.121
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.124/30
+    reserved:
+    - 10.244.4.125
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.128/30
+    reserved:
+    - 10.244.4.129
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.132/30
+    reserved:
+    - 10.244.4.133
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.136/30
+    reserved:
+    - 10.244.4.137
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.140/30
+    reserved:
+    - 10.244.4.141
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.144/30
+    reserved:
+    - 10.244.4.145
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.148/30
+    reserved:
+    - 10.244.4.149
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.152/30
+    reserved:
+    - 10.244.4.153
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.156/30
+    reserved:
+    - 10.244.4.157
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.160/30
+    reserved:
+    - 10.244.4.161
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.164/30
+    reserved:
+    - 10.244.4.165
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.168/30
+    reserved:
+    - 10.244.4.169
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.172/30
+    reserved:
+    - 10.244.4.173
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.176/30
+    reserved:
+    - 10.244.4.177
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.180/30
+    reserved:
+    - 10.244.4.181
+    static: []
+  - cloud_properties:
+      name: random
+    range: 10.244.4.184/30
+    reserved:
+    - 10.244.4.185
+    static: []
+
+resource_pools:
+- cloud_properties:
+    name: random
+  name: generic-sb-resource-pool
+  network: generic-sb-network
+  size: 3
+  stemcell:
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+    version: latest
+
+# The following `apps` entry needs to match the given network name to arrive at the ip for the ctl.erb file within the job templates
+# Used in the following manner
+# Adding artificial space between < and % so bosh deployment will barf with erb errors abt missing end
+# export my_ip='< %=spec.networks.send(properties.networks.keys.first).ip %>'
+#
+# < % if properties.coherence.jvm_args %>
+#   export JVM_ARGS='< %=properties.coherence.jvm_args %>  -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps'
+# < % end %>
+#
+# <  % if properties.coherence.cluster %>
+#
+#   < % if properties.coherence.cluster.name %>
+#     export cluster_name='< %= properties.coherence.cluster.name %>'
+#     export COHERENCE_CLUSTER_ARGS="$COHERENCE_CLUSTER_ARGS -Dtangosol.coherence.cluster=$cluster_name"
+#   < % end %>
+#
+#   < % if properties.coherence.listener %>
+#     port='< %= properties.coherence.listener.port %>'
+#
+#     < % if properties.coherence.machines %>
+#       echo Machine Ips : < %=  p("coherence.machines") %>
+#  networks:
+#    apps: "generic-sb-network"
+properties:
+  domain: 10.244.0.34.xip.io
+  app_domains: 10.244.0.34.xip.io
+  uaa:
+    clients:
+      generic_sb:
+        secret: 'test'
+  ssl:
+    skip_cert_verify: true
+  generic_sb:
+    encryption_key: 'test'
+    app_name: GenericServiceBroker
+    app_uri: genericsb
+    driver_download_url: "http://12.1.1.1:7777/fileserver/oracle-xe/ojdbc6.jar"  # EDIT ME
+    app_push:
+      memory: 512
+      org_quota: 1024
+      timeout: 180
+    persistence_store_type: custom
+    persistence_store:
+      service_addr: 10.244.3.6:1521
+      service_sid: XE
+      service_params:
+      persistence_sb_user: servicebroker
+      persistence_sb_password: s3cr3t
+    target_service:
+      service_addr: 10.244.3.6:1521
+      service_sid: XE
+      service_params:
+      target_admin_user: system
+      target_admin_password: welcome1
+    on_demand_service_plans:
+    - guid: 0ab34def-7d2f-4ff0-bfe7-62b5946cf9d1
+      plan_name: Standard
+      plan_description: default plan for target services
+      #plan_details: "init_size| 50| mb initial size of tablespace;\r\nmax_size|
+      #    500|  mb max size of tablespace;\r\nconnections| 5| max number of concurrent
+      #    connections"
+      plan_details: "init_size: 50: mb initial size of tablespace;\r\nmax_size:
+          500:  mb max size of tablespace;\r\nconnections: 5: max number of concurrent
+          connections"
+    cf:
+      admin_user: admin
+      admin_password: admin
+    broker:
+      user: testuser
+      password: testuser
+

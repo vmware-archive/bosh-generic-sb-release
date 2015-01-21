@@ -1,0 +1,29 @@
+---
+packages:
+- name: cf_cli
+  version: 91e0c34660314df66ab2ccc09c481e0163cc67b3
+  sha1: 75423129362799c8810b591e0b81f9852c973f0f
+  fingerprint: 91e0c34660314df66ab2ccc09c481e0163cc67b3
+  dependencies: []
+- name: generic-service-broker
+  version: 5cfafd5572131ebb1f8b88ba5e506caedadc78c4
+  sha1: 040dc0b46283ede3a4458579e7976bddf62f7f62
+  fingerprint: 5cfafd5572131ebb1f8b88ba5e506caedadc78c4
+  dependencies: []
+jobs:
+- name: deploy-service-broker
+  version: 93e8a7ad54e2ae58e8e6723566eb3ecbc541a4e3
+  fingerprint: 93e8a7ad54e2ae58e8e6723566eb3ecbc541a4e3
+  sha1: 5290abb257d4d0a46d4513fd223a385c635b36f2
+- name: destroy-broker
+  version: f6bcbec355f7bb2e8bcc2db84f3b94cf83627f7f
+  fingerprint: f6bcbec355f7bb2e8bcc2db84f3b94cf83627f7f
+  sha1: 619bcf4a214a7babd980c79e2b90e18bdd935ce8
+- name: register-broker
+  version: ef283227a15b3303e4c65e238083a6fd4411061c
+  fingerprint: ef283227a15b3303e4c65e238083a6fd4411061c
+  sha1: 6825b6691f35ac3c7cf6afbf57d39489b2bdfa22
+commit_hash: '00000000'
+uncommitted_changes: false
+name: generic-sb
+version: '1.3'

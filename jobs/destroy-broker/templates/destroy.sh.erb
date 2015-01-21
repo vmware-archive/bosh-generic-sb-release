@@ -1,0 +1,32 @@
+#! /bin/bash
+set -e -x
+
+export SCHEME=https
+export PATH="/var/vcap/packages/cf_cli/bin:$PATH"
+export ADMIN_USER=<%= properties.generic_sb.cf.admin_user %>
+export ADMIN_PASSWORD=<%= properties.generic_sb.cf.admin_password %>
+export DOMAIN=<%= properties.domain %>
+export API_ENDPOINT=$SCHEME://api.$DOMAIN
+export APP_NAME=<%= properties.generic_sb.app_name %>
+export ORG=generic-sb-service
+export SPACE=generic-sb-service
+export BROKER_NAME=app-generic-sbr
+export DB_NAME=generic-sb-mysql
+
+function authenticate_and_target() {
+  cf api $API_ENDPOINT <% if properties.ssl.skip_cert_verify %>--skip-ssl-validation<% end %>
+  cf auth $ADMIN_USER $ADMIN_PASSWORD
+  cf create-org $ORG
+  cf target -o $ORG
+  cf create-space $SPACE
+  cf target -s $SPACE
+}
+
+cf -v
+authenticate_and_target
+cf purge-service-offering $BROKER_NAME -f
+cf delete-service-broker $BROKER_NAME -f
+cf delete $APP_NAME -f
+cf delete-service $DB_NAME -f
+cf delete-space $SPACE -f
+cf delete-org $ORG -f

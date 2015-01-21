@@ -1,0 +1,10 @@
+---
+name: generic-service-broker
+
+dependencies: []
+
+files:
+- templates/config/application.properties
+- templates/setupServiceBrokerEnv.sh
+- generic-service-broker/spring-cloud-service-broker.jar
+- generic-service-broker/oracle-service-broker-0.1.0.jar
