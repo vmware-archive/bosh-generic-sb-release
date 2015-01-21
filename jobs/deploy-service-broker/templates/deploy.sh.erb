@@ -42,11 +42,12 @@ mkdir -p $CF_HOME
 # Change the APP_PREFIX_NAME to point to the correct jar
 # For now, go with oracle-service-broker if custom persistence store type is selected
 # otherwise, go with the spring-cloud-service-broker for testing...
-if [ "${PERSISTENCE_STORE_TYPE}" == "custom" ]; then
-  APP_PREFIX_NAME=oracle-service-broker
-else
-  APP_PREFIX_NAME=spring-cloud-service-broker
-fi
+#if [ "${PERSISTENCE_STORE_TYPE}" == "custom" ]; then
+#  APP_PREFIX_NAME=oracle-service-broker
+#else
+#  APP_PREFIX_NAME=spring-cloud-service-broker
+#fi
+APP_PREFIX_NAME=oracle-service-broker
 
 # Modify extension type for App file
 EXTENSION_TYPE="jar"
@@ -289,20 +290,24 @@ if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
   provision_db
   log_debug "Provisioned Db using mysql for app"
 fi
-log_debug "Pushing app"
+
 if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
   bind_db
 fi
 
 modify_app
 log_debug "Modified app"
+
+log_debug "Pushing app"
 push_app
 log_debug "Pushed app"
 add_env_vars
 log_debug "Updated env variable for app in cf"
+
 if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
   bind_db
 fi
+
 log_debug "Starting app in cf"
 restart_app
 log_debug "App started!!"
