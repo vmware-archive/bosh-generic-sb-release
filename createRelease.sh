@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # For use to create final release tarball
-CREATE_FINAL_TARBALL=true
 VERSION=1.3
-RELEASE_NAME=generic-sb
+CREATE_FINAL_TARBALL=true
+RELEASE_NAME=generic_sb
 
 echo "Cleanup previous release ..."
 rm -rf releases/* .dev_builds/* .final_builds/*
@@ -17,7 +17,3 @@ if [ "$CREATE_FINAL_TARBALL" == "true" ]; then
 fi
 
 echo "Done creating the release ..."
-
-# Upload release if no running deployment using it 
-#bosh -n upload release; 
-#echo "Done uploading the release ..."

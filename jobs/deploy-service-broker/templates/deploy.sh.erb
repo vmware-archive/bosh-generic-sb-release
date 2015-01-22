@@ -4,35 +4,44 @@ set -e -x
 export PATH="/var/vcap/packages/cf_cli/bin:$PATH"
 
 export SCHEME=https
-export DOMAIN=<%= properties.domain %>
 export ADMIN_USER=<%= properties.generic_sb.cf.admin_user %>
 export ADMIN_PASSWORD=<%= properties.generic_sb.cf.admin_password %>
+export DOMAIN=<%= properties.domain %>
 export API_ENDPOINT=$SCHEME://api.$DOMAIN
-export ORG=generic-sb-service
-export SPACE=generic-sb-service
-export QUOTA=generic-sb-service
 export APP_NAME=<%= properties.generic_sb.app_name %>
 export APP_URI=<%= properties.generic_sb.app_uri %>
-export DRIVER_DOWNLOAD_URL=<%= properties.generic_sb.driver_download_url %>
-export APP_DOMAIN=<%= properties.app_domains[0] %>
+export ORG=${APP_NAME}-service-org
+export SPACE=${APP_NAME}-service-space
+export QUOTA=${APP_NAME}-service-quota
+export APP_DOMAIN=<%= properties.app_domains %>
 export ORG_QUOTA=<%= properties.generic_sb.app_push.org_quota %>
 export APP_PUSH_TIMEOUT=<%= properties.generic_sb.app_push.timeout %>
 export APP_PUSH_MEMORY=<%= properties.generic_sb.app_push.memory %>
+
+# Use this only if app needs additional libraries that need to be downloaded
+export DRIVER_DOWNLOAD_URL=<%= properties.generic_sb.driver_download_url %>
+
+# Use these variables only if app needs to persistence store for saving its plans/sevice offerings etc.
 export PERSISTENCE_STORE_TYPE=<%= properties.generic_sb.persistence_store_type %>
 export PERSISTENCE_STORE_HOST=<%= properties.generic_sb.persistence_store.service_addr %>
 export PERSISTENCE_STORE_SID=<%= properties.generic_sb.persistence_store.service_sid %>
 export PERSISTENCE_STORE_PARAMS=<%= properties.generic_sb.persistence_store.service_params %>
 export PERSISTENCE_STORE_USER=<%= properties.generic_sb.persistence_store.persistence_sb_user %>
 export PERSISTENCE_STORE_PASSWD=<%= properties.generic_sb.persistence_store.persistence_sb_password %>
+
+# Use these variables only if app needs to know how to connect to a remote target that it brokers
 export TARGET_HOST=<%= properties.generic_sb.target_service.service_addr %>
 export TARGET_SID=<%= properties.generic_sb.target_service.service_sid %>
 export TARGET_PARAMS=<%= properties.generic_sb.target_service.service_params %>
 export TARGET_ADMIN_USER=<%= properties.generic_sb.target_service.target_admin_user %>
 export TARGET_ADMIN_PASSWD=<%= properties.generic_sb.target_service.target_admin_password %>
 
-export DEFAULT_DB_NAME="generic-sb-mysql"
+export DEFAULT_DB_NAME=${APP_NAME}-mysql
 export SB_APP_ENV="setupServiceBrokerEnv.sh"
+
+# Use this only if the application needs some additional properties file that needs to be bundled within the app
 export SB_APP_CONFIG="config/application.properties"
+
 export EXPLODED_APP_FOLDER="exploded-app-contents"
 
 export CF_HOME=`pwd`/home/cf
@@ -47,10 +56,12 @@ mkdir -p $CF_HOME
 #else
 #  APP_PREFIX_NAME=spring-cloud-service-broker
 #fi
-APP_PREFIX_NAME=oracle-service-broker
 
-# Modify extension type for App file
-EXTENSION_TYPE="jar"
+# Following variables would be replaced based on blobs that get added and are treated as app bits
+# Modify extension type for App file - modify as needed
+APP_PREFIX_NAME=TEMPLATE_APP_PREFIX_NAME
+EXTENSION_TYPE=TEMPLATE_APP_EXTENSION
+
 TARGET_APP=${APP_PREFIX_NAME}.${EXTENSION_TYPE}
 JOB_NAME=deploy-service-broker
 PACKAGE_NAME=generic-service-broker
@@ -84,17 +95,15 @@ cf update-quota $QUOTA -m ${ORG_QUOTA}m -r 10 -s 10 --disallow-paid-service-plan
   cf set-quota $ORG $QUOTA
 }
 
-function provision_db() {
+function provision_and_bind_db() {
   db_plan=`cf marketplace | grep p-mysql | awk '{ print $2 }' | sed 's/,//g'`
-  cf create-service p-mysql $db_plan $DEFAULT_DB_NAME
-}
-
-function bind_db() {
-  cf bind-service $APP_NAME $DEFAULT_DB_NAME
+  if [ "$db_plan" != "" ]; then
+    cf create-service p-mysql $db_plan $DEFAULT_DB_NAME
+    cf bind-service $APP_NAME $DEFAULT_DB_NAME
+  fi
 }
 
 function restart_app() {
-#  CF_TRACE=true cf restage $APP_NAME
   CF_TRACE=true cf restart $APP_NAME
   if [ "$?" -ne "0" ]; then
     log_debug "App start failed..."
@@ -121,16 +130,19 @@ function add_env_vars() {
 
 function add_parameterized_env_vars() {
   pushd $PACKAGE_PATH
-  # Source the environment variables before doing a cf set-env using the variable name
-  source $SB_APP_ENV
-  cat $SB_APP_ENV | grep -v "^#" | while read env_var_entry
-  do
-    key=`echo $env_var_entry | sed -e 's/export //;s/=.*//';`
-    formatted_env_var=`env | grep $key | sed -e 's/=/ /g';`
-    cf set-env $APP_NAME ${formatted_env_var}
-  done
+
+    # Source the environment variables before doing a cf set-env using the variable name
+    source $SB_APP_ENV
+    cat $SB_APP_ENV | grep -v "^#" | grep "." | while read env_var_entry
+    do
+      key=`echo $env_var_entry | sed -e 's/export //;s/=.*//';`
+      formatted_env_var=`env | grep $key | sed -e 's/=/ /g';`
+      cf set-env $APP_NAME ${formatted_env_var}
+    done
+  popd
 }
 
+# Use this only to bind any additional files/libraries or modify app contents
 function modify_app() {
   pushd $PACKAGE_PATH
 
@@ -204,6 +216,7 @@ function update_env_variable_script() {
   pushd $PACKAGE_PATH
     mkdir -p /var/vcap/data/tmp
 
+    # Modify the variables that need to be substituted with actual values passed via bosh manifest or Ops Mgr Tile
     cp -r templates/setupServiceBrokerEnv.sh /var/vcap/data/tmp
       sed -i.bak "s/DB_HOST_ADDR/${PERSISTENCE_STORE_HOST}/g;    \
             s/DB_SID/${PERSISTENCE_STORE_SID}/g;                 \
@@ -286,14 +299,6 @@ create_quota
 update_env_variable_script
 log_debug "Updated env variable script for app"
 
-if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
-  provision_db
-  log_debug "Provisioned Db using mysql for app"
-fi
-
-if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
-  bind_db
-fi
 
 modify_app
 log_debug "Modified app"
@@ -305,10 +310,12 @@ add_env_vars
 log_debug "Updated env variable for app in cf"
 
 if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
-  bind_db
-fi
+  provision_and_bind_db
+  log_debug "Provisioned and bound mysql db for app"
 
 log_debug "Starting app in cf"
 restart_app
 log_debug "App started!!"
+
+# Remove register_plans if there are already some internal plans
 register_plans

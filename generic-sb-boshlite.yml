@@ -5,16 +5,16 @@ meta:
 
 director_uuid: 35b3e645-7b07-435a-bfab-69f718e0e8ef
 
-name: generic-sb
+name: generic_sb
 
 releases:
-- name: generic-sb
+- name: generic_sb
   version: latest
 
 compilation:
   cloud_properties:
     name: random
-  network: generic-sb-network
+  network: generic_sb_network
   reuse_compilation_vms: true
   workers: 1
 
@@ -28,33 +28,33 @@ jobs:
 - instances: 1
   lifecycle: errand
   name: deploy-service-broker
-  release: generic-sb
+  release: generic_sb
   networks:
-  - name: generic-sb-network
-  resource_pool: generic-sb-resource-pool
+  - name: generic_sb_network
+  resource_pool: generic_sb_resource-pool
   templates:
   - name: deploy-service-broker
 - instances: 1
   lifecycle: errand
   name: register-broker
-  release: generic-sb
+  release: generic_sb
   networks:
-  - name: generic-sb-network
-  resource_pool: generic-sb-resource-pool
+  - name: generic_sb_network
+  resource_pool: generic_sb_resource-pool
   templates:
   - name: register-broker
 - instances: 1
   lifecycle: errand
   name: destroy-broker
-  release: generic-sb
+  release: generic_sb
   networks:
-  - name: generic-sb-network
-  resource_pool: generic-sb-resource-pool
+  - name: generic_sb_network
+  resource_pool: generic_sb_resource-pool
   templates:
   - name: destroy-broker
 
 networks:
-- name: generic-sb-network
+- name: generic_sb_network
   subnets:
   - cloud_properties:
       name: random
@@ -346,8 +346,8 @@ networks:
 resource_pools:
 - cloud_properties:
     name: random
-  name: generic-sb-resource-pool
-  network: generic-sb-network
+  name: generic_sb_resource-pool
+  network: generic_sb_network
   size: 3
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
@@ -375,7 +375,7 @@ resource_pools:
 #     < % if properties.coherence.machines %>
 #       echo Machine Ips : < %=  p("coherence.machines") %>
 #  networks:
-#    apps: "generic-sb-network"
+#    apps: "generic_sb_network"
 properties:
   domain: 10.244.0.34.xip.io
   app_domains: 10.244.0.34.xip.io
@@ -423,4 +423,5 @@ properties:
     broker:
       user: testuser
       password: testuser
+      internal_plan_names: "p-internal-plan1,p-internal-plan2"
 

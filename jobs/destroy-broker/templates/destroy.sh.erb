@@ -7,23 +7,55 @@ export ADMIN_USER=<%= properties.generic_sb.cf.admin_user %>
 export ADMIN_PASSWORD=<%= properties.generic_sb.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
 export API_ENDPOINT=$SCHEME://api.$DOMAIN
+export APP_DOMAIN=<%= properties.app_domains %>
 export APP_NAME=<%= properties.generic_sb.app_name %>
-export ORG=generic-sb-service
-export SPACE=generic-sb-service
-export BROKER_NAME=app-generic-sbr
-export DB_NAME=generic-sb-mysql
+export APP_URI=<%= properties.generic_sb.app_uri %>
+export ORG=${APP_NAME}-service-org
+export SPACE=${APP_NAME}-service-space
+export BROKER_NAME=${APP_NAME}-service-broker
+export BROKER_USER=<%= properties.generic_sb.broker.user %>
+export BROKER_PASS=<%= properties.generic_sb.broker.password %>
+export BROKER_HOST=$SCHEME://${APP_URI}.${APP_DOMAIN}
+export DB_NAME=${APP_NAME}-mysql
+
+# Use this only when there are already inbuild plans that need to enabled for public
+export BROKER_INTERNAL_PLAN_NAMES=<%= properties.generic_sb.broker.internal_plan_names %>
 
 function authenticate_and_target() {
   cf api $API_ENDPOINT <% if properties.ssl.skip_cert_verify %>--skip-ssl-validation<% end %>
   cf auth $ADMIN_USER $ADMIN_PASSWORD
-  cf create-org $ORG
-  cf target -o $ORG
-  cf create-space $SPACE
-  cf target -s $SPACE
+  cf target -o $ORG -s $SPACE
+}
+
+function purge_service_offering() {
+  plans_url=`cf curl /v2/services?q=label:$BROKER_NAME | grep service_plans_url | awk '{ print $2 }' | sed 's/[",]//g'`
+  if [ "$plans_url" != "" ]; then
+    plans=`cf curl $plans_url | grep "\"url\"" | awk '{ print $2 }' | sed 's/[",]//g'`
+    for plan in $plans; do
+      cf purge-service-offering $plan -f
+    done
+  else
+    # Rely on the internal plan names if we cannot get it from the /v2/services on the broker
+    for plan_name in `echo $BROKER_INTERNAL_PLAN_NAMES | sed -e 's/,/ /g' `
+    do
+      cf purge-service-offering $plan_name -f
+    done
+  fi
+}
+
+# Need to test if we can get the service plan name directly from broker app
+function check_service_offering() {
+    app_endpoint=http://${APP_URI}.${DOMAIN}
+    app_catalog_url=${app_endpoint}/v2/catalog
+    catalog_output=`curl -X GET ${app_catalog_url} 2>/dev/null`
+
+    service_id=`echo $catalog_output | sed -e 's/"//g'  | sed -e "s/name:/\nname:/g" | grep "id:" | grep services | sed -e "s/^.*id://g;s/,//" `
+    #plan_id=`echo $catalog_output | sed -e 's/"//g'  | sed -e "s/name:/\nname:/g" | grep "id:" | grep plans | sed -e "s/^.*id://g;s/,//" `
 }
 
 cf -v
 authenticate_and_target
+purge_service_offering
 cf purge-service-offering $BROKER_NAME -f
 cf delete-service-broker $BROKER_NAME -f
 cf delete $APP_NAME -f

@@ -9,8 +9,12 @@ properties:
     description: 'Whether to verify SSL certs when making web requests'
   domain:
     description: 'The CF top-level domain'
-  app_name:
+  app_domains:
+    description: 'CloudFoundry application domains'
+  generic_sb.app_name:
     description: 'App Name'
+  generic_sb.app_uri:
+    description: 'Uri of the Service Broker Application'
   generic_sb.cf.admin_user:
     description: 'Username of the CF admin user'
   generic_sb.cf.admin_password:
@@ -19,3 +23,5 @@ properties:
     description: 'Broker basic auth user'
   generic_sb.broker.password:
     description: 'Broker basic auth password'
+  generic_sb.broker.internal_plan_names:
+    description: 'name of in-build plans in the Service Broker Application'

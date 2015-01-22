@@ -1,8 +1,8 @@
 ---
-name: generic-sb-f423cf4db4d4a2d3dc7d
-director_uuid: f0959490-4adc-4451-b385-fa7ab9010713
+name: generic_sb_fasdfa
+director_uuid: # EDIT_ME
 releases:
-- name: generic-sb
+- name: generic_sb
   version: '1.3'
 networks:
 - name: default
@@ -19,7 +19,7 @@ networks:
     cloud_properties:
       name: Private
 resource_pools:
-- name: deploy-generic-sb
+- name: deploy-generic_sb
   stemcell:
     name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
     version: '2690.3'
@@ -34,7 +34,7 @@ resource_pools:
           resource_pool: ''
   env:
     bosh:
-      password: "$6$0b9e43593da02a7f$sc4nNEGihnGmIGO9dz.WhpKMISd23fKMRw.cLEt3s3Bqiwxs0daWWrIA9GqGDLNNmftwyO4ybPxw0MMQMFczD1"
+      password: "$6$"
 - name: register-broker
   stemcell:
     name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
@@ -50,7 +50,7 @@ resource_pools:
           resource_pool: ''
   env:
     bosh:
-      password: "$6$e0ed91a6b388cca9$GLHnlB/tbI99.rhAHJ8U1kJDFwhWzkQx13ZiCVYm5iu5lTypsRoe9BGDAtnjwucDIMKNDf1khzAbCfDzt6aGo1"
+      password: "$6$e$"
 - name: destroy-broker
   stemcell:
     name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
@@ -66,7 +66,7 @@ resource_pools:
           resource_pool: ''
   env:
     bosh:
-      password: "$6$6d5db9bf6cd0235a$4axlgaKWsDeHX5t3TQrDpo4l.Oozf3E6WP84M030Lgm8sAu71tQ/BGuzQ.GcxRmjNCGe.YW6tDgMd63fbQJAt0"
+      password: "$6BGuY"
 compilation:
   workers: 1
   network: default
@@ -81,65 +81,66 @@ update:
   max_in_flight: 1
   max_errors: 2
   serial: true
+
+properties:
+  domain: 10.10.27.100.xip.io
+  app_domains: 10.10.27.100.xip.io
+  ssl:
+    skip_cert_verify: true
+  uaa:
+    clients:
+      generic_sb:
+        secret: test
+  generic_sb:
+    app_name: GenericServiceBroker
+    app_uri: genericsb
+    persistence_store_type: mysql
+    persistence_store:
+      service_addr: 10.85.29.92:1521
+      service_sid: XE
+      service_params:
+      persistence_sb_user: servicebroker
+      persistence_sb_password: s3cr3t
+    target_service:
+      service_addr: 10.85.29.92:1521
+      service_sid: XE
+      service_params:
+      target_admin_user: system
+      target_admin_password: welcome1
+    on_demand_service_plans:
+    - guid: 0ab34def-7d2f-4ff0-bfe7-62b5946cf9d1
+      plan_name: Standard
+      plan_description: default plan for target services
+      plan_bullets: "init_size: 50: mb initial size of tablespace;\r\nmax_size:
+        500:  mb max size of tablespace;\r\nconnections: 5: max number of concurrent
+        connections"
+      nested_plan_details_collection: []
+    encryption_key: b53e20
+    cf:
+      admin_user: system_services
+      admin_password: f6b71
+    broker:
+      user: 48eae306c
+      password: ed536
+      internal_plan_names: "p-internal-plan1,p-internal-plan2"
+
 jobs:
-- name: deploy-generic-sb
-  template: deploy-generic-sb
-  release: generic-sb
+- name: deploy-generic_sb
+  template: deploy-generic_sb
+  release: generic_sb
   lifecycle: errand
   instances: 1
-  resource_pool: deploy-generic-sb
+  resource_pool: deploy-generic_sb
   persistent_disk: 0
   networks:
   - name: default
     default:
     - dns
     - gateway
-  properties:
-    domain: 10.10.27.100.xip.io
-    app_domains:
-    - 10.10.27.100.xip.io
-    ssl:
-      skip_cert_verify: true
-    uaa:
-      clients:
-        generic-sb:
-          secret: test
-    generic_sb:
-      app_name: GenericServiceBroker
-      app_uri: genericsb
-      persistence_store_type: mysql
-      persistence_store:
-        service_addr: 10.85.29.92:1521
-        service_sid: XE
-        service_params:
-        persistence_sb_user: servicebroker
-        persistence_sb_password: s3cr3t
-      target_service:
-        service_addr: 10.85.29.92:1521
-        service_sid: XE
-        service_params:
-        target_admin_user: system
-        target_admin_password: welcome1
-      on_demand_service_plans:
-      - guid: 0ab34def-7d2f-4ff0-bfe7-62b5946cf9d1
-        plan_name: Standard
-        plan_description: default plan for target services
-        plan_bullets: "init_size: 50: mb initial size of tablespace;\r\nmax_size:
-          500:  mb max size of tablespace;\r\nconnections: 5: max number of concurrent
-          connections"
-        nested_plan_details_collection: []
-      encryption_key: b53e204137286f2d668a
-      cf:
-        admin_user: system_services
-        admin_password: f6b713e822ec6dc37c93
-      broker:
-        user: 48eae306c6e66484
-        password: ed536327ca6d5766
-  update:
-    max_in_flight: 1
+
 - name: register-broker
   template: register-broker
-  release: generic-sb
+  release: generic_sb
   lifecycle: errand
   instances: 1
   resource_pool: register-broker
@@ -149,30 +150,10 @@ jobs:
     default:
     - dns
     - gateway
-  properties:
-    domain: 10.10.27.100.xip.io
-    app_domains:
-    - 10.10.27.100.xip.io
-    ssl:
-      skip_cert_verify: true
-    uaa:
-      clients:
-        generic-sb:
-          secret: test
-    generic_sb:
-      app_name: GenericServiceBroker
-      encryption_key: b53e204137286f2d668a
-      cf:
-        admin_user: system_services
-        admin_password: f6b713e822ec6dc37c93
-      broker:
-        user: 48eae306c6e66484
-        password: ed536327ca6d5766
-  update:
-    max_in_flight: 1
+
 - name: destroy-broker
   template: destroy-broker
-  release: generic-sb
+  release: generic_sb
   lifecycle: errand
   instances: 1
   resource_pool: destroy-broker
@@ -182,24 +163,3 @@ jobs:
     default:
     - dns
     - gateway
-  properties:
-    domain: 10.10.27.100.xip.io
-    app_domains:
-    - 10.10.27.100.xip.io
-    ssl:
-      skip_cert_verify: true
-    uaa:
-      clients:
-        generic-sb:
-          secret: test
-    generic_sb:
-      app_name: GenericServiceBroker
-      encryption_key: b53e204137286f2d668a
-      cf:
-        admin_user: system_services
-        admin_password: f6b713e822ec6dc37c93
-      broker:
-        user: 48eae306c6e66484
-        password: ed536327ca6d5766
-  update:
-    max_in_flight: 1

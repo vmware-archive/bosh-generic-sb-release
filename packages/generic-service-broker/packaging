@@ -6,14 +6,11 @@ set -e
 # It would be copied into the /var/vcap/packages/generic-service-broker folder
 cp -r templates ${BOSH_INSTALL_TARGET}/
 
-# Sources or other files should be accessible as part of the packages
-SB_APP_DIR="generic-service-broker"
-
 # Check for presence of the app bits
 # Modify the archive to be other file extension if its not a jar
-archive=`ls ${SB_APP_DIR}/*.jar`
+app_archive=`ls TEMPLATE_APP_BLOB_PATH/TEMPLATE_APP_BLOB_FILE`
 
-if [  "$archive" != "" ] ; then
+if [  "$app_archive" != "" ] ; then
   echo "service-broker app found"
 else
   echo "service-broker app not found"
@@ -21,5 +18,5 @@ else
 fi
 
 mkdir -p ${BOSH_INSTALL_TARGET}/lib
-cp $archive ${BOSH_INSTALL_TARGET}/lib/
+cp $app_archive ${BOSH_INSTALL_TARGET}/lib/
 

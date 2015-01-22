@@ -1,5 +1,5 @@
 ---
-name: generic-sb                                            # [1]
+name: generic_sb                                            # [1]
 product_version: 1.3.0                                      # [1]
 metadata_version: "1.3"                                    # [2]
 target_installer_version: 1.3
@@ -12,11 +12,11 @@ stemcell:                                                  # [3]
   #file: bosh-stemcell-2690.2-vsphere-esxi-centos-go_agent.tgz
   #version: '2690.2'
 releases:                                                  # [5]
-  - name: generic-sb
-    file: generic-sb-1.3.tgz
+  - name: generic_sb
+    file: generic_sb_1.3.tgz
     version: '1.3'
 provides_product_versions:
-- name: generic-sb
+- name: generic_sb
   version: '1.3'
 label: Generic Service Broker Test Experimental
 description: Generic Service Broker Test Tile  ..
@@ -33,7 +33,7 @@ pre_delete_errands:
 
 
 form_types:                                                # [8]
-  - name: generic-sb-app
+  - name: generic_sb_app
     label: Service Broker Application
     description: Service Broker configuration
     property_inputs:                                       # [9]
@@ -134,7 +134,7 @@ job_types:
 - name: deploy-service-broker
   resource_label: Deploy Generic Service Broker
   template: deploy-service-broker
-  release: generic-sb
+  release: generic_sb
   errand: true
   resource_definitions:
   - name: ram
@@ -192,6 +192,11 @@ job_types:
       min: 512
       max: 1624
     default: 512
+  # This for any internal plans prebuilt into the service broker that needs to be registered with CF
+  - name: internal_plan_names
+    type: string
+    configurable: true
+    default: "p-internal-plan1,p-internal-plan2"
   - name: persistence_store_type
     type: dropdown_select
     configurable: true
@@ -286,7 +291,7 @@ job_types:
 
   manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
     \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic-sb:\n
+    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_sb:\n
     \     secret: test\ngeneric_sb:\n
     \ app_name: (( app_name.value ))\n
     \ app_uri: (( app_uri.value ))\n
@@ -310,13 +315,13 @@ job_types:
     \    target_admin_password: (( target_admin_password.secret ))\n
     \ on_demand_service_plans: (( on_demand_service_plans_collection.value ))\n
     \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
-    (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-    ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-    (( .properties.broker_credentials.password ))\n"
+    \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
+    \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
+    \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( internal_plan_names.value ))"
 - name: register-broker
   resource_label: Register Generic Service Broker
   template: register-broker
-  release: generic-sb
+  release: generic_sb
   errand: true
   resource_definitions:
   - name: ram
@@ -351,17 +356,19 @@ job_types:
 
   manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
     \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic-sb:\n
+    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_sb:\n
     \     secret: test\ngeneric_sb:\n
-    \ app_name: (( .deploy-service-broker.app_name.value ))\n
+    \ app_name: (( app_name.value ))\n
+    \ app_uri: (( app_uri.value ))\n
+    \ internal_plan_names: (( internal_plan_names.value ))\n
     \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
-    (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-    ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-    (( .properties.broker_credentials.password ))\n"
+    \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
+    \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
+    \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( internal_plan_names.value ))\n"
 - name: destroy-broker
   resource_label: Remove Generic Service Broker
   template: destroy-broker
-  release: generic-sb
+  release: generic_sb
   errand: true
   resource_definitions:
   - name: ram
@@ -396,13 +403,14 @@ job_types:
 
   manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
     \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic-sb:\n
+    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_sb:\n
     \     secret: test\ngeneric_sb:\n
-    \ app_name: (( .deploy-service-broker.app_name.value ))\n
+    \ app_name: (( app_name.value ))\n
+    \ app_uri: (( app_uri.value ))\n
     \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
     (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
     ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-    (( .properties.broker_credentials.password ))\n"
+    (( .properties.broker_credentials.password ))\n    internal_plan_names: (( internal_plan_names.value ))\n"
 - name: compilation
   resource_label: compilation
   resource_definitions:

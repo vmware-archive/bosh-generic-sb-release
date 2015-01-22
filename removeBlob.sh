@@ -20,5 +20,6 @@ echo "Deleting the blob entry: $blobFileName, cancel to stop"
 sleep 5
 rm .blobs/$shaFileId
 find blobs -name $blobFileName | xargs rm 
-sed -i.bak '/$blobFileName/,/size: / { d; }' config/blobs.yml
+sed -i.bak "/$blobFileName/,/size: / { d; }" config/blobs.yml
+rm config/blobs.yml.bak
 
