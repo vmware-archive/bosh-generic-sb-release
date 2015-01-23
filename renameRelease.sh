@@ -28,8 +28,8 @@ fi
 
 # Changing Project name from generic* to user provided input
 OLD_PATTERN=$1
-NEW_PATTERN=$2
-NEW_PATTERN_WITH_UNDERSCORE=`echo $2 | sed -e 's/-/_/g' `
+NEW_PATTERN=`echo $2 | sed -e 's/-/_/g' `
+NEW_PATTERN_WITH_DASH=`echo $2 | sed -e 's/_/-/g' `
 
 # Generate app name with captialized first character and without any spaces
 # spring_cloud would appear as SpringCloud
@@ -54,7 +54,14 @@ do
   mv $fileName $newFileName
 done
 
+for fileName in `find . -name "${NEW_PATTERN}*yml" | tail -r`
+do
+  newFileName=`echo $fileName | sed -e "s/$NEW_PATTERN/$NEW_PATTERN_WITH_DASH/g" ` 
+  mv $fileName $newFileName
+done
+
 # For file contents, use underscore '_', rather than minus '-' as this can break with ruby erb files
+
 for fileName in ` grep -lr ${OLD_PATTERN} * ` 
 do
   case "$fileName" in 
@@ -81,10 +88,11 @@ do
     *jpeg )
      continue;;
     * )
-     sed -i.bak "s/${OLD_PATTERN}/${NEW_PATTERN_WITH_UNDERSCORE}/g" $fileName
+     sed -i.bak "s/${OLD_PATTERN}/${NEW_PATTERN}/g" $fileName
     ;;
   esac
 done
+
 
 # If its a single word thats being replaced, check to see if there is space next to it and in those cases, use the descrp format (like 'Spring Cloud')
 # If no space, then use the name (without spaces like 'SpringCloud')

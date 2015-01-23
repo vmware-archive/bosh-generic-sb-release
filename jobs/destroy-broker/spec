@@ -11,17 +11,17 @@ properties:
     description: 'The CF top-level domain'
   app_domains:
     description: 'CloudFoundry application domains'
-  generic_sb.app_name:
+  generic_broker.app_name:
     description: 'App Name'
-  generic_sb.app_uri:
+  generic_broker.app_uri:
     description: 'Uri of the Service Broker Application'
-  generic_sb.cf.admin_user:
+  generic_broker.cf.admin_user:
     description: 'Username of the CF admin user'
-  generic_sb.cf.admin_password:
+  generic_broker.cf.admin_password:
     description: 'Password of the CF admin user'
-  generic_sb.broker.user:
+  generic_broker.broker.user:
     description: 'Broker basic auth user'
-  generic_sb.broker.password:
+  generic_broker.broker.password:
     description: 'Broker basic auth password'
-  generic_sb.broker.internal_plan_names:
+  generic_broker.broker.internal_plan_names:
     description: 'name of in-build plans in the Service Broker Application'

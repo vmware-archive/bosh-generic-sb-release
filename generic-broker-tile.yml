@@ -1,5 +1,5 @@
 ---
-name: generic_sb                                            # [1]
+name: generic_broker                                            # [1]
 product_version: 1.3.0                                      # [1]
 metadata_version: "1.3"                                    # [2]
 target_installer_version: 1.3
@@ -12,11 +12,11 @@ stemcell:                                                  # [3]
   #file: bosh-stemcell-2690.2-vsphere-esxi-centos-go_agent.tgz
   #version: '2690.2'
 releases:                                                  # [5]
-  - name: generic_sb
-    file: generic_sb_1.3.tgz
+  - name: generic_broker
+    file: generic_broker_1.3.tgz
     version: '1.3'
 provides_product_versions:
-- name: generic_sb
+- name: generic_broker
   version: '1.3'
 label: Generic Service Broker Test Experimental
 description: Generic Service Broker Test Tile  ..
@@ -33,7 +33,7 @@ pre_delete_errands:
 
 
 form_types:                                                # [8]
-  - name: generic_sb_app
+  - name: generic_broker_app
     label: Service Broker Application
     description: Service Broker configuration
     property_inputs:                                       # [9]
@@ -134,7 +134,7 @@ job_types:
 - name: deploy-service-broker
   resource_label: Deploy Generic Service Broker
   template: deploy-service-broker
-  release: generic_sb
+  release: generic_broker
   errand: true
   resource_definitions:
   - name: ram
@@ -173,7 +173,7 @@ job_types:
   - name: app_uri
     type: string
     configurable: true
-    default: genericsb
+    default: generic_sb
   - name: driver_download_url
     type: string
     configurable: true
@@ -291,8 +291,8 @@ job_types:
 
   manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
     \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_sb:\n
-    \     secret: test\ngeneric_sb:\n
+    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
+    \     secret: test\ngeneric_broker:\n
     \ app_name: (( app_name.value ))\n
     \ app_uri: (( app_uri.value ))\n
     \ driver_download_url: (( driver_download_url.value ))\n
@@ -305,8 +305,8 @@ job_types:
     \    service_addr: (( persistence_service_addr.value ))\n
     \    service_sid: (( persistence_service_sid.value ))\n
     \    service_params: (( persistence_service_params.value ))\n
-    \    persistence_sb_user: (( persistence_sb_user.value ))\n
-    \    persistence_sb_password: (( persistence_sb_password.secret ))\n
+    \    persistence_broker_user: (( persistence_sb_user.value ))\n
+    \    persistence_broker_password: (( persistence_sb_password.secret ))\n
     \ target_service:\n
     \    service_addr: (( target_service_addr.value ))\n
     \    service_sid: (( target_service_sid.value ))\n
@@ -321,7 +321,7 @@ job_types:
 - name: register-broker
   resource_label: Register Generic Service Broker
   template: register-broker
-  release: generic_sb
+  release: generic_broker
   errand: true
   resource_definitions:
   - name: ram
@@ -356,8 +356,8 @@ job_types:
 
   manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
     \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_sb:\n
-    \     secret: test\ngeneric_sb:\n
+    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
+    \     secret: test\ngeneric_broker:\n
     \ app_name: (( app_name.value ))\n
     \ app_uri: (( app_uri.value ))\n
     \ internal_plan_names: (( internal_plan_names.value ))\n
@@ -368,7 +368,7 @@ job_types:
 - name: destroy-broker
   resource_label: Remove Generic Service Broker
   template: destroy-broker
-  release: generic_sb
+  release: generic_broker
   errand: true
   resource_definitions:
   - name: ram
@@ -403,8 +403,8 @@ job_types:
 
   manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
     \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_sb:\n
-    \     secret: test\ngeneric_sb:\n
+    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
+    \     secret: test\ngeneric_broker:\n
     \ app_name: (( app_name.value ))\n
     \ app_uri: (( app_uri.value ))\n
     \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:

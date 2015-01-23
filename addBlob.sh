@@ -13,24 +13,30 @@ if [ "$#" -lt 2 ]; then
   exit -1
 fi
 
-blobFile=$1
+givenBlobFile=$1
+
+# The path to the file can have other directories
+# Trim the directories
+blobFile=`echo $givenBlobFile | awk  -F '/' '{print $NF } '`
 blobPath=$2
 
-bosh -n add blob $blobFile $blobPath
+bosh -n add blob $givenBlobFile $blobPath
 bosh -n upload blobs
 
 echo "Is this blob the actual app binary? Respond with y or n:"
 read response
 
 if [ "$response" == "y" ]; then
-  echo "Modifying the jobs/deploy-service-broker/templates/deloy.sh.erb to refer to the correct app archive or file"
   app_prefix_name=`echo $blobFile | awk -F . '{ print $1}' `
-  app_extn=`echo $blobFile | awk -F . '{ print $NF}' `
-  sed -i.bak "s/TEMPLATE_APP_PREFIX_NAME/${app_prefix_name}/g;s/TEMPLATE_APP_EXTENSION/${app_extn}/g" jobs/deploy-service-broker/templates/deploy.sh.erb
+  app_extn=`echo $blobFile  | awk -F . '{ print $NF}' `
+  sed -i.bak "s/TEMPLATE_APP_PREFIX_NAME/${app_prefix_name}/g; s/TEMPLATE_APP_EXTENSION/${app_extn}/g" jobs/deploy-service-broker/templates/deploy.sh.erb
+  echo "Modified the jobs/deploy-service-broker/templates/deloy.sh.erb to refer to the correct app archive or file"
 
-  echo "Modifying the packages/*-service-broker/spec and the packaging file to refer to the correct app blob bits"
-  sed -i.bak "s/TEMPLATE_APP_BLOB_PATH/${blobPath}/g;s/TEMPLATE_APP_BLOB_FILE/${blobFile}/g" packages/*-service-broker/*
+  sed -i.bak "s/TEMPLATE_APP_BLOB_PATH/${blobPath}/g; s/TEMPLATE_APP_BLOB_FILE/${blobFile}/g" packages/*_service_broker/*
+  echo "Modified the packages/*_service_broker/spec and the packaging file to refer to the correct app blob bits"
 
   find jobs/deploy-service-broker -name "*.bak" | xargs rm 
-  find packages/*-service-broker -name "*.bak" | xargs rm 
+  find packages/*_service_broker -name "*.bak" | xargs rm 
 fi
+
+echo ""

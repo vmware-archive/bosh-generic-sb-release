@@ -5,16 +5,16 @@ meta:
 
 director_uuid: 35b3e645-7b07-435a-bfab-69f718e0e8ef
 
-name: generic_sb
+name: generic_broker
 
 releases:
-- name: generic_sb
+- name: generic_broker
   version: latest
 
 compilation:
   cloud_properties:
     name: random
-  network: generic_sb_network
+  network: generic_broker_network
   reuse_compilation_vms: true
   workers: 1
 
@@ -28,33 +28,33 @@ jobs:
 - instances: 1
   lifecycle: errand
   name: deploy-service-broker
-  release: generic_sb
+  release: generic_broker
   networks:
-  - name: generic_sb_network
-  resource_pool: generic_sb_resource-pool
+  - name: generic_broker_network
+  resource_pool: generic_broker_resource-pool
   templates:
   - name: deploy-service-broker
 - instances: 1
   lifecycle: errand
   name: register-broker
-  release: generic_sb
+  release: generic_broker
   networks:
-  - name: generic_sb_network
-  resource_pool: generic_sb_resource-pool
+  - name: generic_broker_network
+  resource_pool: generic_broker_resource-pool
   templates:
   - name: register-broker
 - instances: 1
   lifecycle: errand
   name: destroy-broker
-  release: generic_sb
+  release: generic_broker
   networks:
-  - name: generic_sb_network
-  resource_pool: generic_sb_resource-pool
+  - name: generic_broker_network
+  resource_pool: generic_broker_resource-pool
   templates:
   - name: destroy-broker
 
 networks:
-- name: generic_sb_network
+- name: generic_broker_network
   subnets:
   - cloud_properties:
       name: random
@@ -346,8 +346,8 @@ networks:
 resource_pools:
 - cloud_properties:
     name: random
-  name: generic_sb_resource-pool
-  network: generic_sb_network
+  name: generic_broker_resource-pool
+  network: generic_broker_network
   size: 3
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
@@ -375,20 +375,20 @@ resource_pools:
 #     < % if properties.coherence.machines %>
 #       echo Machine Ips : < %=  p("coherence.machines") %>
 #  networks:
-#    apps: "generic_sb_network"
+#    apps: "generic_broker_network"
 properties:
   domain: 10.244.0.34.xip.io
   app_domains: 10.244.0.34.xip.io
   uaa:
     clients:
-      generic_sb:
+      generic_broker:
         secret: 'test'
   ssl:
     skip_cert_verify: true
-  generic_sb:
+  generic_broker:
     encryption_key: 'test'
     app_name: GenericServiceBroker
-    app_uri: genericsb
+    app_uri: generic_broker
     driver_download_url: "http://12.1.1.1:7777/fileserver/oracle-xe/ojdbc6.jar"  # EDIT ME
     app_push:
       memory: 512
@@ -399,8 +399,8 @@ properties:
       service_addr: 10.244.3.6:1521
       service_sid: XE
       service_params:
-      persistence_sb_user: servicebroker
-      persistence_sb_password: s3cr3t
+      persistence_broker_user: servicebroker
+      persistence_broker_password: s3cr3t
     target_service:
       service_addr: 10.244.3.6:1521
       service_sid: XE

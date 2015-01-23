@@ -2,12 +2,12 @@
 
 
 # Use '_' for release and deployment names as ruby can trip on '-'
-RELEASE_NAME=generic_sb
-DEPLOYMENT_NAME=generic_sb
+RELEASE_NAME=generic_broker
+DEPLOYMENT_NAME=generic_broker
 TARGET_PLATFORM=boshlite
 #TARGET_PLATFORM=vSphere
 
-DEPLOYMENT_MANIFEST=`pwd`/generic-sb-${TARGET_PLATFORM}.yml
+DEPLOYMENT_MANIFEST=`pwd`/*broker-${TARGET_PLATFORM}.yml
 bosh deployment $DEPLOYMENT_MANIFEST
 
 # Cleanup existing deployment and release

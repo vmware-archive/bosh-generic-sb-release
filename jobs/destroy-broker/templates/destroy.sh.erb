@@ -3,23 +3,23 @@ set -e -x
 
 export SCHEME=https
 export PATH="/var/vcap/packages/cf_cli/bin:$PATH"
-export ADMIN_USER=<%= properties.generic_sb.cf.admin_user %>
-export ADMIN_PASSWORD=<%= properties.generic_sb.cf.admin_password %>
+export ADMIN_USER=<%= properties.generic_broker.cf.admin_user %>
+export ADMIN_PASSWORD=<%= properties.generic_broker.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
 export API_ENDPOINT=$SCHEME://api.$DOMAIN
 export APP_DOMAIN=<%= properties.app_domains %>
-export APP_NAME=<%= properties.generic_sb.app_name %>
-export APP_URI=<%= properties.generic_sb.app_uri %>
+export APP_NAME=<%= properties.generic_broker.app_name %>
+export APP_URI=<%= properties.generic_broker.app_uri %>
 export ORG=${APP_NAME}-service-org
 export SPACE=${APP_NAME}-service-space
 export BROKER_NAME=${APP_NAME}-service-broker
-export BROKER_USER=<%= properties.generic_sb.broker.user %>
-export BROKER_PASS=<%= properties.generic_sb.broker.password %>
+export BROKER_USER=<%= properties.generic_broker.broker.user %>
+export BROKER_PASS=<%= properties.generic_broker.broker.password %>
 export BROKER_HOST=$SCHEME://${APP_URI}.${APP_DOMAIN}
 export DB_NAME=${APP_NAME}-mysql
 
 # Use this only when there are already inbuild plans that need to enabled for public
-export BROKER_INTERNAL_PLAN_NAMES=<%= properties.generic_sb.broker.internal_plan_names %>
+export BROKER_INTERNAL_PLAN_NAMES=<%= properties.generic_broker.broker.internal_plan_names %>
 
 function authenticate_and_target() {
   cf api $API_ENDPOINT <% if properties.ssl.skip_cert_verify %>--skip-ssl-validation<% end %>

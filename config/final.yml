@@ -2,5 +2,5 @@
 blobstore:
   provider: local
   options:
-    blobstore_path: /tmp/generic_sb-blobs
-final_name: generic_sb_blobstore
+    blobstore_path: /tmp/generic_broker-blobs
+final_name: generic_broker_blobstore

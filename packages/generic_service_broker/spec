@@ -1,5 +1,5 @@
 ---
-name: generic-service-broker
+name: generic_service_broker
 
 dependencies: []
 
@@ -7,4 +7,4 @@ files:
 - templates/config/application.properties
 - templates/setupServiceBrokerEnv.sh
 - TEMPLATE_APP_BLOB_PATH/TEMPLATE_APP_BLOB_FILE
-#- generic-service-broker/oracle-service-broker-0.1.0.jar
+#- generic_service_broker/oracle-service-broker-0.1.0.jar
