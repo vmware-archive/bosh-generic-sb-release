@@ -6,7 +6,7 @@ It also includes scripts to generate an Operations Manager Tile (in form of .piv
 
 This is purely an experimental release and highly recommended to not test against a production system.
 
-## Structure:
+## Structure
 * There are 3 errands that would be accessible through Bosh using this release
   * deploy-service-broker that would use the release bits (bundled with service broker app code) to deploy a custom service broker application to CF.
   * register-broker would register the service broker to CF
@@ -17,13 +17,14 @@ Once the job has been deployed via bosh deploy, one can execute ' bosh run erran
 * The metadata for the errands would be generated based on either deployment manifest used during bosh deploy or via the Ops Mgr Tile configurations.
 
 ## Build the Release
+Steps to building the Bosh Release
 
-### Rename the package and jobs 
-* Rename the release and all files using the renameRelease.sh file (provide 'generic' and desired name as arguments)
+### Rename the package and jobs
+Rename the release and all files using the renameRelease.sh file (provide 'generic' and desired name as arguments)
 ### Add CF CLI binary as Blob
-* Run fetch_cf_cli.sh script to fetch CF CLI binary and add it as a blob to the release. Specify 'N' when it asks if its the app binary.
+Run fetch_cf_cli.sh script to fetch CF CLI binary and add it as a blob to the release. Specify 'N' when it asks if its the app binary.
 ### Add Custom Service Broker App content as Blob
-* Adding custom code and binaries required for the service broker app:
+Adding custom code and binaries required for the service broker app:
   * Add any dependent files/templates under src/templates folder
   * Use the addBlob.sh to add a custom service broker app implementation (like jar/zip/tar/tgz) for the release
     * Respond with 'Y' if adding the main app archive 
@@ -32,9 +33,9 @@ Once the job has been deployed via bosh deploy, one can execute ' bosh run erran
   * Edit the packaging file under packages/<project>/ to copy over any other additional files/blobs to $BOSH_INSTALL_TARGET/lib or other location.
     * The packaging file would be not be updated to include non-app bits ('N' as input) or any additional blobs added, even if they are also considered app bits.
 ### Edit runtime variables for the Jobs
-* Bosh job properties navigation
+Its important to understand how properties defined inside Bosh Job are referenced/navigated
   * Bosh would pass on runtime attributes from the deployment manifest to the job instance via a relationship graph.
-   * The variable should be defined under the job properties (under some defined structure) in the manifest
+   * The variable should be defined under the job properties (under some top or nested structure) in the manifest
    * Bosh would understand that a given property or attribute is required for a specific job based on the reference to the attribute inside the job's spec file. The job spec file should provide the hierarchy or nesting order of the variable in relation to the top element and also provide a sample description of the variable. Default can be specified that would allow bosh to use that value in the absence of value from the deployment manifest file.
    * At the job execution time, these variables can be evaluated to be processed by the job instance.
    * Steps to add an attribute or variable definition: 
@@ -57,13 +58,13 @@ properties:
     plan_params: "plan_param1,plan_param2"
 ```
 ### Edit the deploy.sh.erb file
- * Remove the variables from the deploy.sh.erb that are not required as absence of the variable in the manifest can cause failures (ex: remove TARGET_SERVER.., DRIVER_DOWNLOAD_URL etc. if they are not needed).
-     * Edit the update_env_variable_script function to do the substitution of template variables with real variable values.
-      * Example:`` \`s/TEMPLATE_PLAN_PARAMS/${PLAN_PARAMS}/g \` ```
-    * For any new parameter or variable added or modified, ensure the related spec includes those newer or modified attribute names and associated description.
-   * At the job execution time, these variables can be evaluated to be processed by the job instance.
+Remove the variables from the deploy.sh.erb that are not required as absence of the variable in the manifest can cause failures (ex: remove TARGET_SERVER.., DRIVER_DOWNLOAD_URL etc. if they are not needed).
+   * Edit the update_env_variable_script function to do the substitution of template variables with real variable values.
+    * Example:`` \`s/TEMPLATE_PLAN_PARAMS/${PLAN_PARAMS}/g \` ```
+  * For any new parameter or variable added or modified, ensure the related spec includes those newer or modified attribute names and associated description.
+ * At the job execution time, these variables can be evaluated to be processed by the job instance.
 ## Bosh Manifest Generation 
-* Edit the deployment manifest files to test against bosh-lite or vSphere directly using Bosh.
+  * Edit the deployment manifest files to test against bosh-lite or vSphere directly using Bosh.
   * Use the make_manifest.sh script to generate the manifest file according to target platform (warden, vsphere, aws-ec2).
    * Before running the make_manifest.sh, set the bosh target to the target Bosh director 
    * Edit the templates/*-broker-properties.yml file to update the following elements:
