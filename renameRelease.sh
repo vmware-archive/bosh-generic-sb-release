@@ -46,7 +46,7 @@ echo "Application descrp inside the Tile would be : ${NEW_APP_DESCRP} Service Br
 
 # Save a backup before renaming/replacing...
 curDate=`date +'%H.%M-%m.%d.%Y' `
-zip -r backup-$curDate.zip jobs packages src config templates *sh *yml make*  
+zip -r backup-$curDate.zip jobs packages src *sh config *yml 
 
 for fileName in `find . -name "${OLD_PATTERN}*" | tail -r`
 do
@@ -94,24 +94,10 @@ do
 done
 
 
-# Make sure the deployment name uses dash instead of underscore - used by both run.sh and deployRelease.sh
-sed -i.bak "s/DEPLOYMENT_NAME=${NEW_PATTERN}/DEPLOYMENT_NAME=${NEW_PATTERN_WITH_DASH}/g" run.sh deployRelease.sh
-sed -i.bak "s/DEPLOYMENT_NAME/${NEW_PATTERN_WITH_DASH}-broker/g" *yml
-
 # If its a single word thats being replaced, check to see if there is space next to it and in those cases, use the descrp format (like 'Spring Cloud')
 # If no space, then use the name (without spaces like 'SpringCloud')
-sed -i.bak "s/${OLD_APP_DESCRP} /${NEW_APP_DESCRP} /g" *.yml *.sh  templates/*.yml
-sed -i.bak "s/${OLD_APP_NAME}/${NEW_APP_NAME}/g" *.yml *.sh  templates/*.yml
-
-# For the app_uri, make sure the endpoint does not use '_', change those to '-'
-# Ruby would fail!!: 
-# Request failed: 500: {\"code\"=>10001, #
-# "description"=>"the scheme http does not accept registry part: test_broker.10.244.0.34.xip.io
-sed -i.bak "s/app_uri: ${NEW_PATTERN}/app_uri: ${NEW_PATTERN_WITH_DASH}/g" *.yml templates/*.yml
-
-# Have the mainfest file using dash instead of underscore
-sed -i.bak "s/${NEW_PATTERN}/${NEW_PATTERN_WITH_DASH}/g" make_manifest.sh
-#sed -i.bak "s/${NEW_PATTERN}/${NEW_PATTERN_WITH_DASH}/g" *.yml templates/*.yml
+sed -i.bak "s/${OLD_APP_DESCRP} /${NEW_APP_DESCRP} /g" *.yml *.sh
+sed -i.bak "s/${OLD_APP_NAME}/${NEW_APP_NAME}/g" *.yml *.sh
 
 find . -name "*.bak" | xargs rm
 
