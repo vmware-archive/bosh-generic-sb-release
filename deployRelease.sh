@@ -4,12 +4,12 @@
 CLEAN_UP=true
 
 # For use to create final release tarball
-RELEASE_NAME=oracle-xe
+RELEASE_NAME=generic_broker
 
-DEPLOYMENT_NAME=oracle-xe
-DEPLOYMENT_PLATFORM=boshlite
-#DEPLOYMENT_PLATFORM=vSphere
-DEPLOYMENT_MANIFEST=`pwd`/oracle-xe-${DEPLOYMENT_PLATFORM}.yml
+DEPLOYMENT_NAME=generic_broker
+DEPLOYMENT_PLATFORM=warden
+#DEPLOYMENT_PLATFORM=vsphere
+DEPLOYMENT_MANIFEST=`pwd`/generic-broker-${DEPLOYMENT_PLATFORM}-manifest.yml
 
 if [ "$CLEAN_UP" == "true" ]; then
   bosh deployment $DEPLOYMENT_MANIFEST

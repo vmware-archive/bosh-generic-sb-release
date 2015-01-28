@@ -7,13 +7,13 @@ export SCHEME=https
 export ADMIN_USER=<%= properties.generic_broker.cf.admin_user %>
 export ADMIN_PASSWORD=<%= properties.generic_broker.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
-export API_ENDPOINT=$SCHEME://api.$DOMAIN
+export APP_DOMAIN=<%= properties.app_domains %>
+export API_ENDPOINT=$SCHEME://api.${APP_DOMAIN}
 export APP_NAME=<%= properties.generic_broker.app_name %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
 export ORG=${APP_NAME}-service-org
 export SPACE=${APP_NAME}-service-space
 export QUOTA=${APP_NAME}-service-quota
-export APP_DOMAIN=<%= properties.app_domains %>
 export ORG_QUOTA=<%= properties.generic_broker.app_push.org_quota %>
 export APP_PUSH_TIMEOUT=<%= properties.generic_broker.app_push.timeout %>
 export APP_PUSH_MEMORY=<%= properties.generic_broker.app_push.memory %>
@@ -35,6 +35,10 @@ export TARGET_SID=<%= properties.generic_broker.target_service.service_sid %>
 export TARGET_PARAMS=<%= properties.generic_broker.target_service.service_params %>
 export TARGET_ADMIN_USER=<%= properties.generic_broker.target_service.target_admin_user %>
 export TARGET_ADMIN_PASSWD=<%= properties.generic_broker.target_service.target_admin_password %>
+
+export BROKER_NAME=${APP_NAME}-service-broker
+export BROKER_USER=<%= properties.generic_broker.broker.user %>
+export BROKER_PASS=<%= properties.generic_broker.broker.password %>
 
 export DEFAULT_DB_NAME=${APP_NAME}-mysql
 export SB_APP_ENV="setupServiceBrokerEnv.sh"
@@ -224,12 +228,12 @@ function update_env_variable_script() {
   popd
 }
 
-function register_plans() {
+function register_on_demand_plans() {
   pushd $PACKAGE_PATH
     mkdir -p /var/vcap/data/tmp
     # Sleep for a bit so the app is up
     sleep 30
-    app_endpoint=http://$BROKER_USER}:${BROKER_PASSWD}@${APP_URI}.${DOMAIN}
+    app_endpoint=http://${BROKER_USER}:${BROKER_PASSWD}@${APP_URI}.${DOMAIN}
     app_catalog_url=${app_endpoint}/v2/catalog
     catalog_output=`curl -X GET ${app_catalog_url} 2>/dev/null`
     log_debug "Service Broker App Catalog output : $catalog_output"
@@ -280,33 +284,22 @@ EOF
   popd
 }
 
-log_debug Complete deployment manifest : <%= properties.generic_broker %>
 cf -v
 authenticate_and_target
-log_debug "Authenticated and targeted cf!!"
 create_quota
 update_env_variable_script
-log_debug "Updated env variable script for app"
 
 modify_app
-log_debug "Modified app"
-
-log_debug "Pushing app"
 push_app
-log_debug "Pushed app"
 add_env_vars
-log_debug "Updated env variable for app in cf"
 
 if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
   provision_and_bind_db
-  log_debug "Provisioned and bound mysql db for app"
 fi
 
-log_debug "Starting app in cf"
 restart_app
-log_debug "App started!!"
 
 # Remove register_plans if there are already some internal plans
-if [ "$INTERNAL_PLANS" == "" ]; then
-  register_plans
-fi
+<% if properties.generic_broker.on_demand_service_plans %>
+  register_on_demand_plans
+<% end %>

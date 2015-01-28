@@ -5,7 +5,7 @@ meta:
 
 director_uuid: 35b3e645-7b07-435a-bfab-69f718e0e8ef
 
-name: generic_broker
+name: DEPLOYMENT_NAME
 
 releases:
 - name: generic_broker
@@ -353,29 +353,6 @@ resource_pools:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
     version: latest
 
-# The following `apps` entry needs to match the given network name to arrive at the ip for the ctl.erb file within the job templates
-# Used in the following manner
-# Adding artificial space between < and % so bosh deployment will barf with erb errors abt missing end
-# export my_ip='< %=spec.networks.send(properties.networks.keys.first).ip %>'
-#
-# < % if properties.coherence.jvm_args %>
-#   export JVM_ARGS='< %=properties.coherence.jvm_args %>  -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps'
-# < % end %>
-#
-# <  % if properties.coherence.cluster %>
-#
-#   < % if properties.coherence.cluster.name %>
-#     export cluster_name='< %= properties.coherence.cluster.name %>'
-#     export COHERENCE_CLUSTER_ARGS="$COHERENCE_CLUSTER_ARGS -Dtangosol.coherence.cluster=$cluster_name"
-#   < % end %>
-#
-#   < % if properties.coherence.listener %>
-#     port='< %= properties.coherence.listener.port %>'
-#
-#     < % if properties.coherence.machines %>
-#       echo Machine Ips : < %=  p("coherence.machines") %>
-#  networks:
-#    apps: "generic_broker_network"
 properties:
   domain: 10.244.0.34.xip.io
   app_domains: 10.244.0.34.xip.io
@@ -388,7 +365,7 @@ properties:
   generic_broker:
     encryption_key: 'test'
     app_name: GenericServiceBroker
-    app_uri: generic_broker
+    app_uri: generic-broker
     driver_download_url: "http://12.1.1.1:7777/fileserver/oracle-xe/ojdbc6.jar"  # EDIT ME
     app_push:
       memory: 512

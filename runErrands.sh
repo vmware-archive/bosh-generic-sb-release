@@ -6,6 +6,7 @@ do
   echo "3) destroy-broker"
   echo "4) Exit"
 
+  echo -n "Enter selection: "
   read input
 
   case "$input" in
@@ -14,6 +15,6 @@ do
     3) arg="destroy-broker";;
     4) exit 0;;
   esac
-  
+  echo "Running bosh errand $arg" 
   bosh run errand  $arg
 done

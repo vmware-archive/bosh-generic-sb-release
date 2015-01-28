@@ -1,0 +1,56 @@
+properties:
+  # EDIT ME -- change the domain names
+  domain: 10.244.0.34.xip.io
+  app_domains: 10.244.0.34.xip.io
+  uaa:
+    clients:
+      generic_broker:
+        secret: 'test'
+  ssl:
+    skip_cert_verify: true
+  generic_broker:
+    encryption_key: 'test'
+    # EDIT ME -- Change the app name and URI as needed
+    app_name: GenericServiceBroker
+    app_uri: generic-broker
+    driver_download_url: "http://12.1.1.1:7777/fileserver/oracle-xe/ojdbc6.jar"  # EDIT ME
+    app_push:
+      memory: 512
+      org_quota: 1024
+      timeout: 180
+    # Change the persistence type to 'mysql' for using my sql instance to store data
+    # Change the persistence type to 'custom' for using custom db (non-my sql) instance to store data
+    # Change the persistence type to 'none' if its all in-memory
+    persistence_store_type: none
+    persistence_store:
+      service_addr: 10.244.3.6:1521
+      service_sid: XE
+      service_params:
+      persistence_broker_user: servicebroker
+      persistence_broker_password: s3cr3t
+    target_service:
+      service_addr: 10.244.3.6:1521
+      service_sid: XE
+      service_params:
+      target_admin_user: system
+      target_admin_password: welcome1
+    # EDIT ME - remove if there are no On Demand Plans that need to be created
+    on_demand_service_plans:
+    - guid: 0ab34def-7d2f-4ff0-bfe7-62b5946cf9d1
+      plan_name: Standard
+      plan_description: default plan for target services
+      #plan_details: "init_size| 50| mb initial size of tablespace;\r\nmax_size|
+      #    500|  mb max size of tablespace;\r\nconnections| 5| max number of concurrent
+      #    connections"
+      plan_details: "init_size: 50: mb initial size of tablespace;\r\nmax_size:
+          500:  mb max size of tablespace;\r\nconnections: 5: max number of concurrent
+          connections"
+    cf:
+      admin_user: admin
+      admin_password: admin
+    broker:
+      user: testuser
+      password: testuser
+      # EDIT ME - These are supposed to refer to inbuilt plans which needs to be made public accessible from the Broker
+      internal_plan_names: "p-internal-plan1,p-internal-plan2"
+
