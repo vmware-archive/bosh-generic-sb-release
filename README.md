@@ -23,6 +23,7 @@ Steps to building the Bosh Release
 Rename the release and all files using the renameRelease.sh file (provide 'generic' and desired name as arguments)
 ### Add CF CLI binary as Blob
 Run fetch_cf_cli.sh script to fetch CF CLI binary and add it as a blob to the release. Specify 'N' when it asks if its the app binary.
+
 ### Add Custom Service Broker App content as Blob
 Adding custom code and binaries required for the service broker app:
   * Add any dependent files/templates under src/templates folder
@@ -32,6 +33,7 @@ Adding custom code and binaries required for the service broker app:
     * The packaging file would be automatically updated only in case of 'Y' as input for only the first blob added as application binary.
   * Edit the packaging file under packages/<project>/ to copy over any other additional files/blobs to $BOSH_INSTALL_TARGET/lib or other location.
     * The packaging file would be not be updated to include non-app bits ('N' as input) or any additional blobs added, even if they are also considered app bits.
+
 ### Edit runtime variables for the Jobs
 Its important to understand how properties defined inside Bosh Job are referenced/navigated
   * Bosh would pass on runtime attributes from the deployment manifest to the job instance via a relationship graph.
@@ -63,6 +65,7 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
     * Example:`` \`s/TEMPLATE_PLAN_PARAMS/${PLAN_PARAMS}/g \` ```
   * For any new parameter or variable added or modified, ensure the related spec includes those newer or modified attribute names and associated description.
  * At the job execution time, these variables can be evaluated to be processed by the job instance.
+
 ## Bosh Manifest Generation 
   * Edit the deployment manifest files to test against bosh-lite or vSphere directly using Bosh.
   * Use the make_manifest.sh script to generate the manifest file according to target platform (warden, vsphere, aws-ec2).
@@ -82,12 +85,14 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
    * A new manifest would be generated with the Bosh Director UUID based on the bosh target
  * Edit the run.sh script to point to the newly generated manifest rather than the boiler plate templates
  * Note: Everytime, new properties/attributes are added in the job spec or erb files, make sure corresponding changes are added to the templates/*properties.yml file and manifest is regenerated.
+
 ## Deployment
 * Use run.sh script to do full clean, build, deploy:
   * Create a release file using createRelease.sh script
   * Deploy the release to Bosh
 * Do the deployment using 'bosh deploy' directly or via run.sh
 * Note: Always generate the latest bosh manifest file (using make_manifest.sh) before running this script.
+
 ## Running Errands
 * Run bosh errands. Sample:
    bosh run errand deploy-service-broker
@@ -95,6 +100,7 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
    bosh run errand destroy-broker
    
 * or use the runErrands.sh shell script to specify the option to test/run.
+
 ## Tile Generation
 * Once all changes are complete, edit the `*tile.yml` to add the associated changes for all related attributes, metadata that needs to be passed on to the bosh deployment.
   * Any new attribute or property added should be first defined in the property blueprints (like type/configurable/default etc) and also within the job related manifest section.
@@ -123,6 +129,7 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
 * Create a custom image for the tile by first generating an image and converting it to Base-64 encoding [use this link](www.base64-image.de/step-2.php) and use that in the image tag in the tile file.
 * Run createTile.sh to generate the Ops Mgr Tile (.pivotal file).
 * `Important: Backup the Ops Mgr configuration before proceeding to next step.`
+
 ## Tile Import into Ops Mgr
 * Import the Tile into non-Production version of Ops Mgr.
 * Verify the Tile works before proceeding with any changes.
