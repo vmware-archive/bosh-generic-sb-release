@@ -7,8 +7,12 @@ export SCHEME=https
 export ADMIN_USER=<%= properties.generic_broker.cf.admin_user %>
 export ADMIN_PASSWORD=<%= properties.generic_broker.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
-export APP_DOMAIN=<%= properties.app_domains %>
-export API_ENDPOINT=$SCHEME://api.${APP_DOMAIN}
+<% if properties.app_domains.kind_of?(Array) %>
+  export APP_DOMAIN=<%= properties.app_domains.first %>
+<% else %>
+  export APP_DOMAIN=<%= properties.app_domains %>
+<% end %>
+export API_ENDPOINT=$SCHEME://api.${DOMAIN}
 export APP_NAME=<%= properties.generic_broker.app_name %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
 export ORG=${APP_NAME}-service-org
@@ -38,7 +42,9 @@ export TARGET_ADMIN_PASSWD=<%= properties.generic_broker.target_service.target_a
 
 export BROKER_NAME=${APP_NAME}-service-broker
 export BROKER_USER=<%= properties.generic_broker.broker.user %>
-export BROKER_PASS=<%= properties.generic_broker.broker.password %>
+export BROKER_PASSWD=<%= properties.generic_broker.broker.password %>
+
+export CREATE_OPEN_SECURITY_GROUP=<%= properties.generic_broker.create_open_security_group %>
 
 export DEFAULT_DB_NAME=${APP_NAME}-mysql
 export SB_APP_ENV="setupServiceBrokerEnv.sh"
@@ -87,6 +93,17 @@ function create_quota() {
 cf create-quota $QUOTA -m ${ORG_QUOTA}m -r 10 -s 10
 cf update-quota $QUOTA -m ${ORG_QUOTA}m -r 10 -s 10 --disallow-paid-service-plans
   cf set-quota $ORG $QUOTA
+}
+
+function create_open_security_group() {
+  if [ "${CREATE_OPEN_SECURITY_GROUP}" == "true" ]; then
+    echo "Creating open security group"
+
+    cf create-security-group all_open $PACKAGE_PATH/templates/all_open.json
+    cf bind-running-security-group all_open
+  else
+    echo "Not creating open security group"
+  fi
 }
 
 function provision_and_bind_db() {
@@ -286,6 +303,7 @@ EOF
 
 cf -v
 authenticate_and_target
+create_open_security_group
 create_quota
 update_env_variable_script
 

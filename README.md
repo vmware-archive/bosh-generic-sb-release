@@ -126,7 +126,7 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
     \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
     \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( *internal_plan_names*.value ))\n"
    ```
-* Create a custom image for the tile by first generating an image and converting it to Base-64 encoding [use this link](www.base64-image.de/step-2.php) and use that in the image tag in the tile file.
+* Create a custom image for the tile by first creating an image and converting it to [Base-64 encoding](http://www.base64-image.de/step-2.php) and use that in the image tag in the tile file. Ensure the sizes are less than an inch in height and width for it to fit inside the tile.
 * Run createTile.sh to generate the Ops Mgr Tile (.pivotal file).
 * `Important: Backup the Ops Mgr configuration before proceeding to next step.`
 

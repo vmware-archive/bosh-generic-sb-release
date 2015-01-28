@@ -18,6 +18,9 @@ properties:
     description: 'Name of the Service Broker Application'
   generic_broker.app_uri:
     description: 'Uri of the Service Broker Application'
+  generic_broker.create_open_security_group:
+    description: 'Open security group for the app to access outside'
+    default: false
   generic_broker.driver_download_url:
     description: 'Download url for drivers needed by the Service Broker Application'
   generic_broker.app_push.org_quota:

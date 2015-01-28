@@ -7,7 +7,11 @@ export ADMIN_USER=<%= properties.generic_broker.cf.admin_user %>
 export ADMIN_PASSWORD=<%= properties.generic_broker.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
 export API_ENDPOINT=$SCHEME://api.$DOMAIN
-export APP_DOMAIN=<%= properties.app_domains %>
+<% if properties.app_domains.kind_of?(Array) %>
+  export APP_DOMAIN=<%= properties.app_domains.first %>
+<% else %>
+  export APP_DOMAIN=<%= properties.app_domains %>
+<% end %>
 export APP_NAME=<%= properties.generic_broker.app_name %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
 export ORG=${APP_NAME}-service-org

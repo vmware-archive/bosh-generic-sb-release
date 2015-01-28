@@ -1,9 +1,9 @@
 #!/bin/sh
 
-TILE_NAME=Generic-SB-Experimental
+TILE_NAME=Generic-Broker-Experimental
 TILE_FILE=`pwd`/*tile.yml
 RELEASE_TARFILE=`pwd`/releases/*/*.tgz
-BOSH_STEMCELL_FILE=bosh-stemcell-2690.2-vsphere-esxi-centos-go_agent.tgz
+BOSH_STEMCELL_FILE=`cat ${TILE_FILE} | grep "bosh-stemcell" | grep "^ *file:" | awk '{print $2}' `
 BOSH_STEMCELL_LOCATION=https://s3.amazonaws.com/bosh-jenkins-artifacts/bosh-stemcell/vsphere
 
 mkdir -p tmp

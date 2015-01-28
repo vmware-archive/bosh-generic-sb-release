@@ -93,7 +93,8 @@ properties:
         secret: test
   generic_broker:
     app_name: GenericServiceBroker
-    app_uri: generic-broker
+    app_uri: APP_URI
+    create_open_security_group: false
     persistence_store_type: mysql
     persistence_store:
       service_addr: 10.85.29.92:1521

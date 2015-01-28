@@ -14,7 +14,11 @@ export SPACE=${APP_NAME}-service-space
 export BROKER_NAME=${APP_NAME}-service-broker
 export BROKER_USER=<%= properties.generic_broker.broker.user %>
 export BROKER_PASS=<%= properties.generic_broker.broker.password %>
-export APP_DOMAIN=<%= properties.app_domains %>
+<% if properties.app_domains.kind_of?(Array) %>
+  export APP_DOMAIN=<%= properties.app_domains.first %>
+<% else %>
+  export APP_DOMAIN=<%= properties.app_domains %>
+<% end %>
 export BROKER_HOST=$SCHEME://${APP_URI}.${APP_DOMAIN}
 
 # Use this only when there are already inbuild plans that need to enabled for public

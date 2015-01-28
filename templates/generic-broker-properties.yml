@@ -13,14 +13,15 @@ properties:
     # EDIT ME -- Change the app name and URI as needed
     app_name: GenericServiceBroker
     app_uri: generic-broker
+    create_open_security_group: false
     driver_download_url: "http://12.1.1.1:7777/fileserver/oracle-xe/ojdbc6.jar"  # EDIT ME
     app_push:
       memory: 512
       org_quota: 1024
       timeout: 180
-    # Change the persistence type to 'mysql' for using my sql instance to store data
-    # Change the persistence type to 'custom' for using custom db (non-my sql) instance to store data
-    # Change the persistence type to 'none' if its all in-memory
+    # Set the persistence type to 'mysql' for using my sql instance to store data
+    # Set the persistence type to 'custom' for using custom db (non-my sql) instance to store data
+    # Set the persistence type to 'none' if its all in-memory
     persistence_store_type: none
     persistence_store:
       service_addr: 10.244.3.6:1521
@@ -34,7 +35,7 @@ properties:
       service_params:
       target_admin_user: system
       target_admin_password: welcome1
-    # EDIT ME - remove if there are no On Demand Plans that need to be created
+    # EDIT ME - remove if there are no On-Demand Plans that need to be created
     on_demand_service_plans:
     - guid: 0ab34def-7d2f-4ff0-bfe7-62b5946cf9d1
       plan_name: Standard

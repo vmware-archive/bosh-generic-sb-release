@@ -94,9 +94,10 @@ do
 done
 
 
-# Make sure the deployment name uses dash instead of underscore - used by both run.sh and deployRelease.sh
+# Make sure the deployment name uses dash instead of underscore - used by both run.sh and deployRelease.sh and the tile
 sed -i.bak "s/DEPLOYMENT_NAME=${NEW_PATTERN}/DEPLOYMENT_NAME=${NEW_PATTERN_WITH_DASH}/g" run.sh deployRelease.sh
 sed -i.bak "s/DEPLOYMENT_NAME/${NEW_PATTERN_WITH_DASH}-broker/g" *yml
+sed -i.bak "s/APP_URI/${NEW_PATTERN_WITH_DASH}-broker/g" *yml
 
 # If its a single word thats being replaced, check to see if there is space next to it and in those cases, use the descrp format (like 'Spring Cloud')
 # If no space, then use the name (without spaces like 'SpringCloud')
