@@ -142,9 +142,9 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
    ```
 * Create a custom image for the tile by first creating an image and converting it to [Base-64 encoding](http://www.base64-image.de/step-2.php) and use that in the image tag in the tile file. Ensure the sizes are less than an inch in height and width for it to fit inside the tile.
 * Run createTile.sh to generate the Ops Mgr Tile (.pivotal file).
-* `Important: Backup the Ops Mgr configuration before proceeding to next step.`
 
 ## Tile Import into Ops Mgr
+`Important: Backup the Ops Mgr configuration before proceeding to next step.`
 * Import the Tile into non-Production version of Ops Mgr.
 * Verify the Tile works before proceeding with any changes.
  * Rollback the tile import if Ops Mgrs reports 500 or throws Errors.
