@@ -1,5 +1,6 @@
 # Bosh-generic-sb-release
-Bosh release for a generic service broker that would be deployed as an app on Cloud Foundry, along with support for Ops Mgr Tile generation.
+
+A [Bosh release](http://docs.cloudfoundry.org/bosh/create-release.html) for any generic service broker that would be deployed as an application on [Cloud Foundry](http://www.pivotal.io/platform-as-a-service/cloud-foundry), along with scripts to generate an Ops Mgr Tile of the [Service Broker](http://docs.cloudfoundry.org/services/api.html).
 
 This is a scaffolding to generate a bosh release that would be used to deploy a service broker as an application to Cloud Foundry. 
 It also includes scripts to generate an Operations Manager Tile (in form of .pivotal file).
@@ -7,14 +8,21 @@ It also includes scripts to generate an Operations Manager Tile (in form of .piv
 This is purely an experimental release and highly recommended to not test against a production system.
 
 ## Structure
+* A Bosh release would be generated containing a custom developed Service Broker implementation of the Service Broker interface for brokering services to Cloud Foundry Applications.
+  * Using the steps described and provided scripts, users will be able to create a Bosh release around a custom service broker implementation (to Database or other services) and deploy it to their Cloud Foundry Environment
+  * The service broker implementation application would be deployed to Cloud Foundry as a separate application, followed by its registration as a service broker with the Cloud Foundry Cloud Controller.
+  * Users will then be able to access the new service broker via the Cloud Foundry Marketplace
+  * The exposed services brokered by the new service broker implementation can then be bound to user applications running on Cloud Foundry.
+  * Scripts bundled with the release will also handle the de-registration/purging of the services and underlying service broker.
+
 * There are 3 errands that would be accessible through Bosh using this release
-  * deploy-service-broker that would use the release bits (bundled with service broker app code) to deploy a custom service broker application to CF.
+  * deploy-service-broker that would use the release bits (bundled with service broker app code) to deploy the custom service broker application to CF.
   * register-broker would register the service broker to CF
   * destroy-broker would delete/de-register the service broker from CF.
 
-Once the job has been deployed via bosh deploy, one can execute ' bosh run errand deploy-service-broker' to run the named errand.
-* The release along with any necessary stemcells and the modified tile.yml file can be used to create a Tile to be imported into PCF Ops Mgr.
-* The metadata for the errands would be generated based on either deployment manifest used during bosh deploy or via the Ops Mgr Tile configurations.
+Once the job has been deployed via bosh deploy, one can execute 'bosh run errand deploy-service-broker' to run the named errand.
+* The release along with any necessary stemcells and the modified tile.yml file can be used to create a Pivotal Operations Manager Tile to be imported into PCF Ops Mgr.
+* The metadata for the errands would be generated based on either user generated deployment manifest or via the Ops Mgr Tile configurations.
 
 ## Build the Release
 Steps to building the Bosh Release
@@ -22,17 +30,19 @@ Steps to building the Bosh Release
 ### Rename the package and jobs
 Rename the release and all files using the renameRelease.sh file (provide 'generic' and desired name as arguments)
 ### Add CF CLI binary as Blob
-Run fetch_cf_cli.sh script to fetch CF CLI binary and add it as a blob to the release. Specify 'N' when it asks if its the app binary.
+Run fetch_cf_cli.sh script to fetch CF CLI binary and add it as a blob to the release.
+To upgrade the CF cli, edit/update the download link specified inside the fetch_cf_cli.sh script.
 
 ### Add Custom Service Broker App content as Blob
 Adding custom code and binaries required for the service broker app:
   * Add any dependent files/templates under src/templates folder
+  * If running on bosh-lite, set the create_open_security_group attribute to true to allow the service broker app to interact with other apps.
   * Use the addBlob.sh to add a custom service broker app implementation (like jar/zip/tar/tgz) for the release
-    * Respond with 'Y' if adding the main app archive 
+    * Respond with 'y' if adding the main app archive 
     * This will automatically update the spec and packaging file for the package to include the app binary.
-    * The packaging file would be automatically updated only in case of 'Y' as input for only the first blob added as application binary.
+    * The packaging file would be automatically updated only in case of 'y' as input for only the first blob added as application binary.
   * Edit the packaging file under packages/<project>/ to copy over any other additional files/blobs to $BOSH_INSTALL_TARGET/lib or other location.
-    * The packaging file would be not be updated to include non-app bits ('N' as input) or any additional blobs added, even if they are also considered app bits.
+    * The packaging file would be not be updated to include non-app bits ('n' as input) or any additional blobs added, even if they are also considered app bits.
 
 ### Edit runtime variables for the Jobs
 Its important to understand how properties defined inside Bosh Job are referenced/navigated
@@ -59,6 +69,9 @@ properties:
     app_uri: mytestsb
     plan_params: "plan_param1,plan_param2"
 ```
+Note: Whenever a new variable is added, it should be referenceable in the spec file, the manifest and the job template erb file.
+If a variable is moved or modified, the same set of files should be updated.
+
 ### Edit the deploy.sh.erb file
 Remove the variables from the deploy.sh.erb that are not required as absence of the variable in the manifest can cause failures (ex: remove TARGET_SERVER.., DRIVER_DOWNLOAD_URL etc. if they are not needed).
    * Edit the update_env_variable_script function to do the substitution of template variables with real variable values.
@@ -81,6 +94,7 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
      * Managed target server details
      * Internal Plans managed by Broker
      * On Demand plans to be created on the broker
+     * If running on bosh-lite, set the create_open_security_group attribute to true to allow the service broker app to interact with other apps.
    * Run the make_manifest.sh providing 'warden' or 'vsphere' to indicate the platform
    * A new manifest would be generated with the Bosh Director UUID based on the bosh target
  * Edit the run.sh script to point to the newly generated manifest rather than the boiler plate templates

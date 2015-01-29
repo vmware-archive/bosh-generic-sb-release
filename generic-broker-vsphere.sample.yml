@@ -84,7 +84,8 @@ update:
 
 properties:
   domain: 10.10.27.100.xip.io
-  app_domains: 10.10.27.100.xip.io
+  app_domains:
+   - 10.10.27.100.xip.io
   ssl:
     skip_cert_verify: true
   uaa:

@@ -1,17 +1,27 @@
 #!/bin/bash
 set -e -x
 
+  <%
+    def grab_app_domain_name
+      app_domains_str = properties.app_domains.to_s
+      array_start = ( app_domains_str =~ /^\[/ )
+      if (array_start == 0)
+        app_domain_entry = app_domains_str.gsub(/^\[/, '').gsub(/\]/,'').gsub(/,.*/, '')
+      else
+        app_domain_entry = app_domains_str
+      end
+      app_domain_entry
+    end
+    app_domain = grab_app_domain_name
+  %>
+
 export PATH="/var/vcap/packages/cf_cli/bin:$PATH"
 
 export SCHEME=https
 export ADMIN_USER=<%= properties.generic_broker.cf.admin_user %>
 export ADMIN_PASSWORD=<%= properties.generic_broker.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
-<% if properties.app_domains.kind_of?(Array) %>
-  export APP_DOMAIN=<%= properties.app_domains.first %>
-<% else %>
-  export APP_DOMAIN=<%= properties.app_domains %>
-<% end %>
+export APP_DOMAIN=<%="#{app_domain}"%>
 export API_ENDPOINT=$SCHEME://api.${DOMAIN}
 export APP_NAME=<%= properties.generic_broker.app_name %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
@@ -185,7 +195,7 @@ function push_app() {
   pushd $PACKAGE_PATH
     mkdir -p /var/vcap/data/tmp
     export TMPDIR=/var/vcap/data/tmp
-    CF_TRACE=true cf push $APP_NAME -p ${PACKAGE_PATH}/${TARGET_APP} -n ${APP_URI} -t ${APP_PUSH_TIMEOUT} -m ${APP_PUSH_MEMORY}m --no-start
+    CF_TRACE=true cf push $APP_NAME -p ${PACKAGE_PATH}/${TARGET_APP} -n ${APP_URI} -d ${APP_DOMAIN} -t ${APP_PUSH_TIMEOUT} -m ${APP_PUSH_MEMORY}m --no-start
     if [ "$?" -ne "0" ]; then
       log_debug "App push failed..."
       cf logs $APP_NAME --recent
@@ -250,7 +260,7 @@ function register_on_demand_plans() {
     mkdir -p /var/vcap/data/tmp
     # Sleep for a bit so the app is up
     sleep 30
-    app_endpoint=http://${BROKER_USER}:${BROKER_PASSWD}@${APP_URI}.${DOMAIN}
+    app_endpoint=http://${BROKER_USER}:${BROKER_PASSWD}@${APP_URI}.${APP_DOMAIN}
     app_catalog_url=${app_endpoint}/v2/catalog
     catalog_output=`curl -X GET ${app_catalog_url} 2>/dev/null`
     log_debug "Service Broker App Catalog output : $catalog_output"

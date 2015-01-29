@@ -355,7 +355,8 @@ resource_pools:
 
 properties:
   domain: 10.244.0.34.xip.io
-  app_domains: 10.244.0.34.xip.io
+  app_domains:
+   - 10.244.0.34.xip.io
   uaa:
     clients:
       generic_broker:
