@@ -7,7 +7,17 @@ TARGET_PLATFORM=warden
 RELEASE_NAME=generic_broker
 DEPLOYMENT_NAME=generic-broker-${TARGET_PLATFORM}
 
+echo "Running against bosh target platform $TARGET_PLATFORM"
+echo "Please create the manifest using ./make_manifest.sh <platform> before proceeding with full deploy"
+echo "Edit the templates/*properties.yml file to tweak any deployment attributes"
+sleep 2
 
+bosh_target=`bosh target`
+echo "Bosh Status"
+bosh status
+
+DEPLOYMENT_MANIFEST=`pwd`/*broker-${TARGET_PLATFORM}-manifest.yml
+bosh deployment $DEPLOYMENT_MANIFEST
 
 # Cleanup existing deployment and release
 bosh -n delete deployment  $DEPLOYMENT_NAME
@@ -20,18 +30,7 @@ echo "Done creating the release ..."
 bosh -n upload release; 
 echo "Done uploading the release ..."
 
-echo "Running against bosh target platform $TARGET_PLATFORM"
-echo "Please create the manifest using ./make_manifest.sh <platform> before proceeding with full deploy"
-echo "Edit the templates/*properties.yml file to tweak any deployment attributes"
-sleep 2
-
-bosh_target=`bosh target`
-echo "Bosh Status"
-bosh status
-
 echo "Going to deploy against bosh target: $bosh_target ..."
-DEPLOYMENT_MANIFEST=`pwd`/*broker-${TARGET_PLATFORM}-manifest.yml
-bosh deployment $DEPLOYMENT_MANIFEST
 bosh -n deploy
 echo "Done deploying ..."
 
