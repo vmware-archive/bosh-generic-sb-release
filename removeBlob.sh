@@ -23,3 +23,9 @@ find blobs -name $blobFileName | xargs rm
 sed -i.bak "/$blobFileName/,/size: / { d; }" config/blobs.yml
 rm config/blobs.yml.bak
 
+# The previous edit might leave the blobs.yml incomplete with just '---' without the '{}'
+# Recreate a pristine blobs.yml that has '--- {}'
+numberOfLines=`cat config/blobs.yml | wc -l | awk '{print $1}' `
+if [ "$numberOfLines" == "1" ]; then
+  echo "--- {}" > config/blobs.yml
+fi

@@ -16,6 +16,9 @@ fi
 
 shift
 
+echo "Should set the bosh target before proceeding!!!"
+echo "Also tweak the templates/*properties.yml to add/modify any attributes or properties before manifest generation"
+echo ""
 
 BOSH_STATUS=$(bosh status)
 DIRECTOR_UUID=$(echo "$BOSH_STATUS" | grep UUID | awk '{print $2}')

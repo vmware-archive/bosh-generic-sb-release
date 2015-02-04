@@ -6,7 +6,7 @@ do
   echo "3) destroy-broker"
   echo "4) Exit"
 
-  echo -n "Enter selection: "
+  echo "Enter selection: "
   read input
 
   case "$input" in

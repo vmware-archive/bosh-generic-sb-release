@@ -24,4 +24,5 @@ properties:
   generic_broker.broker.password:
     description: 'Broker basic auth password'
   generic_broker.broker.internal_plan_names:
-    description: 'name of in-build plans in the Service Broker Application'
+    description: 'name of in-built plans in the Service Broker Application'
+    default: ""
