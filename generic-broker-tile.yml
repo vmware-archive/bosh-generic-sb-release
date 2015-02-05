@@ -300,36 +300,81 @@ job_types:
       identity: vcap
 
 
-  manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
-    \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
-    \     secret: test\ngeneric_broker:\n
-    \ app_name: (( .properties.app_name.value ))\n
-    \ app_uri: (( .properties.app_uri.value ))\n
-    \ create_open_security_group: (( .properties.create_open_security_group.value ))\n
-    \ app_push:\n
-    \    org_quota: (( .properties.org_quota.value ))\n
-    \    timeout: 180\n
-    \    memory: (( .properties.memory.value ))\n
-    \ driver_download_url: (( .properties.driver_download_url.value ))\n
-    \ persistence_store_type: (( .properties.persistence_store_type.value ))\n
-    \ persistence_store:\n
-    \    service_addr: (( .properties.persistence_service_addr.value ))\n
-    \    service_sid: (( .properties.persistence_service_sid.value ))\n
-    \    service_params: (( .properties.persistence_service_params.value ))\n
-    \    persistence_broker_user: (( .properties.persistence_sb_user.value ))\n
-    \    persistence_broker_password: (( .properties.persistence_sb_password.secret ))\n
-    \ target_service:\n
-    \    service_addr: (( .properties.target_service_addr.value ))\n
-    \    service_sid: (( .properties.target_service_sid.value ))\n
-    \    service_params: (( .properties.target_service_params.value ))\n
-    \    target_admin_user: (( .properties.target_admin_user.value ))\n
-    \    target_admin_password: (( .properties.target_admin_password.secret ))\n
-    \ on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))\n
-    \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
-    \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-    \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-    \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))"
+  #manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
+  #  \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
+  #  ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
+  #  \     secret: test\ngeneric_broker:\n
+  #  \ app_name: (( .properties.app_name.value ))\n
+  #  \ app_uri: (( .properties.app_uri.value ))\n
+  #  \ create_open_security_group: (( .properties.create_open_security_group.value ))\n
+  #  \ app_push:\n
+  #  \   org_quota: (( .properties.org_quota.value ))\n
+  #  \   timeout: 180\n
+  #  \   memory: (( .properties.memory.value ))\n
+  #  \ driver_download_url: (( .properties.driver_download_url.value ))\n
+  #  \ persistence_store_type: (( .properties.persistence_store_type.value ))\n
+  #  \ persistence_store:\n
+  #  \   service_addr: (( .properties.persistence_service_addr.value ))\n
+  #  \   service_sid: (( .properties.persistence_service_sid.value ))\n
+  #  \   service_params: (( .properties.persistence_service_params.value ))\n
+  #  \   persistence_broker_user: (( .properties.persistence_sb_user.value ))\n
+  #  \   persistence_broker_password: (( .properties.persistence_sb_password.secret ))\n
+  #  \ target_service:\n
+  #  \   service_addr: (( .properties.target_service_addr.value ))\n
+  #  \   service_sid: (( .properties.target_service_sid.value ))\n
+  #  \   service_params: (( .properties.target_service_params.value ))\n
+  #  \   target_admin_user: (( .properties.target_admin_user.value ))\n
+  #  \   target_admin_password: (( .properties.target_admin_password.secret ))\n
+  #  \ on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))\n
+  #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
+  #  \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
+  #  \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
+  #  \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))"
+
+
+  manifest: |
+    domain: (( ..cf.cloud_controller.system_domain.value ))
+    app_domains:
+      - (( ..cf.cloud_controller.apps_domain.value ))
+    ssl:
+      skip_cert_verify: (( ..cf.ha_proxy.skip_cert_verify.value ))
+    uaa:
+      url: https://uaa.(( ..cf.cloud_controller.system_domain.value ))
+      clients:
+        generic_broker:
+          secret: test
+    generic_broker:
+      app_name: (( .properties.app_name.value ))
+      app_uri: (( .properties.app_uri.value ))
+      create_open_security_group: (( .properties.create_open_security_group.value ))
+      app_push:
+        org_quota: (( .properties.org_quota.value ))
+        timeout: 180
+        memory: (( .properties.memory.value ))
+      driver_download_url: (( .properties.driver_download_url.value ))
+      persistence_store_type: (( .properties.persistence_store_type.value ))
+      persistence_store:
+        service_addr: (( .properties.persistence_service_addr.value ))
+        service_sid: (( .properties.persistence_service_sid.value ))
+        service_params: (( .properties.persistence_service_params.value ))
+        persistence_broker_user: (( .properties.persistence_sb_user.value ))
+        persistence_broker_password: (( .properties.persistence_sb_password.secret ))
+      target_service:
+        service_addr: (( .properties.target_service_addr.value ))
+        service_sid: (( .properties.target_service_sid.value ))
+        service_params: (( .properties.target_service_params.value ))
+        target_admin_user: (( .properties.target_admin_user.value ))
+        target_admin_password: (( .properties.target_admin_password.secret ))
+      on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))
+      encryption_key: (( .properties.encryption_key.secret ))
+      cf:
+        admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+        admin_password: (( ..cf.uaa.system_services_credentials.password ))
+      broker:
+        user: (( .properties.broker_credentials.identity ))
+        password: (( .properties.broker_credentials.password ))
+        internal_plan_names: (( .properties.internal_plan_names.value ))
+
 - name: register-broker
   resource_label: Register Generic Service Broker
   template: register-broker
@@ -366,16 +411,39 @@ job_types:
     default:
       identity: vcap
 
-  manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
-    \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
-    \     secret: test\ngeneric_broker:\n
-    \ app_name: (( .properties.app_name.value ))\n
-    \ app_uri: (( .properties.app_uri.value ))\n
-    \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
-    \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-    \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-    \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))\n"
+  #manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
+  #  \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
+  #  ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
+  #  \     secret: test\ngeneric_broker:\n
+  #  \ app_name: (( .properties.app_name.value ))\n
+  #  \ app_uri: (( .properties.app_uri.value ))\n
+  #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
+  #  \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
+  #  \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
+  #  \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))\n"
+  manifest: |
+    domain: (( ..cf.cloud_controller.system_domain.value ))
+    app_domains:
+      - (( ..cf.cloud_controller.apps_domain.value ))
+    ssl:
+      skip_cert_verify: (( ..cf.ha_proxy.skip_cert_verify.value ))
+    uaa:
+      url: https://uaa.(( ..cf.cloud_controller.system_domain.value ))
+      clients:
+        generic_broker:
+          secret: test
+    generic_broker:
+      app_name: (( .properties.app_name.value ))
+      app_uri: (( .properties.app_uri.value ))
+      encryption_key: (( .properties.encryption_key.secret ))
+      cf:
+        admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+        admin_password: (( ..cf.uaa.system_services_credentials.password ))
+      broker:
+        user: (( .properties.broker_credentials.identity ))
+        password: (( .properties.broker_credentials.password ))
+        internal_plan_names: (( .properties.internal_plan_names.value ))
+
 - name: destroy-broker
   resource_label: Remove Generic Service Broker
   template: destroy-broker
@@ -412,16 +480,40 @@ job_types:
     default:
       identity: vcap
 
-  manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
-    \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
-    ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
-    \     secret: test\ngeneric_broker:\n
-    \ app_name: (( .properties.app_name.value ))\n
-    \ app_uri: (( .properties.app_uri.value ))\n
-    \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
-    (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-    ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-    (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))\n"
+  #manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
+  #  \ - (( ..cf.cloud_controller.apps_domain.value ))\nssl:\n  skip_cert_verify: ((
+  #  ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
+  #  \     secret: test\ngeneric_broker:\n
+  #  \ app_name: (( .properties.app_name.value ))\n
+  #  \ app_uri: (( .properties.app_uri.value ))\n
+  #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
+  #  (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
+  #  ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
+  #  (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))\n"
+
+  manifest: |
+    domain: (( ..cf.cloud_controller.system_domain.value ))
+    app_domains:
+      - (( ..cf.cloud_controller.apps_domain.value ))
+    ssl:
+      skip_cert_verify: (( ..cf.ha_proxy.skip_cert_verify.value ))
+    uaa:
+      url: https://uaa.(( ..cf.cloud_controller.system_domain.value ))
+      clients:
+        generic_broker:
+          secret: test
+    generic_broker:
+      app_name: (( .properties.app_name.value ))
+      app_uri: (( .properties.app_uri.value ))
+      encryption_key: (( .properties.encryption_key.secret ))
+      cf:
+        admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+        admin_password: (( ..cf.uaa.system_services_credentials.password ))
+      broker:
+        user: (( .properties.broker_credentials.identity ))
+        password: (( .properties.broker_credentials.password ))
+        internal_plan_names: (( .properties.internal_plan_names.value ))
+
 - name: compilation
   resource_label: compilation
   resource_definitions:
