@@ -210,19 +210,19 @@ function push_app() {
 #
 #    cp -r templates/config /var/vcap/data/tmp
 #    if [ "${PERSISTENCE_STORE_TYPE}" == "custom" ]; then
-#      sed -i.bak "s/DB_HOST_ADDR/${PERSISTENCE_STORE_HOST}/g;    \
-#            s/DB_SID/${PERSISTENCE_STORE_SID}/g;                 \
-#            s/DB_PARAMS/${PERSISTENCE_STORE_PARAMS}/g;           \
-#            s/DB_USER/${PERSISTENCE_STORE_USER}/g;               \
-#            s/DB_PASSWD/${PERSISTENCE_STORE_PASSWD}/g"           \
+#      sed -i.bak "s#DB_HOST_ADDR#${PERSISTENCE_STORE_HOST}#g;    \
+#            s#DB_SID#${PERSISTENCE_STORE_SID}#g;                 \
+#            s#DB_PARAMS/${PERSISTENCE_STORE_PARAMS}#g;           \
+#            s#DB_USER#${PERSISTENCE_STORE_USER}#g;               \
+#            s#DB_PASSWD#${PERSISTENCE_STORE_PASSWD}#g"           \
 #            /var/vcap/data/tmp/${SB_APP_CONFIG}
 #    fi
 #
-#    sed -i.bak "s/TARGET_HOST_ADDR/${TARGET_HOST}/g;             \
-#            s/TARGET_SID/${TARGET_SID}/g;                        \
-#            s/TARGET_PARAMS/${TARGET_PARAMS}/g;                  \
-#            s/TARGET_ADMIN_USER/${TARGET_ADMIN_USER}/g;          \
-#            s/TARGET_ADMIN_PASSWD/${TARGET_ADMIN_PASSWD}/g"      \
+#    sed -i.bak "s#TARGET_HOST_ADDR#${TARGET_HOST}#g;             \
+#            s#TARGET_SID#${TARGET_SID}#g;                        \
+#            s#TARGET_PARAMS#${TARGET_PARAMS}#g;                  \
+#            s#TARGET_ADMIN_USER#${TARGET_ADMIN_USER}#g;          \
+#            s#TARGET_ADMIN_PASSWD#${TARGET_ADMIN_PASSWD}#g"      \
 #            /var/vcap/data/tmp/${SB_APP_CONFIG}
 #
 #    # Dealing with a Jar file here, so unzip and copy over the updated app configs
@@ -239,16 +239,16 @@ function update_env_variable_script() {
 
     # Modify the variables that need to be substituted with actual values passed via bosh manifest or Ops Mgr Tile
     cp -r templates/setupServiceBrokerEnv.sh /var/vcap/data/tmp
-      sed -i.bak "s/DB_HOST_ADDR/${PERSISTENCE_STORE_HOST}/g;    \
-            s/DB_SID/${PERSISTENCE_STORE_SID}/g;                 \
-            s/DB_PARAMS/${PERSISTENCE_STORE_PARAMS}/g;           \
-            s/DB_USER/${PERSISTENCE_STORE_USER}/g;               \
-            s/DB_PASSWD/${PERSISTENCE_STORE_PASSWD}/g;           \
-            s/TARGET_HOST_ADDR/${TARGET_HOST}/g;                 \
-            s/TARGET_SID/${TARGET_SID}/g;                        \
-            s/TARGET_PARAMS/${TARGET_PARAMS}/g;                  \
-            s/TARGET_ADMIN_USER/${TARGET_ADMIN_USER}/g;          \
-            s/TARGET_ADMIN_PASSWD/${TARGET_ADMIN_PASSWD}/g"      \
+      sed -i.bak "s#DB_HOST_ADDR#${PERSISTENCE_STORE_HOST}#g;    \
+            s#DB_SID#${PERSISTENCE_STORE_SID}#g;                 \
+            s#DB_PARAMS#${PERSISTENCE_STORE_PARAMS}#g;           \
+            s#DB_USER#${PERSISTENCE_STORE_USER}#g;               \
+            s#DB_PASSWD#${PERSISTENCE_STORE_PASSWD}#g;           \
+            s#TARGET_HOST_ADDR#${TARGET_HOST}#g;                 \
+            s#TARGET_SID#${TARGET_SID}#g;                        \
+            s#TARGET_PARAMS#${TARGET_PARAMS}#g;                  \
+            s#TARGET_ADMIN_USER#${TARGET_ADMIN_USER}#g;          \
+            s#TARGET_ADMIN_PASSWD#${TARGET_ADMIN_PASSWD}#g"      \
             /var/vcap/data/tmp/${SB_APP_ENV}
 
     cp /var/vcap/data/tmp/${SB_APP_ENV} ${SB_APP_ENV}

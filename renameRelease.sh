@@ -50,13 +50,13 @@ zip -r backup-$curDate.zip jobs packages src config templates *sh *yml make*
 
 for fileName in `find . -name "${OLD_PATTERN}*" | tail -r`
 do
-  newFileName=`echo $fileName | sed -e "s/$OLD_PATTERN/$NEW_PATTERN/g" ` 
+  newFileName=`echo $fileName | sed -e "s#$OLD_PATTERN#$NEW_PATTERN#g" ` 
   mv $fileName $newFileName
 done
 
 for fileName in `find . -name "${NEW_PATTERN}*yml" | tail -r`
 do
-  newFileName=`echo $fileName | sed -e "s/$NEW_PATTERN/$NEW_PATTERN_WITH_DASH/g" ` 
+  newFileName=`echo $fileName | sed -e "s#$NEW_PATTERN#$NEW_PATTERN_WITH_DASH#g" ` 
   mv $fileName $newFileName
 done
 
