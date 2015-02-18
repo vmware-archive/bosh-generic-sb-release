@@ -46,13 +46,13 @@ form_types:                                                # [8]
       - reference: .create_open_security_group
         label: Open up Security Groups
         description: 'Open up security group on CF for Service Broker to access other apps or CF Cloud Controller'
-### CUSTOM_VARIABLE_LABEL_BEGIN_MARKER
-### CUSTOM_VARIABLE_LABEL_END_MARKER
-### DRIVER_DOWNLOAD_BEGIN_MARKER
+      ### CUSTOM_VARIABLE_LABEL_BEGIN_MARKER
+      ### CUSTOM_VARIABLE_LABEL_END_MARKER
+      ### DRIVER_DOWNLOAD_BEGIN_MARKER
       - reference: .driver_download_url
         label: Service Broker Application Depedencies Download Url
         description: 'Enter the uri/endpoint to download any 3rd party drivers/dependencies (like Oracle jdbc driver) for use by the Service Broker app (before push to CF)'
-### DRIVER_DOWNLOAD_END_MARKER
+      ### DRIVER_DOWNLOAD_END_MARKER
 # Uncomment following if really needed to be exposed to user
 #      - reference: .org_quota
 #        label: Service Broker Org Quota (MB)
@@ -60,8 +60,7 @@ form_types:                                                # [8]
 #      - reference: .memory
 #        label: Service Broker Application Memory (in MB)
 #        description: 'Enter the max memory (in MB, less than the total Org Quota specified above) for the Service Broker app on CF'
-### PERSISTENCE_STORE_BEGIN_MARKER
-      - reference: .driver_download_url
+  ### PERSISTENCE_STORE_BEGIN_MARKER
   - name: persistence-db
     label: Persistence for Service Broker
     description: Persistence store for Service Broker to store its configurations
@@ -84,9 +83,9 @@ form_types:                                                # [8]
       - reference: .persistence_sb_password
         label: Password for Service broker app to use on the persistence
         description: 'Enter the password for the Service Broker to connect to the persistence store'
-### PERSISTENCE_STORE_END_MARKER
+  ### PERSISTENCE_STORE_END_MARKER
 
-### TARGET_SERVICE_BEGIN_MARKER
+  ### TARGET_SERVICE_BEGIN_MARKER
   - name: managed-target-db
     label: Managed Target for Service Broker
     description: Target Service managed by Service Broker
@@ -106,8 +105,9 @@ form_types:                                                # [8]
       - reference: .target_admin_password
         label: Admin Password for Service broker app to manage the target service
         description: 'Enter the admin password for managing the target service'
-### TARGET_SERVICE_END_MARKER
-### ON_DEMAND_PLAN_BEGIN_MARKER
+  ### TARGET_SERVICE_END_MARKER
+
+  ### ON_DEMAND_PLAN_BEGIN_MARKER
   - name: on_demand_service_plans
     label: On-Demand Service Plans
     description: "An on-demand service plan lets Pivotal CF users create their own Service Plans from the Pivotal CF command line interface or developer console. Use this page to configure the service plan's settings."
@@ -125,20 +125,7 @@ form_types:                                                # [8]
           label: "Plan Details or bullets (individual line entries, each with Name : Value : Description and ending with ;)"
           description: "Specify configurations or bullets for the plan. Specify each plan detail or bullet in a separate line with a name, value, description separated by ':' and ending with ';'.
           Detail1: associated value : description ; <NEWLINE> Detail2: its value : description <NEWLINE>"
-### ON_DEMAND_PLAN_END_MARKER
-
-#        - name: Nested attributes
-#          label: Name of Attribute
-#          property_inputs:
-#          - reference: .on_demand_service_plans_collection.nested_plan_details_collection
-#            label: Bullets
-#            property_inputs:
-#            - reference: attribute_name
-#              label: Value of Attribute
-#              description: "Value for the named attribute or bullet in the service plan."
-#            - reference: attribute_description
-#              label: Description of Attribute
-#              description: "Enter a description. Ex: number of maximum concurrent connections or plan name or MB of tablespace size"
+  ### ON_DEMAND_PLAN_END_MARKER
 
 property_blueprints:
 - name: broker_credentials
@@ -358,12 +345,14 @@ job_types:
         org_quota: (( .properties.org_quota.value ))
         timeout: 180
         memory: (( .properties.memory.value ))
-### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
-### CUSTOM_VARIABLE_MANIFEST_END_MARKER
-### DRIVER_DOWNLOAD_BEGIN_MARKER
+      ### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
+      ### CUSTOM_VARIABLE_MANIFEST_END_MARKER
+
+      ### DRIVER_DOWNLOAD_BEGIN_MARKER
       driver_download_url: (( .properties.driver_download_url.value ))
-### DRIVER_DOWNLOAD_END_MARKER
-### PERSISTENCE_STORE_BEGIN_MARKER
+      ### DRIVER_DOWNLOAD_END_MARKER
+
+      ### PERSISTENCE_STORE_BEGIN_MARKER
       persistence_store_type: (( .properties.persistence_store_type.value ))
       persistence_store:
         service_addr: (( .properties.persistence_service_addr.value ))
@@ -371,19 +360,20 @@ job_types:
         service_params: (( .properties.persistence_service_params.value ))
         persistence_broker_user: (( .properties.persistence_sb_user.value ))
         persistence_broker_password: (( .properties.persistence_sb_password.secret ))
-### PERSISTENCE_STORE_END_MARKER
-#
-### TARGET_SERVICE_BEGIN_MARKER
+      ### PERSISTENCE_STORE_END_MARKER
+
+      ### TARGET_SERVICE_BEGIN_MARKER
       target_service:
         service_addr: (( .properties.target_service_addr.value ))
         service_sid: (( .properties.target_service_sid.value ))
         service_params: (( .properties.target_service_params.value ))
         target_admin_user: (( .properties.target_admin_user.value ))
         target_admin_password: (( .properties.target_admin_password.secret ))
-### TARGET_SERVICE_END_MARKER
-### ON_DEMAND_PLAN_BEGIN_MARKER
+      ### TARGET_SERVICE_END_MARKER
+
+      ### ON_DEMAND_PLAN_BEGIN_MARKER
       on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))
-### ON_DEMAND_PLAN_END_MARKER
+      ### ON_DEMAND_PLAN_END_MARKER
       encryption_key: (( .properties.encryption_key.secret ))
       cf:
         admin_user: (( ..cf.uaa.system_services_credentials.identity ))
