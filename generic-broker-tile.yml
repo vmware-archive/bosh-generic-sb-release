@@ -46,9 +46,13 @@ form_types:                                                # [8]
       - reference: .create_open_security_group
         label: Open up Security Groups
         description: 'Open up security group on CF for Service Broker to access other apps or CF Cloud Controller'
+### CUSTOM_VARIABLE_LABEL_BEGIN_MARKER
+### CUSTOM_VARIABLE_LABEL_END_MARKER
+### DRIVER_DOWNLOAD_BEGIN_MARKER
       - reference: .driver_download_url
         label: Service Broker Application Depedencies Download Url
         description: 'Enter the uri/endpoint to download any 3rd party drivers/dependencies (like Oracle jdbc driver) for use by the Service Broker app (before push to CF)'
+### DRIVER_DOWNLOAD_END_MARKER
 # Uncomment following if really needed to be exposed to user
 #      - reference: .org_quota
 #        label: Service Broker Org Quota (MB)
@@ -56,6 +60,8 @@ form_types:                                                # [8]
 #      - reference: .memory
 #        label: Service Broker Application Memory (in MB)
 #        description: 'Enter the max memory (in MB, less than the total Org Quota specified above) for the Service Broker app on CF'
+### PERSISTENCE_STORE_BEGIN_MARKER
+      - reference: .driver_download_url
   - name: persistence-db
     label: Persistence for Service Broker
     description: Persistence store for Service Broker to store its configurations
@@ -78,6 +84,9 @@ form_types:                                                # [8]
       - reference: .persistence_sb_password
         label: Password for Service broker app to use on the persistence
         description: 'Enter the password for the Service Broker to connect to the persistence store'
+### PERSISTENCE_STORE_END_MARKER
+
+### TARGET_SERVICE_BEGIN_MARKER
   - name: managed-target-db
     label: Managed Target for Service Broker
     description: Target Service managed by Service Broker
@@ -97,6 +106,8 @@ form_types:                                                # [8]
       - reference: .target_admin_password
         label: Admin Password for Service broker app to manage the target service
         description: 'Enter the admin password for managing the target service'
+### TARGET_SERVICE_END_MARKER
+### ON_DEMAND_PLAN_BEGIN_MARKER
   - name: on_demand_service_plans
     label: On-Demand Service Plans
     description: "An on-demand service plan lets Pivotal CF users create their own Service Plans from the Pivotal CF command line interface or developer console. Use this page to configure the service plan's settings."
@@ -114,6 +125,8 @@ form_types:                                                # [8]
           label: "Plan Details or bullets (individual line entries, each with Name : Value : Description and ending with ;)"
           description: "Specify configurations or bullets for the plan. Specify each plan detail or bullet in a separate line with a name, value, description separated by ':' and ending with ';'.
           Detail1: associated value : description ; <NEWLINE> Detail2: its value : description <NEWLINE>"
+### ON_DEMAND_PLAN_END_MARKER
+
 #        - name: Nested attributes
 #          label: Name of Attribute
 #          property_inputs:
@@ -148,29 +161,33 @@ property_blueprints:
   type: boolean
   configurable: true
   default: false
+### CUSTOM_VARIABLE_DEFN_BEGIN_MARKER
+### CUSTOM_VARIABLE_DEFN_END_MARKER
+### DRIVER_DOWNLOAD_BEGIN_MARKER
 - name: driver_download_url
   type: string
   configurable: true
   default: "https://10.85.29.16/ojdbc.jar"
+### DRIVER_DOWNLOAD_END_MARKER
 - name: org_quota
   type: integer
-  configurable: true
-  constraints:
-    min: 1024
-    max: 3072
-  default: 2048
-- name: memory
-  type: integer
-  configurable: true
+  configurable: false
   constraints:
     min: 512
-    max: 1624
+    max: 1024
   default: 512
+- name: memory
+  type: integer
+  configurable: false
+  constraints:
+    min: 256
+    max: 1024
+  default: 256
 # This for any internal plans prebuilt into the service broker that needs to be registered with CF
 - name: internal_plan_names
   type: string
   configurable: true
-  default: "p-internal-plan1,p-internal-plan2"
+  default: "INTERNAL_PLAN_NAME"
 - name: persistence_store_type
   type: dropdown_select
   configurable: true
@@ -182,7 +199,7 @@ property_blueprints:
     label: User specified Persistent Store
   - name: none
     label: None
-
+### PERSISTENCE_STORE_BEGIN_MARKER
 - name: persistence_service_addr
   type: string
   configurable: true
@@ -205,7 +222,9 @@ property_blueprints:
   configurable: true
   default: s3cr3t
   optional: true
+### PERSISTENCE_STORE_END_MARKER
 
+### TARGET_SERVICE_BEGIN_MARKER
 - name: target_service_addr
   type: string
   configurable: true
@@ -229,6 +248,9 @@ property_blueprints:
   default: s3cr3t
   optional: true
 
+### TARGET_SERVICE_END_MARKER
+
+### ON_DEMAND_PLAN_BEGIN_MARKER
 - name: on_demand_service_plans_collection
   type: collection
   configurable: true
@@ -244,23 +266,8 @@ property_blueprints:
   - name: plan_details
     type: text
     configurable: true
-# There is no support for nest in collections (collections within collections)
-#    - name: nested_plan_details_collection
-#      type: collection
-#      configurable: true
-#      optional: true
-#      # Needs to have its own inner/nested property_blueprints when its a collection
-#      property_blueprints:
-#      - name: attribute_name
-#        type: string
-#        configurable: true
-#      - name: attribute_value
-#        type: string
-#        configurable: true
-#      - name: attribute_description
-#        type: string
-#        configurable: true
 
+### ON_DEMAND_PLAN_END_MARKER
 
 job_types:
 - name: deploy-service-broker
@@ -351,7 +358,12 @@ job_types:
         org_quota: (( .properties.org_quota.value ))
         timeout: 180
         memory: (( .properties.memory.value ))
+### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
+### CUSTOM_VARIABLE_MANIFEST_END_MARKER
+### DRIVER_DOWNLOAD_BEGIN_MARKER
       driver_download_url: (( .properties.driver_download_url.value ))
+### DRIVER_DOWNLOAD_END_MARKER
+### PERSISTENCE_STORE_BEGIN_MARKER
       persistence_store_type: (( .properties.persistence_store_type.value ))
       persistence_store:
         service_addr: (( .properties.persistence_service_addr.value ))
@@ -359,13 +371,19 @@ job_types:
         service_params: (( .properties.persistence_service_params.value ))
         persistence_broker_user: (( .properties.persistence_sb_user.value ))
         persistence_broker_password: (( .properties.persistence_sb_password.secret ))
+### PERSISTENCE_STORE_END_MARKER
+#
+### TARGET_SERVICE_BEGIN_MARKER
       target_service:
         service_addr: (( .properties.target_service_addr.value ))
         service_sid: (( .properties.target_service_sid.value ))
         service_params: (( .properties.target_service_params.value ))
         target_admin_user: (( .properties.target_admin_user.value ))
         target_admin_password: (( .properties.target_admin_password.secret ))
+### TARGET_SERVICE_END_MARKER
+### ON_DEMAND_PLAN_BEGIN_MARKER
       on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))
+### ON_DEMAND_PLAN_END_MARKER
       encryption_key: (( .properties.encryption_key.secret ))
       cf:
         admin_user: (( ..cf.uaa.system_services_credentials.identity ))

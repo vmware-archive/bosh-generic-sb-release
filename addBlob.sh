@@ -26,12 +26,15 @@ echo "Removing older versions of the $blobFile previously added"
 bosh -n add blob $givenBlobFile $blobPath
 bosh -n upload blobs
 
-echo "Is this blob the actual app binary? Respond with y or n:"
+printf "Is this blob the actual app binary? Respond with y or n:"
 read response
 
 
 PACKAGE_SPEC_FILE=`echo packages/*service_broker/spec`
-echo "- ${blobPath}/${blobFile}" >> $PACKAGE_SPEC_FILE
+blobExists=`grep "$blobPath/$blobFile" $PACKAGE_SPEC_FILE | awk '{print $NF}' `
+if [ "$blobExists" == "" ]; then
+  echo "- ${blobPath}/${blobFile}" >> $PACKAGE_SPEC_FILE
+fi
 
 if [ "$response" == "y" ]; then
   app_prefix_name=`echo $blobFile | awk -F . '{ print $1}' `

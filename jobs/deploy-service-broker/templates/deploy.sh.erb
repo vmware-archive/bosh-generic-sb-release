@@ -33,22 +33,30 @@ export APP_PUSH_TIMEOUT=<%= properties.generic_broker.app_push.timeout %>
 export APP_PUSH_MEMORY=<%= properties.generic_broker.app_push.memory %>
 
 # Use this only if app needs additional libraries that need to be downloaded
+#
+### DRIVER_DOWNLOAD_BEGIN_MARKER
 export DRIVER_DOWNLOAD_URL=<%= properties.generic_broker.driver_download_url %>
+### DRIVER_DOWNLOAD_END_MARKER
 
 # Use these variables only if app needs to persistence store for saving its plans/sevice offerings etc.
 export PERSISTENCE_STORE_TYPE=<%= properties.generic_broker.persistence_store_type %>
+
+### PERSISTENCE_STORE_BEGIN_MARKER
 export PERSISTENCE_STORE_HOST=<%= properties.generic_broker.persistence_store.service_addr %>
 export PERSISTENCE_STORE_SID=<%= properties.generic_broker.persistence_store.service_sid %>
 export PERSISTENCE_STORE_PARAMS=<%= properties.generic_broker.persistence_store.service_params %>
 export PERSISTENCE_STORE_USER=<%= properties.generic_broker.persistence_store.persistence_broker_user %>
 export PERSISTENCE_STORE_PASSWD=<%= properties.generic_broker.persistence_store.persistence_broker_password %>
+### PERSISTENCE_STORE_END_MARKER
 
 # Use these variables only if app needs to know how to connect to a remote target that it brokers
+### TARGET_SERVICE_BEGIN_MARKER
 export TARGET_HOST=<%= properties.generic_broker.target_service.service_addr %>
 export TARGET_SID=<%= properties.generic_broker.target_service.service_sid %>
 export TARGET_PARAMS=<%= properties.generic_broker.target_service.service_params %>
 export TARGET_ADMIN_USER=<%= properties.generic_broker.target_service.target_admin_user %>
 export TARGET_ADMIN_PASSWD=<%= properties.generic_broker.target_service.target_admin_password %>
+### TARGET_SERVICE_END_MARKER
 
 export BROKER_NAME=${APP_NAME}-service-broker
 export BROKER_USER=<%= properties.generic_broker.broker.user %>
@@ -59,10 +67,11 @@ export CREATE_OPEN_SECURITY_GROUP=<%= properties.generic_broker.create_open_secu
 export DEFAULT_DB_NAME=${APP_NAME}-mysql
 export SB_APP_ENV="setupServiceBrokerEnv.sh"
 
-# Use this only if the application needs some additional properties file that needs to be bundled within the app
-export SB_APP_CONFIG="config/application.properties"
-
 export EXPLODED_APP_FOLDER="exploded-app-contents"
+
+### CUSTOM_VARIABLE_BEGIN_MARKER
+
+### CUSTOM_VARIABLE_END_MARKER
 
 export CF_HOME=`pwd`/home/cf
 mkdir -p $CF_HOME
@@ -239,16 +248,21 @@ function update_env_variable_script() {
 
     # Modify the variables that need to be substituted with actual values passed via bosh manifest or Ops Mgr Tile
     cp -r templates/setupServiceBrokerEnv.sh /var/vcap/data/tmp
-      sed -i.bak "s#DB_HOST_ADDR#${PERSISTENCE_STORE_HOST}#g;    \
-            s#DB_SID#${PERSISTENCE_STORE_SID}#g;                 \
-            s#DB_PARAMS#${PERSISTENCE_STORE_PARAMS}#g;           \
-            s#DB_USER#${PERSISTENCE_STORE_USER}#g;               \
-            s#DB_PASSWD#${PERSISTENCE_STORE_PASSWD}#g;           \
-            s#TARGET_HOST_ADDR#${TARGET_HOST}#g;                 \
-            s#TARGET_SID#${TARGET_SID}#g;                        \
-            s#TARGET_PARAMS#${TARGET_PARAMS}#g;                  \
-            s#TARGET_ADMIN_USER#${TARGET_ADMIN_USER}#g;          \
-            s#TARGET_ADMIN_PASSWD#${TARGET_ADMIN_PASSWD}#g"      \
+#            s#DB_HOST_ADDR#${PERSISTENCE_STORE_HOST}#g;         \
+#            s#DB_SID#${PERSISTENCE_STORE_SID}#g;                 \
+#            s#DB_PARAMS#${PERSISTENCE_STORE_PARAMS}#g;           \
+#            s#DB_USER#${PERSISTENCE_STORE_USER}#g;               \
+#            s#DB_PASSWD#${PERSISTENCE_STORE_PASSWD}#g;           \
+#            s#TARGET_HOST_ADDR#${TARGET_HOST}#g;                 \
+#            s#TARGET_SID#${TARGET_SID}#g;                        \
+#            s#TARGET_PARAMS#${TARGET_PARAMS}#g;                  \
+#            s#TARGET_ADMIN_USER#${TARGET_ADMIN_USER}#g;          \
+#            s#TARGET_ADMIN_PASSWD#${TARGET_ADMIN_PASSWD}#g;      \
+#            s#CUSTOM_VARIABLE_END_MARKER##g;"                    \
+#            /var/vcap/data/tmp/${SB_APP_ENV}
+
+    sed -i.bak   "s#CUSTOM_VARIABLE_SED_BEGIN_MARKER##g;            \
+            s#CUSTOM_VARIABLE_SED_END_MARKER##g;"                    \
             /var/vcap/data/tmp/${SB_APP_ENV}
 
     cp /var/vcap/data/tmp/${SB_APP_ENV} ${SB_APP_ENV}
