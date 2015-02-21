@@ -166,8 +166,9 @@ function add_parameterized_env_vars() {
     cat $SB_APP_ENV | grep -v "^#" | grep "." | while read env_var_entry
     do
       key=`echo $env_var_entry | sed -e 's/export //;s/=.*//';`
-      formatted_env_var=`env | grep $key | sed -e 's/=/ /g';`
-      cf set-env $APP_NAME ${formatted_env_var}
+      formatted_key=`echo $key | sed -e 's/__/\./g' `
+      formatted_env_var=`env | grep $key | sed -e 's/^.*=//';`
+      cf set-env $APP_NAME ${formatted_key} ${formatted_env_var}
     done
   popd
 }
@@ -262,7 +263,7 @@ function update_env_variable_script() {
 #            /var/vcap/data/tmp/${SB_APP_ENV}
 
     sed -i.bak   "s#CUSTOM_VARIABLE_SED_BEGIN_MARKER##g;            \
-            s#CUSTOM_VARIABLE_SED_END_MARKER##g;"                    \
+                  s#CUSTOM_VARIABLE_SED_END_MARKER##g;"             \
             /var/vcap/data/tmp/${SB_APP_ENV}
 
     cp /var/vcap/data/tmp/${SB_APP_ENV} ${SB_APP_ENV}

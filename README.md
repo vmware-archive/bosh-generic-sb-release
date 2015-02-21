@@ -32,7 +32,8 @@ Rename the release and all related files using the renameRelease.sh file (provid
 ### Customize the Release
 Customizing release using customizeRelease.sh script
   * Add Custom Variables that need to be exposed via the Tile or Manifest which in turn would be consumed by the Service Broker App. For example, the service broker app might require the CF domain information in form of a variable 'CF_DOMAIN_ENDPOINT' or it might need a Github Account access token in form of a variable 'github_accesstoken'. These variables might be having a default value or would be defined later via the Tile by the user. These variables would be bound to default or other user defined values and bound to the service broker application in form of Environment variables (using cf set-env AppName envVariableName envVariableValue) allowing loose coupling/late binding.
-    * Also, these variables might or might not be exposed to the end-user. The generated tile would either have labels or no labels based on user responding to the script.
+  Note: Avoid using env variable names with '.' (period) character as these will cause failures when exporting it in unix shells. Use '_' (underscore) or other options to avoid using spaces, '.' etc.
+    * Also, these variables might or might not be exposed to the end-user. The generated tile would have labels exposing the properties based on user responding to the script.
   * Does the Service Broker need persistence store to manage/store its configurations? It can be a database with endpoint, service name, user credentials to connect and store the data.
   * Does the Service Broker need to know about a target service that would be defined later by the end-user?
   * Does the Service Broker app need any additional third party libraries/drivers to function that should be downloaded separately before getting deployed as an app on CF?
