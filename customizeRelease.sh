@@ -37,7 +37,7 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
   brokerName=`basename ${brokerName} '.app_name:' `
   while true
   do
-    printf "    Variable name (without spaces, enter n to stop): "
+    printf "    Variable name (without spaces, use _ instead of '.' or '-'), enter n to stop): "
     read variableName
     if [ "${variableName}" == "n" -o "${variableName}" == "no" ]; then
       break
@@ -52,11 +52,11 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     printf "    Should this be configurable or exposed to end-user, reply with y or n: "
     read exposable
 
-    mod_variableName=`echo $variableName | sed -e 's/ /_/g;s/-/_/g;' `
-    env_variableName=`echo $mod_variableName | sed -e 's/\./__/g;' `
-    variableName_upper=`echo $mod_variableName | sed -e 's/\./_/g' |  awk '{print toupper($0)}' `
+    mod_variableName=`echo $variableName | sed -e 's/ /_/g;s/-/_/g;s/\./_/g;' `
+    #env_variableName=`echo $mod_variableName | sed -e 's/\./__/g;' `
+    variableName_upper=`echo $mod_variableName | awk '{print toupper($0)}' `
     templated_variableName_upper=TEMPLATE_${variableName_upper}
-    echo "export ${env_variableName}=${templated_variableName_upper}"  >> src/templates/setupServiceBrokerEnv.sh
+    echo "export ${mod_variableName}=${templated_variableName_upper}"  >> src/templates/setupServiceBrokerEnv.sh
     echo "  ${brokerName}.${variableName}:"  >> $specTmp
     echo "    description: '${variableDescrp}'"  >> $specTmp
     echo "    default: '${defaultValue}'"  >> $specTmp
