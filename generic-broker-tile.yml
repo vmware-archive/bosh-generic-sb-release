@@ -352,8 +352,8 @@ job_types:
       driver_download_url: (( .properties.driver_download_url.value ))
       ### DRIVER_DOWNLOAD_END_MARKER
 
-      ### PERSISTENCE_STORE_BEGIN_MARKER
       persistence_store_type: (( .properties.persistence_store_type.value ))
+      ### PERSISTENCE_STORE_BEGIN_MARKER
       persistence_store:
         service_addr: (( .properties.persistence_service_addr.value ))
         service_sid: (( .properties.persistence_service_sid.value ))

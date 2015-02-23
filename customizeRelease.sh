@@ -1,10 +1,22 @@
 #!/bin/sh
 
+echo "  This script will customize the Service Broker Release and Ops Mgr Tile generation based on user inputs"
+echo "  Things that would be customized include:"
+echo "     - Custom defined dynamic variables/parameters that would be passed along as environment variables to the application "
+echo "     - Expose the user defined parameters via the Tile UI"
+echo "     - Use or not use persistence (mysql or custom database persistence)"
+echo "     - Allow user to pull down external third party libraries that are required by the service broker app"
+echo "     - Allow registration of either in-built or user defined plans"
+
+echo ""
+ 
+
 echo "  Does the Service Broker Application require any configurable parameter/variables for its functioning"
 echo "     Externalized parameters can be dynamic or user defined like some github access token"
 echo "     and needs to be part of the Service Broker App via environment variable"
 echo "     Example:  cf set-env ServiceBrokerApp <MyVariable> <TestValue>"
 echo ""
+
 printf "  Reply y or n: "
 read requireEnvVariables
 if [ "${requireEnvVariables:0:1}" == "y" ]; then
@@ -90,10 +102,21 @@ fi
 echo ""
 printf "Does the Service Broker need a persistence store? Reply y or n : "
 read persistenceStore
-if [ "${persistenceStore:0:1}" == "n" ]; then
+if [ "${persistenceStore:0:1}" == "y" ]; then
+  printf "Can the Service Broker use CF's default MySQL Service (if available) for persistence? Reply y or n : "
+  read persistenceStoreType
+  if [ "${persistenceStoreType:0:1}" == "y" ]; then
+    echo "Going with MySQL service binding for persistence"
+    sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: mysql/g" templates/*properties.yml *tile.yml 
+    sed -i.bak "/PERSISTENCE_STORE_BEGIN_MARKER/,/PERSISTENCE_STORE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile.yml
+  else
+    echo "Going with Custom persistence"
+    sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: custom/g" templates/*properties.yml *tile.yml 
+  fi
+else 
+  sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: none/g" templates/*properties.yml *tile.yml 
   sed -i.bak "/PERSISTENCE_STORE_BEGIN_MARKER/,/PERSISTENCE_STORE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile.yml
 fi
-
 
 echo ""
 printf "Does the Service Broker need to manage a target service? Reply y or n : "
