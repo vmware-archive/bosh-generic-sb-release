@@ -47,7 +47,8 @@ echo "Application descrp inside the Tile would be : ${NEW_APP_DESCRP} Service Br
 
 # Save a backup before renaming/replacing...
 curDate=`date +'%H.%M-%m.%d.%Y' `
-zip -r backup-$curDate.zip jobs packages src config templates *sh *yml make*  
+zip -r backup-$curDate.zip jobs packages src config templates *sh *yml make*   > /dev/null
+echo "Backed up original contents as backup-$curDate.zip"
 
 for fileName in `find . -name "${OLD_RELEASE}*" | tail -r`
 do

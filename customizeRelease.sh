@@ -1,5 +1,5 @@
 #!/bin/sh
-
+echo ""
 echo "  This script will customize the Service Broker Release and Ops Mgr Tile generation based on user inputs"
 echo "  Things that would be customized include:"
 echo "     - Custom defined dynamic variables/parameters that would be passed along as environment variables to the application "
@@ -9,6 +9,7 @@ echo "     - Allow user to pull down external third party libraries that are req
 echo "     - Allow registration of either in-built or user defined plans"
 
 echo ""
+echo "Starting customization........"
  
 
 echo "  Does the Service Broker Application require any configurable parameter/variables for its functioning"
@@ -37,12 +38,15 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
   brokerName=`basename ${brokerName} '.app_name:' `
   while true
   do
-    printf "    Variable name (without spaces, use _ instead of '.' or '-'), enter n to stop): "
+    printf "    Variable name (without spaces, use _ instead of '.' or '-'), enter n to stop: "
     read variableName
     if [ "${variableName}" == "n" -o "${variableName}" == "no" ]; then
       break
     fi
 
+    variableName=`echo $variableName | sed -e 's/ /_/g;s/-/_/g;s/\./_/g;' `
+    echo "    Modified name (with spaces, '.', '-' converted to '_'): ${variableName}"
+    echo ""
     printf "    Enter short description of Variable (spaces okay): "
     read variableLabel
     printf "    Enter long description of Variable (spaces okay): "
@@ -52,11 +56,9 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     printf "    Should this be configurable or exposed to end-user, reply with y or n: "
     read exposable
 
-    mod_variableName=`echo $variableName | sed -e 's/ /_/g;s/-/_/g;s/\./_/g;' `
-    #env_variableName=`echo $mod_variableName | sed -e 's/\./__/g;' `
-    variableName_upper=`echo $mod_variableName | awk '{print toupper($0)}' `
+    variableName_upper=`echo $variableName | awk '{print toupper($0)}' `
     templated_variableName_upper=TEMPLATE_${variableName_upper}
-    echo "export ${mod_variableName}=${templated_variableName_upper}"  >> src/templates/setupServiceBrokerEnv.sh
+    echo "export ${variableName}=${templated_variableName_upper}"  >> src/templates/setupServiceBrokerEnv.sh
     echo "  ${brokerName}.${variableName}:"  >> $specTmp
     echo "    description: '${variableDescrp}'"  >> $specTmp
     echo "    default: '${defaultValue}'"  >> $specTmp
