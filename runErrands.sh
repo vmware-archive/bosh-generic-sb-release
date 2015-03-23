@@ -14,6 +14,7 @@ do
     2) arg="register-broker";;
     3) arg="destroy-broker";;
     4) exit 0;;
+    *) continue
   esac
   echo "Running bosh errand $arg" 
   bosh run errand  $arg

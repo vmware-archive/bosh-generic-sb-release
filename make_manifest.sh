@@ -9,7 +9,9 @@ STEMCELL_OS=${STEMCELL_OS:-ubuntu}
 
 if [ "$infrastructure" != "aws-ec2" ] && \
     [ "$infrastructure" != "vsphere" ] && \
+#    [ "$infrastructure" != "vcloud" ] && \
     [ "$infrastructure" != "warden" ] ; then
+#  echo "usage: ./make_manifest <warden|aws-ec2|vsphere|vcloud> "
   echo "usage: ./make_manifest <warden|aws-ec2|vsphere> "
   exit 1
 fi
@@ -46,6 +48,13 @@ if [[ $infrastructure = "vsphere" ]]; then
     exit 1
   fi
 fi
+
+#if [[ $infrastructure = "vcloud" ]]; then
+#  if [[ $DIRECTOR_CPI != "vcloud" ]]; then
+#    echo "Not targeting an vCloud. Please use 'bosh target' before running this script."
+#    exit 1
+#  fi
+#fi
 
 function latest_uploaded_stemcell {
   bosh stemcells | grep bosh | grep $STEMCELL_OS | awk -F'|' '{ print $2, $3 }' | sort -nr -k2 | head -n1 | awk '{ print $1 }'

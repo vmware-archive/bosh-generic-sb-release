@@ -29,11 +29,12 @@ bosh -n upload blobs
 printf "Is this blob the actual app binary? Respond with y or n:"
 read response
 
-
-PACKAGE_SPEC_FILE=`echo packages/*service_broker/spec`
-blobExists=`grep "$blobPath/$blobFile" $PACKAGE_SPEC_FILE | awk '{print $NF}' `
-if [ "$blobExists" == "" ]; then
-  echo "- ${blobPath}/${blobFile}" >> $PACKAGE_SPEC_FILE
+if [ "$blobPath" != "cf_cli" ]; then
+  PACKAGE_SPEC_FILE=`echo packages/*service_broker/spec`
+  blobExists=`grep "$blobPath/$blobFile" $PACKAGE_SPEC_FILE | awk '{print $NF}' `
+  if [ "$blobExists" == "" ]; then
+    echo "- ${blobPath}/${blobFile}" >> $PACKAGE_SPEC_FILE
+  fi
 fi
 
 if [ "$response" == "y" ]; then

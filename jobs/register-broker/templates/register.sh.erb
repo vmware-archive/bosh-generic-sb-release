@@ -24,16 +24,17 @@ export DOMAIN=<%= properties.domain %>
 export API_ENDPOINT=$SCHEME://api.$DOMAIN
 export APP_DOMAIN=<%="#{app_domain}" %>
 export APP_NAME=<%= properties.generic_broker.app_name %>
+export APP_VERSION=<%= properties.generic_broker.app_version %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
 export ORG=${APP_NAME}-service-org
 export SPACE=${APP_NAME}-service-space
-export BROKER_NAME=${APP_NAME}-service-broker
+export BROKER_NAME=${APP_NAME}-${APP_VERSION}-service-broker
 export BROKER_USER=<%= properties.generic_broker.broker.user %>
 export BROKER_PASS=<%= properties.generic_broker.broker.password %>
 export BROKER_HOST=$SCHEME://${APP_URI}.${APP_DOMAIN}
 
-# Use this only when there are already inbuild plans that need to enabled for public
-export BROKER_INTERNAL_PLAN_NAMES=<%= properties.generic_broker.broker.internal_plan_names %>
+# Use this only when there are already inbuild services that need to enabled for public
+export BROKER_INTERNAL_SERVICE_NAMES=<%= properties.generic_broker.broker.internal_service_names %>
 
 function authenticate_and_target() {
   cf api $API_ENDPOINT <% if properties.ssl.skip_cert_verify %>--skip-ssl-validation<% end %>
@@ -50,28 +51,28 @@ function register_broker() {
   fi
 }
 
-function publicize_plans() {
-  plans_url=`cf curl /v2/services?q=label:$BROKER_NAME | grep service_plans_url | awk '{ print $2 }' | sed 's/[",]//g'`
-  if [ "$plans_url" != "" ]; then
-    plans=`cf curl $plans_url | grep "\"url\"" | awk '{ print $2 }' | sed 's/[",]//g'`
-    for plan in $plans; do
-      publicize_plan $plan
+function publicize_services() {
+  services_url=`cf curl /v2/services?q=label:$BROKER_NAME | grep service_plans_url | awk '{ print $2 }' | sed 's/[",]//g'`
+  if [ "$services_url" != "" ]; then
+    services=`cf curl $services_url | grep "\"url\"" | awk '{ print $2 }' | sed 's/[",]//g'`
+    for service in $services; do
+      publicize_service $service
     done
   else
     # Rely on the internal plan names if we cannot get it from the /v2/services on the broker
-    for plan_name in `echo $BROKER_INTERNAL_PLAN_NAMES | sed -e 's/,/ /g'`
+    for service_name in `echo $BROKER_INTERNAL_SERVICE_NAMES | sed -e 's/,/ /g'`
     do
-      cf enable-service-access $plan_name
+      cf enable-service-access $service_name
     done
   fi
 }
 
-function publicize_plan() {
-  plan_url=$1
-  cf curl $plan_url -X PUT -d '{"public": true}'
+function publicize_service() {
+  service_url=$1
+  cf curl $service_url -X PUT -d '{"public": true}'
 }
 
 cf -v
 authenticate_and_target
 register_broker
-publicize_plans
+publicize_services

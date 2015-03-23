@@ -24,17 +24,18 @@ export DOMAIN=<%= properties.domain %>
 export API_ENDPOINT=$SCHEME://api.$DOMAIN
 export APP_DOMAIN=<%="#{app_domain}"%>
 export APP_NAME=<%= properties.generic_broker.app_name %>
+export APP_VERSION=<%= properties.generic_broker.app_version %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
 export ORG=${APP_NAME}-service-org
 export SPACE=${APP_NAME}-service-space
-export BROKER_NAME=${APP_NAME}-service-broker
+export BROKER_NAME=${APP_NAME}-${APP_VERSION}-service-broker
 export BROKER_USER=<%= properties.generic_broker.broker.user %>
 export BROKER_PASS=<%= properties.generic_broker.broker.password %>
 export BROKER_HOST=$SCHEME://${APP_URI}.${APP_DOMAIN}
-export DB_NAME=${APP_NAME}-mysql
+export DB_NAME=${APP_NAME}-${APP_VERSION}-mysql
 
 # Use this only when there are already inbuild plans that need to enabled for public
-export BROKER_INTERNAL_PLAN_NAMES=<%= properties.generic_broker.broker.internal_plan_names %>
+export BROKER_INTERNAL_SERVICE_NAMES=<%= properties.generic_broker.broker.internal_service_names %>
 
 function authenticate_and_target() {
   cf api $API_ENDPOINT <% if properties.ssl.skip_cert_verify %>--skip-ssl-validation<% end %>
@@ -43,17 +44,17 @@ function authenticate_and_target() {
 }
 
 function purge_service_offering() {
-  plans_url=`cf curl /v2/services?q=label:$BROKER_NAME | grep service_plans_url | awk '{ print $2 }' | sed 's/[",]//g'`
-  if [ "$plans_url" != "" ]; then
-    plans=`cf curl $plans_url | grep "\"url\"" | awk '{ print $2 }' | sed 's/[",]//g'`
-    for plan in $plans; do
-      cf purge-service-offering $plan -f
+  services_url=`cf curl /v2/services?q=label:$BROKER_NAME | grep service_plans_url | awk '{ print $2 }' | sed 's/[",]//g'`
+  if [ "$services_url" != "" ]; then
+    services=`cf curl $services_url | grep "\"url\"" | awk '{ print $2 }' | sed 's/[",]//g'`
+    for service in $services; do
+      cf purge-service-offering -f $service
     done
   else
     # Rely on the internal plan names if we cannot get it from the /v2/services on the broker
-    for plan_name in `echo $BROKER_INTERNAL_PLAN_NAMES | sed -e 's/,/ /g' `
+    for service_name in `echo $BROKER_INTERNAL_SERVICE_NAMES | sed -e 's/,/ /g' `
     do
-      cf purge-service-offering $plan_name -f
+      cf purge-service-offering -f $service_name
     done
   fi
 }
@@ -71,9 +72,9 @@ function check_service_offering() {
 cf -v
 authenticate_and_target
 purge_service_offering
-cf purge-service-offering $BROKER_NAME -f
-cf delete-service-broker $BROKER_NAME -f
-cf delete $APP_NAME -f
-cf delete-service $DB_NAME -f
-cf delete-space $SPACE -f
-cf delete-org $ORG -f
+cf purge-service-offering -f $BROKER_NAME
+cf delete-service-broker -f $BROKER_NAME
+cf delete -f ${APP_NAME}-${APP_VERSION}
+cf delete-service -f $DB_NAME
+cf delete-space -f $SPACE
+cf delete-org -f $ORG

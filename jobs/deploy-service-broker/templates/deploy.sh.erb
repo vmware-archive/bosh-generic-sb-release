@@ -24,10 +24,17 @@ export DOMAIN=<%= properties.domain %>
 export APP_DOMAIN=<%="#{app_domain}"%>
 export API_ENDPOINT=$SCHEME://api.${DOMAIN}
 export APP_NAME=<%= properties.generic_broker.app_name %>
+export APP_VERSION=<%= properties.generic_broker.app_version %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
 export ORG=${APP_NAME}-service-org
 export SPACE=${APP_NAME}-service-space
 export QUOTA=${APP_NAME}-service-quota
+export CF_TARGET=$API_ENDPOINT
+export CF_ORG=$ORG
+export CF_SPACE=$SPACE
+export CF_USER=$ADMIN_USER
+export CF_PASSWORD=$ADMIN_PASSWORD
+export CF_SKIP_SSL=<%= properties.ssl.skip_cert_verify %>
 export ORG_QUOTA=<%= properties.generic_broker.app_push.org_quota %>
 export APP_PUSH_TIMEOUT=<%= properties.generic_broker.app_push.timeout %>
 export APP_PUSH_MEMORY=<%= properties.generic_broker.app_push.memory %>
@@ -58,13 +65,16 @@ export TARGET_ADMIN_USER=<%= properties.generic_broker.target_service.target_adm
 export TARGET_ADMIN_PASSWD=<%= properties.generic_broker.target_service.target_admin_password %>
 ### TARGET_SERVICE_END_MARKER
 
-export BROKER_NAME=${APP_NAME}-service-broker
+export BROKER_NAME=${APP_NAME}-${APP_VERSION}-service-broker
 export BROKER_USER=<%= properties.generic_broker.broker.user %>
 export BROKER_PASSWD=<%= properties.generic_broker.broker.password %>
+export SECURITY_USER_NAME=<%= properties.generic_broker.broker.user %>
+export SECURITY_USER_PASSWORD=<%= properties.generic_broker.broker.password %>
 
 export CREATE_OPEN_SECURITY_GROUP=<%= properties.generic_broker.create_open_security_group %>
+export DELETE_PREV_APP_INSTANCE=<%= properties.generic_broker.delete_prev_app_instance %>
 
-export DEFAULT_DB_NAME=${APP_NAME}-mysql
+export DEFAULT_DB_NAME=${APP_NAME}-${APP_VERSION}-mysql
 export SB_APP_ENV="setupServiceBrokerEnv.sh"
 
 export EXPLODED_APP_FOLDER="exploded-app-contents"
@@ -109,8 +119,8 @@ function authenticate_and_target() {
 }
 
 function create_quota() {
-cf create-quota $QUOTA -m ${ORG_QUOTA}m -r 10 -s 10
-cf update-quota $QUOTA -m ${ORG_QUOTA}m -r 10 -s 10 --disallow-paid-service-plans
+  cf create-quota $QUOTA -m ${ORG_QUOTA}m -r 10 -s 10
+  cf update-quota $QUOTA -m ${ORG_QUOTA}m -r 10 -s 10 --disallow-paid-service-plans
   cf set-quota $ORG $QUOTA
 }
 
@@ -129,30 +139,39 @@ function provision_and_bind_db() {
   db_plan=`cf marketplace | grep p-mysql | awk '{ print $2 }' | sed 's/,//g'`
   if [ "$db_plan" != "" ]; then
     cf create-service p-mysql $db_plan $DEFAULT_DB_NAME
-    cf bind-service $APP_NAME $DEFAULT_DB_NAME
+    cf bind-service ${APP_NAME}-${APP_VERSION} $DEFAULT_DB_NAME
   fi
 }
 
 function restart_app() {
-  CF_TRACE=true cf restart $APP_NAME
+CF_TRACE=true cf restart ${APP_NAME}-${APP_VERSION}
   if [ "$?" -ne "0" ]; then
     log_debug "App start failed..."
-    cf logs $APP_NAME --recent
+    cf logs ${APP_NAME}-${APP_VERSION} --recent
   fi
 }
 
 function add_env_vars() {
-#  cf set-env $APP_NAME BASIC_AUTH_PASSWORD <%= properties.generic_broker.broker.password %>
-#  cf set-env $APP_NAME BASIC_AUTH_USERNAME <%= properties.generic_broker.broker.user %>
-#  cf set-env $APP_NAME ENCRYPTION_KEY <%= properties.generic_broker.encryption_key %>
-#  cf set-env $APP_NAME UAA_CLIENT_ID generic-sb-service
-#  cf set-env $APP_NAME UAA_CLIENT_SECRET <%= properties.uaa.clients.generic_broker.secret %>
-  cf set-env $APP_NAME UAA_HOST $SCHEME://uaa.$DOMAIN
-  cf set-env $APP_NAME CC_HOST $API_ENDPOINT
-  cf set-env $APP_NAME LOGIN_HOST $SCHEME://login.$DOMAIN
-  cf set-env $APP_NAME ROOT "\$HOME"
-  cf set-env $APP_NAME SCHEME $SCHEME
-  cf set-env $APP_NAME VERIFY_SSL <%= !properties.ssl.skip_cert_verify %>
+#  cf set-env ${APP_NAME}-${APP_VERSION} BASIC_AUTH_PASSWORD <%= properties.generic_broker.broker.password %>
+#  cf set-env ${APP_NAME}-${APP_VERSION} BASIC_AUTH_USERNAME <%= properties.generic_broker.broker.user %>
+#  cf set-env ${APP_NAME}-${APP_VERSION} ENCRYPTION_KEY <%= properties.generic_broker.encryption_key %>
+#  cf set-env ${APP_NAME}-${APP_VERSION} UAA_CLIENT_ID generic-sb-service
+#  cf set-env ${APP_NAME}-${APP_VERSION} UAA_CLIENT_SECRET <%= properties.uaa.clients.generic_broker.secret %>
+  cf set-env ${APP_NAME}-${APP_VERSION} UAA_HOST $SCHEME://uaa.$DOMAIN
+  cf set-env ${APP_NAME}-${APP_VERSION} CC_HOST $API_ENDPOINT
+  cf set-env ${APP_NAME}-${APP_VERSION} LOGIN_HOST $SCHEME://login.$DOMAIN
+  cf set-env ${APP_NAME}-${APP_VERSION} ROOT "\$HOME"
+  cf set-env ${APP_NAME}-${APP_VERSION} SCHEME $SCHEME
+  cf set-env ${APP_NAME}-${APP_VERSION} VERIFY_SSL <%= !properties.ssl.skip_cert_verify %>
+
+  # Adding additional properties that most spring based apps or internal apps seem to be expecting
+  cf set-env ${APP_NAME}-${APP_VERSION} CF_ORG $CF_ORG
+  cf set-env ${APP_NAME}-${APP_VERSION} CF_SPACE $CF_SPACE
+  cf set-env ${APP_NAME}-${APP_VERSION} CF_USER $CF_USER
+  cf set-env ${APP_NAME}-${APP_VERSION} CF_PASSWORD $CF_PASSWORD
+  cf set-env ${APP_NAME}-${APP_VERSION} CF_TARGET $CF_TARGET
+  cf set-env ${APP_NAME}-${APP_VERSION} SECURITY_USER_NAME $SECURITY_USER_NAME
+  cf set-env ${APP_NAME}-${APP_VERSION} SECURITY_USER_PASSWORD $SECURITY_USER_PASSWORD
 
   # Add app specific env variables using the setup script definition
   add_parameterized_env_vars
@@ -168,7 +187,7 @@ function add_parameterized_env_vars() {
       key=`echo $env_var_entry | sed -e 's/export //;s/=.*//';`
       #formatted_key=`echo $key | sed -e 's/__/\./g' `
       formatted_env_var=`env | grep "^${key}=" | sed -e 's/^.*=//';`
-      cf set-env $APP_NAME ${key} ${formatted_env_var}
+      cf set-env ${APP_NAME}-${APP_VERSION} ${key} ${formatted_env_var}
     done
   popd
 }
@@ -201,14 +220,37 @@ function modify_app() {
   popd
 }
 
+function delete_prev_app_instance() {
+
+  cf apps | grep ${APP_NAME}-${APP_VERSION}
+  existing_app_check=$?
+
+  if [ "$existing_app_check" == "0" ]; then
+
+    # Look for User-Provided env variables and stop after the first blank line after that
+    cf env ${APP_NAME}-${APP_VERSION} | awk 'f{print}/User-Provided/{f=1};/^ *$/{f=0}' \
+                | grep '.' | awk -F ':' '{print $1}' | while read env_variable_name
+    do
+      cf unset-env $env_variable_name
+    done
+    cf delete -f ${APP_NAME}-${APP_VERSION}  > /dev/null
+  fi
+}
+
 function push_app() {
   pushd $PACKAGE_PATH
     mkdir -p /var/vcap/data/tmp
     export TMPDIR=/var/vcap/data/tmp
-    CF_TRACE=true cf push $APP_NAME -p ${PACKAGE_PATH}/${TARGET_APP} -n ${APP_URI} -d ${APP_DOMAIN} -t ${APP_PUSH_TIMEOUT} -m ${APP_PUSH_MEMORY}m --no-start
+
+    # Cleanup any older version of the app
+    <% if properties.delete_prev_app_instance%>
+    delete_prev_app_instance
+    <% end %>
+
+    CF_TRACE=true cf push ${APP_NAME}-${APP_VERSION} -p ${PACKAGE_PATH}/${TARGET_APP} -n ${APP_URI} -d ${APP_DOMAIN} -t ${APP_PUSH_TIMEOUT} -m ${APP_PUSH_MEMORY}m --no-start
     if [ "$?" -ne "0" ]; then
       log_debug "App push failed..."
-      cf logs $APP_NAME --recent
+      cf logs ${APP_NAME}-${APP_VERSION} --recent
     fi
   popd
 }
@@ -248,25 +290,35 @@ function update_env_variable_script() {
     mkdir -p /var/vcap/data/tmp
 
     # Modify the variables that need to be substituted with actual values passed via bosh manifest or Ops Mgr Tile
-    cp -r templates/setupServiceBrokerEnv.sh /var/vcap/data/tmp
-#            s#DB_HOST_ADDR#${PERSISTENCE_STORE_HOST}#g;         \
-#            s#DB_SID#${PERSISTENCE_STORE_SID}#g;                 \
-#            s#DB_PARAMS#${PERSISTENCE_STORE_PARAMS}#g;           \
-#            s#DB_USER#${PERSISTENCE_STORE_USER}#g;               \
-#            s#DB_PASSWD#${PERSISTENCE_STORE_PASSWD}#g;           \
-#            s#TARGET_HOST_ADDR#${TARGET_HOST}#g;                 \
-#            s#TARGET_SID#${TARGET_SID}#g;                        \
-#            s#TARGET_PARAMS#${TARGET_PARAMS}#g;                  \
-#            s#TARGET_ADMIN_USER#${TARGET_ADMIN_USER}#g;          \
-#            s#TARGET_ADMIN_PASSWD#${TARGET_ADMIN_PASSWD}#g;      \
-#            s#CUSTOM_VARIABLE_END_MARKER##g;"                    \
-#            /var/vcap/data/tmp/${SB_APP_ENV}
+    # cp templates/setupServiceBrokerEnv.sh /var/vcap/data/tmp
 
-    sed -i.bak   "s#CUSTOM_VARIABLE_SED_BEGIN_MARKER##g;            \
-                  s#CUSTOM_VARIABLE_SED_END_MARKER##g;"             \
-            /var/vcap/data/tmp/${SB_APP_ENV}
+    #    sed -i.bak   "s#CUSTOM_VARIABLE_SED_BEGIN_MARKER##g;            \
+    #            s#DB_HOST_ADDR#${PERSISTENCE_STORE_HOST}#g;         \
+    #            s#DB_SID#${PERSISTENCE_STORE_SID}#g;                 \
+    #            s#DB_PARAMS#${PERSISTENCE_STORE_PARAMS}#g;           \
+    #            s#DB_USER#${PERSISTENCE_STORE_USER}#g;               \
+    #            s#DB_PASSWD#${PERSISTENCE_STORE_PASSWD}#g;           \
+    #            s#TARGET_HOST_ADDR#${TARGET_HOST}#g;                 \
+    #            s#TARGET_SID#${TARGET_SID}#g;                        \
+    #            s#TARGET_PARAMS#${TARGET_PARAMS}#g;                  \
+    #            s#TARGET_ADMIN_USER#${TARGET_ADMIN_USER}#g;          \
+    #            s#TARGET_ADMIN_PASSWD#${TARGET_ADMIN_PASSWD}#g;      \
+    #            s#CUSTOM_VARIABLE_END_MARKER##g;"                    \
+    #            /var/vcap/data/tmp/${SB_APP_ENV}
+    #
+    #    sed -i.bak   "s#CUSTOM_VARIABLE_SED_BEGIN_MARKER##g;            \
+    #                  s#CUSTOM_VARIABLE_SED_END_MARKER##g;"             \
+    #            /var/vcap/data/tmp/${SB_APP_ENV}
 
-    cp /var/vcap/data/tmp/${SB_APP_ENV} ${SB_APP_ENV}
+    cp $PACKAGE_PATH/templates/setupServiceBrokerEnv.sh /var/vcap/data/tmp
+
+    cat $PACKAGE_PATH/templates/setupServiceBrokerEnv.sh | grep -v "^#" | grep "." | while read env_var_entry
+    do
+      variable_name=`echo $env_var_entry | sed -e 's/export //g;s/=.*$//g' `
+      variable_value=${!variable_name}
+      sed -i.bak "s#TEMPLATE_${variable_name}#${variable_value}#g" /var/vcap/data/tmp/${SB_APP_ENV}
+    done
+    cp /var/vcap/data/tmp/${SB_APP_ENV} $PACKAGE_PATH/${SB_APP_ENV}
   popd
 }
 

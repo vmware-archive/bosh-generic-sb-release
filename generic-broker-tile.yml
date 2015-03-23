@@ -140,6 +140,10 @@ property_blueprints:
   type: string
   configurable: true
   default: GenericServiceBroker
+- name: app_version
+  type: string
+  configurable: true
+  default: v1
 - name: app_uri
   type: string
   configurable: true
@@ -171,10 +175,10 @@ property_blueprints:
     max: 1024
   default: 256
 # This for any internal plans prebuilt into the service broker that needs to be registered with CF
-- name: internal_plan_names
+- name: internal_service_names
   type: string
   configurable: true
-  default: "INTERNAL_PLAN_NAME"
+  default: "INTERNAL_SERVICE_NAME"
 - name: persistence_store_type
   type: dropdown_select
   configurable: true
@@ -299,6 +303,7 @@ job_types:
   #  ..cf.ha_proxy.skip_cert_verify.value ))\nuaa:\n  clients:\n    generic_broker:\n
   #  \     secret: test\ngeneric_broker:\n
   #  \ app_name: (( .properties.app_name.value ))\n
+  #  \ app_version: (( .properties.app_version.value ))\n
   #  \ app_uri: (( .properties.app_uri.value ))\n
   #  \ create_open_security_group: (( .properties.create_open_security_group.value ))\n
   #  \ app_push:\n
@@ -323,7 +328,7 @@ job_types:
   #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
   #  \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
   #  \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-  #  \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))"
+  #  \ (( .properties.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))"
 
 
   manifest: |
@@ -339,6 +344,7 @@ job_types:
           secret: test
     generic_broker:
       app_name: (( .properties.app_name.value ))
+      app_version: (( .properties.app_version.value ))
       app_uri: (( .properties.app_uri.value ))
       create_open_security_group: (( .properties.create_open_security_group.value ))
       app_push:
@@ -381,7 +387,7 @@ job_types:
       broker:
         user: (( .properties.broker_credentials.identity ))
         password: (( .properties.broker_credentials.password ))
-        internal_plan_names: (( .properties.internal_plan_names.value ))
+        internal_service_names: (( .properties.internal_service_names.value ))
 
 - name: register-broker
   resource_label: Register Generic Service Broker
@@ -428,7 +434,7 @@ job_types:
   #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
   #  \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
   #  \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-  #  \ (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))\n"
+  #  \ (( .properties.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))\n"
   manifest: |
     domain: (( ..cf.cloud_controller.system_domain.value ))
     app_domains:
@@ -442,6 +448,7 @@ job_types:
           secret: test
     generic_broker:
       app_name: (( .properties.app_name.value ))
+      app_version: (( .properties.app_version.value ))
       app_uri: (( .properties.app_uri.value ))
       encryption_key: (( .properties.encryption_key.secret ))
       cf:
@@ -450,7 +457,7 @@ job_types:
       broker:
         user: (( .properties.broker_credentials.identity ))
         password: (( .properties.broker_credentials.password ))
-        internal_plan_names: (( .properties.internal_plan_names.value ))
+        internal_service_names: (( .properties.internal_service_names.value ))
 
 - name: destroy-broker
   resource_label: Remove Generic Service Broker
@@ -497,7 +504,7 @@ job_types:
   #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
   #  (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
   #  ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-  #  (( .properties.broker_credentials.password ))\n    internal_plan_names: (( .properties.internal_plan_names.value ))\n"
+  #  (( .properties.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))\n"
 
   manifest: |
     domain: (( ..cf.cloud_controller.system_domain.value ))
@@ -512,6 +519,7 @@ job_types:
           secret: test
     generic_broker:
       app_name: (( .properties.app_name.value ))
+      app_version: (( .properties.app_version.value ))
       app_uri: (( .properties.app_uri.value ))
       encryption_key: (( .properties.encryption_key.secret ))
       cf:
@@ -520,7 +528,7 @@ job_types:
       broker:
         user: (( .properties.broker_credentials.identity ))
         password: (( .properties.broker_credentials.password ))
-        internal_plan_names: (( .properties.internal_plan_names.value ))
+        internal_service_names: (( .properties.internal_service_names.value ))
 
 - name: compilation
   resource_label: compilation

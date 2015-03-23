@@ -24,7 +24,7 @@ if [ "$shaFileId" != "" ]; then
   sed -i.bak "/$blobFileName/,/size: / { d; }" config/blobs.yml
   rm config/blobs.yml.bak
 
-  specFile=`grep $blobFileName packages/*/spec | awk -F ":" '{print $1}' `
+  specFile=`grep $blobFileName packages/*broker/spec | awk -F ":" '{print $1}' `
   sed -i.bak "/$blobFileName/ { d; }" $specFile 
 fi
 

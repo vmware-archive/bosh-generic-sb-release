@@ -124,7 +124,7 @@ properties:
     broker:
       user: 48eae306c
       password: ed536
-      internal_plan_names: "p-internal-plan1,p-internal-plan2"
+      internal_service_names: "p-internal-service1,p-internal-service2"
 
 jobs:
 - name: deploy-service-broker

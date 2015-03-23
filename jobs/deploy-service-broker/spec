@@ -16,6 +16,8 @@ properties:
     description: 'UAA Client Secret'
   generic_broker.app_name:
     description: 'Name of the Service Broker Application'
+  generic_broker.app_version:
+    description: 'Version of the Service Broker Application'
   generic_broker.app_uri:
     description: 'Uri of the Service Broker Application'
   generic_broker.create_open_security_group:

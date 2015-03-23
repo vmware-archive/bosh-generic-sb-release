@@ -13,6 +13,8 @@ properties:
     description: 'CloudFoundry application domains'
   generic_broker.app_name:
     description: 'App Name'
+  generic_broker.app_version:
+    description: 'Version of the Service Broker Application'
   generic_broker.app_uri:
     description: 'Uri of the Service Broker Application'
   generic_broker.cf.admin_user:
@@ -23,6 +25,5 @@ properties:
     description: 'Broker basic auth user'
   generic_broker.broker.password:
     description: 'Broker basic auth password'
-  generic_broker.broker.internal_plan_names:
-    description: 'name of in-build plans in the Service Broker Application'
-    default: ""
+  generic_broker.broker.internal_service_names:
+    description: 'name of in-built services in the Service Broker Application'

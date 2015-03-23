@@ -53,6 +53,9 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     read variableDescrp
     printf "    Enter a default value (use quotes if containing spaces): "
     read defaultValue
+    if [ "$defaultValue" == "" ]; then
+      defaultValue="_FILL_ME_"
+    fi
     printf "    Should this be configurable or exposed to end-user, reply with y or n: "
     read exposable
 
@@ -64,7 +67,7 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     echo "    default: '${defaultValue}'"  >> $specTmp
 
     echo "export ${variableName_upper}=<%= properties.${brokerName}.${variableName} %>" >> $erbTmp1
-    echo "                  s#${templated_variableName_upper}#\${${variableName_upper}}#g;  \\ " >> $erbTmp2
+    #echo "                  s#${templated_variableName_upper}#\${${variableName_upper}}#g;  \\ " >> $erbTmp2
 
     if [ "${exposable:0:1}" == "y" ]; then
       echo "      - reference: .${variableName}"  >> $tileTmp1
@@ -85,7 +88,7 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
 
   sed -i.bak "/CUSTOM_VARIABLE_BEGIN_MARKER/r./${specTmp}" jobs/deploy-service-broker/spec
   sed -i.bak "/CUSTOM_VARIABLE_BEGIN_MARKER/r./${erbTmp1}" jobs/deploy-service-broker/templates/deploy.sh.erb
-  sed -i.bak "/CUSTOM_VARIABLE_SED_BEGIN_MARKER/r./${erbTmp2}" jobs/deploy-service-broker/templates/deploy.sh.erb
+  #sed -i.bak "/CUSTOM_VARIABLE_SED_BEGIN_MARKER/r./${erbTmp2}" jobs/deploy-service-broker/templates/deploy.sh.erb
 
   sed -i.bak "/CUSTOM_VARIABLE_LABEL_BEGIN_MARKER/r./${tileTmp1}" *tile.yml 
   sed -i.bak "/CUSTOM_VARIABLE_DEFN_BEGIN_MARKER/r./${tileTmp2}" *tile.yml 
@@ -135,14 +138,15 @@ if [ "${userPlans:0:1}" == "n" ]; then
 fi
 
 echo ""
-printf "Does the Service Broker support in-built plan(s)? Reply y or n : "
-read internalPlans
-if [ "${internalPlans:0:1}" == "y" ]; then
-  printf "Provide name of the internal plan (if multiple plans, use comma as separator without spaces): "
-  read internalPlanNames
-  sed -i.bak "s/INTERNAL_PLAN_NAME/${internalPlanNames}/g" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml *tile.yml
+printf "Does the Service Broker support in-built service(s)? Reply y or n : "
+read internalServices
+if [ "${internalServices:0:1}" == "y" ]; then
+  printf "Provide name of the internal service (if multiple services, use comma as separator without spaces) without quotes: "
+  read internalServiceNames
+  internalServiceNames=`echo $internalServiceNames | sed -e 's/"//g;' | sed -e "s/\'//g;" `
+  sed -i.bak "s/INTERNAL_SERVICE_NAME/${internalServiceNames}/g" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml *tile.yml
 else
-  sed -i.bak "s/INTERNAL_PLAN_NAME//g" jobs/deploy-service-broker/spec templates/*properties.yml *tile.yml 
+  sed -i.bak "s/INTERNAL_SERVICE_NAME//g"  templates/*properties.yml *tile.yml 
 fi
 
 find . -name *bak | xargs rm 

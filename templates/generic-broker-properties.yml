@@ -12,6 +12,7 @@ properties:
     encryption_key: 'test'
     # EDIT ME -- Change the app name and URI as needed
     app_name: GenericServiceBroker
+    app_version: v1
     app_uri: generic-broker
     create_open_security_group: false
     ### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
@@ -67,5 +68,5 @@ properties:
       user: testuser
       password: testuser
       # EDIT ME - These are supposed to refer to inbuilt plans which needs to be made public accessible from the Broker
-      internal_plan_names: "INTERNAL_PLAN_NAME"
+      internal_service_names: "INTERNAL_SERVICE_NAME"
 

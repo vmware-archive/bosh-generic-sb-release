@@ -142,11 +142,12 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
      * Endpoint to download any dependencies or 3rd party libraries required by service broker application
      * Persistence store details
      * Managed target server details
-     * Internal Plans managed by Broker
+     * Internal Services managed by Broker
      * On Demand plans to be created on the broker
      * If running on bosh-lite, set the create_open_security_group attribute to true to allow the service broker app to interact with other apps.
    * Run the make_manifest.sh providing 'warden' or 'vsphere' to indicate the platform
    * A new manifest would be generated with the Bosh Director UUID based on the bosh target
+   * If any variables were added via the customizeRelease script and no default values were provided, the teplate file would have '_FILL_ME_' as value. Please edit before deploying the manifest (or even before generating the manifest). 
  * Edit the run.sh script to point to the newly generated manifest rather than the boiler plate templates
  * Note: Everytime, new properties/attributes are added in the job spec or erb files, make sure corresponding changes are added to the templates/*properties.yml file and manifest is regenerated.
 
@@ -156,6 +157,12 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
   * Deploy the release to Bosh
 * Do the deployment using 'bosh deploy' directly or via run.sh
 * Note: Always generate the latest bosh manifest file (using make_manifest.sh) before running this script.
+ * Note: If the deployment fails with similar errors, it indicates the network subnet is in use. Choose a different subnet (example: choose 10.244.3 rather than 10.244.1 via a global search-replace inside the generated manifest file).
+ ```
+ Started compiling packages > spring_service_broker/43f050bd3571814827e267f0d8d7abb289accbe9. Failed: Creating VM with agent ID 'd6266e99-af23-4ac9-8026-4e8ac08a1696': Creating container: network already acquired: 10.244.1.12/30 (00:00:00)
+
+ Error 100: Creating VM with agent ID 'd6266e99-af23-4ac9-8026-4e8ac08a1696': Creating container: network already acquired: 10.244.1.12/30
+ ```
 
 ## Running Errands
 * Run bosh errands. Sample:
@@ -169,12 +176,12 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
 * Once all changes are complete, edit the `*tile.yml` to add the associated changes for all related attributes, metadata that needs to be passed on to the bosh deployment.
   * Any new attribute or property added should be first defined in the property blueprints (like type/configurable/default etc) and also within the job related manifest section.
     If the property should be exposed/configurable by user, it should be part a form_type section
-   Example: Adding a new property called *internal_plan_names* would require:
+   Example: Adding a new property called *internal_service_names* would require:
    ```
-  - name: internal_plan_names
+  - name: internal_service_names
     type: string
     configurable: true
-    default: "p-internal-plan1,p-internal-plan2"
+    default: "p-internal-service1,p-internal-service2"
    ```
    and within the manifest section:
    ```
@@ -208,7 +215,7 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
       broker:
         user: (( .properties.broker_credentials.identity ))
         password: (( .properties.broker_credentials.password ))
-        internal_plan_names: (( .properties.internal_plan_names.value ))
+        internal_service_names: (( .properties.internal_service_names.value ))
    ```
 * Create a custom image for the tile by first creating an image and converting it to [Base-64 encoding](http://www.base64-image.de/step-2.php) and use that in the image tag in the tile file. Ensure the sizes are less than an inch in height and width for it to fit inside the tile.
 * Run createTile.sh to generate the Ops Mgr Tile (.pivotal file).
