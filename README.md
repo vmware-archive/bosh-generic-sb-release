@@ -37,7 +37,7 @@ Customizing release using customizeRelease.sh script
   * Does the Service Broker need persistence store to manage/store its configurations? It can be a database with endpoint, service name, user credentials to connect and store the data.
   * Does the Service Broker need to know about a target service that would be defined later by the end-user?
   * Does the Service Broker app need any additional third party libraries/drivers to function that should be downloaded separately before getting deployed as an app on CF?
-  * Does the Service Broker have inbuilt internal plans that need to be registered and exposed?
+  * Does the Service Broker have inbuilt internal services that need to be registered and exposed?
   * Does the Service Broker allow user defined plans?
 
 Sample output:
