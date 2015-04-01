@@ -59,15 +59,15 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     printf "    Should this be configurable or exposed to end-user, reply with y or n: "
     read exposable
 
-    variableName_upper=`echo $variableName | awk '{print toupper($0)}' `
-    templated_variableName_upper=TEMPLATE_${variableName_upper}
-    echo "export ${variableName}=${templated_variableName_upper}"  >> src/templates/setupServiceBrokerEnv.sh
+    #variableName_upper=`echo $variableName | awk '{print toupper($0)}' `
+    templated_variableName=TEMPLATE_${variableName}
+    echo "export ${variableName}=${templated_variableName}"  >> src/templates/setupServiceBrokerEnv.sh
     echo "  ${brokerName}.${variableName}:"  >> $specTmp
     echo "    description: '${variableDescrp}'"  >> $specTmp
     echo "    default: '${defaultValue}'"  >> $specTmp
 
-    echo "export ${variableName_upper}=<%= properties.${brokerName}.${variableName} %>" >> $erbTmp1
-    #echo "                  s#${templated_variableName_upper}#\${${variableName_upper}}#g;  \\ " >> $erbTmp2
+    echo "export ${variableName}=<%= properties.${brokerName}.${variableName} %>" >> $erbTmp1
+    #echo "                  s#${templated_variableName}#\${${variableName}}#g;  \\ " >> $erbTmp2
 
     if [ "${exposable:0:1}" == "y" ]; then
       echo "      - reference: .properties.${variableName}"  >> $tileTmp1

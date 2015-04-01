@@ -40,19 +40,19 @@ form_types:                                                # [8]
     label: Service Broker Application
     description: Service Broker configuration
     property_inputs:                                       # [9]
-      - reference: .properties.app_name
+      - reference: .app_name
         label: Service Broker Application Name
         description: 'Enter the name for the Service Broker App'
-      - reference: .properties.app_uri
+      - reference: .app_uri
         label: Service Broker Application URI
         description: 'Enter the uri/endpoint for the Service Broker app (on push to CF)'
-      - reference: .properties.create_open_security_group
+      - reference: .create_open_security_group
         label: Open up Security Groups
         description: 'Open up security group on CF for Service Broker to access other apps or CF Cloud Controller'
       ### CUSTOM_VARIABLE_LABEL_BEGIN_MARKER
       ### CUSTOM_VARIABLE_LABEL_END_MARKER
       ### DRIVER_DOWNLOAD_BEGIN_MARKER
-      - reference: .properties.driver_download_url
+      - reference: .driver_download_url
         label: Service Broker Application Depedencies Download Url
         description: 'Enter the uri/endpoint to download any 3rd party drivers/dependencies (like Oracle jdbc driver) for use by the Service Broker app (before push to CF)'
       ### DRIVER_DOWNLOAD_END_MARKER
@@ -68,22 +68,22 @@ form_types:                                                # [8]
     label: Persistence for Service Broker
     description: Persistence store for Service Broker to store its configurations
     property_inputs:                                       # [9]
-      - reference: .properties.persistence_store_type
+      - reference: .persistence_store_type
         label: Persistence using MySQL Service binding (default) or custom database
         description: "Select MySQL Service Binding or Custom Database for storing broker configurations"
-      - reference: .properties.persistence_service_addr
+      - reference: .persistence_service_addr
         label: Persistence Database Instance Listener Address with Port
         description: "Enter the address and port for the SB's Persistence Database"
-      - reference: .properties.persistence_service_sid
+      - reference: .persistence_service_sid
         label: Persistence Database instance Service name
         description: 'Enter the SID or service or database name for the Persistence Database'
-      - reference: .properties.persistence_service_params
+      - reference: .persistence_service_params
         label: Additional parameters for connecting to db instance
         description: 'Enter any additional parameters to be used for connecting to the SB Database'
-      - reference: .properties.persistence_sb_user
+      - reference: .persistence_sb_user
         label: Username for Service broker app to use for its persistence (should be valid and have sufficient privileges/tabelespace etc)
         description: 'Enter a valid name for the Service Broker to connect to the persistence store'
-      - reference: .properties.persistence_sb_password
+      - reference: .persistence_sb_password
         label: Password for Service broker app to use on the persistence
         description: 'Enter the password for the Service Broker to connect to the persistence store'
   ### PERSISTENCE_STORE_END_MARKER
@@ -93,19 +93,19 @@ form_types:                                                # [8]
     label: Managed Target for Service Broker
     description: Target Service managed by Service Broker
     property_inputs:                                       # [9]
-      - reference: .properties.target_service_addr
+      - reference: .target_service_addr
         label: Target Service Listener Address with Port
         description: "Enter the address and port for the SB's Target Service"
-      - reference: .properties.target_service_sid
+      - reference: .target_service_sid
         label: Target Service instance service name
         description: 'Enter the service name for the Target Service'
-      - reference: .properties.target_service_params
+      - reference: .target_service_params
         label: Additional parameters for connecting to service instance
         description: 'Enter any additional parameters to be used for connecting to the Target'
-      - reference: .properties.target_admin_user
+      - reference: .target_admin_user
         label: Admin username for Service broker app to to manage the target service
         description: 'Enter an admin user name for managing the target service'
-      - reference: .properties.target_admin_password
+      - reference: .target_admin_password
         label: Admin Password for Service broker app to manage the target service
         description: 'Enter the admin password for managing the target service'
   ### TARGET_SERVICE_END_MARKER
@@ -115,7 +115,7 @@ form_types:                                                # [8]
     label: On-Demand Service Plans
     description: "An on-demand service plan lets Pivotal CF users create their own Service Plans from the Pivotal CF command line interface or developer console. Use this page to configure the service plan's settings."
     property_inputs:
-      - reference: .properties.on_demand_service_plans_collection
+      - reference: .on_demand_service_plans_collection
         label: On-Demand Service Plans
         property_inputs:
         - reference: plan_name
@@ -131,8 +131,6 @@ form_types:                                                # [8]
   ### ON_DEMAND_PLAN_END_MARKER
 
 property_blueprints:
-- name: broker_credentials
-  type: salted_credentials
 - name: encryption_key
   type: secret
 - name: vm_credentials
@@ -299,6 +297,8 @@ job_types:
     type: salted_credentials
     default:
       identity: vcap
+  - name: broker_credentials
+    type: salted_credentials
 
 
   #manifest: ! "domain: (( ..cf.cloud_controller.system_domain.value ))\napp_domains:\n
@@ -330,8 +330,8 @@ job_types:
   #  \ on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))\n
   #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
   #  \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-  #  \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-  #  \ (( .properties.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))"
+  #  \ ))\n  broker:\n    user: (( .broker_credentials.identity ))\n    password:
+  #  \ (( .broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))"
 
 
   manifest: |
@@ -388,8 +388,8 @@ job_types:
         admin_user: (( ..cf.uaa.system_services_credentials.identity ))
         admin_password: (( ..cf.uaa.system_services_credentials.password ))
       broker:
-        user: (( .properties.broker_credentials.identity ))
-        password: (( .properties.broker_credentials.password ))
+        user: (( .broker_credentials.identity ))
+        password: (( .broker_credentials.password ))
         internal_service_names: (( .properties.internal_service_names.value ))
 
 - name: register-broker
@@ -436,8 +436,8 @@ job_types:
   #  \ app_uri: (( .properties.app_uri.value ))\n
   #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
   #  \ (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-  #  \ ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-  #  \ (( .properties.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))\n"
+  #  \ ))\n  broker:\n    user: (( .deploy-service-broker.broker_credentials.identity ))\n    password:
+  #  \ (( .deploy-service-broker.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))\n"
   manifest: |
     domain: (( ..cf.cloud_controller.system_domain.value ))
     app_domains:
@@ -458,8 +458,8 @@ job_types:
         admin_user: (( ..cf.uaa.system_services_credentials.identity ))
         admin_password: (( ..cf.uaa.system_services_credentials.password ))
       broker:
-        user: (( .properties.broker_credentials.identity ))
-        password: (( .properties.broker_credentials.password ))
+        user: (( .deploy-service-broker.broker_credentials.identity ))
+        password: (( .deploy-service-broker.broker_credentials.password ))
         internal_service_names: (( .properties.internal_service_names.value ))
 
 - name: destroy-broker
@@ -506,8 +506,8 @@ job_types:
   #  \ app_uri: (( .properties.app_uri.value ))\n
   #  \ encryption_key: (( .properties.encryption_key.secret ))\n  cf:\n    admin_user:
   #  (( ..cf.uaa.system_services_credentials.identity ))\n    admin_password: (( ..cf.uaa.system_services_credentials.password
-  #  ))\n  broker:\n    user: (( .properties.broker_credentials.identity ))\n    password:
-  #  (( .properties.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))\n"
+  #  ))\n  broker:\n    user: (( .deploy-service-broker.broker_credentials.identity ))\n    password:
+  #  (( .deploy-service-broker.broker_credentials.password ))\n    internal_service_names: (( .properties.internal_service_names.value ))\n"
 
   manifest: |
     domain: (( ..cf.cloud_controller.system_domain.value ))
@@ -529,8 +529,8 @@ job_types:
         admin_user: (( ..cf.uaa.system_services_credentials.identity ))
         admin_password: (( ..cf.uaa.system_services_credentials.password ))
       broker:
-        user: (( .properties.broker_credentials.identity ))
-        password: (( .properties.broker_credentials.password ))
+        user: (( .deploy-service-broker.broker_credentials.identity ))
+        password: (( .deploy-service-broker.broker_credentials.password ))
         internal_service_names: (( .properties.internal_service_names.value ))
 
 - name: compilation
