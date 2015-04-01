@@ -222,6 +222,8 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
 
 ## Tile Import into Ops Mgr
 `Important: Backup the Ops Mgr configuration before proceeding to next step.`
+* Change the name of the Tile and versions as necessary. Please also edit the version of Ops Mgr if deploying to non-1.3 version of PCF.
+ Note: The version bundled in this repo is for Ops Manager 1.3
 * Import the Tile into non-Production version of Ops Mgr.
 * Verify the Tile works before proceeding with any changes.
  * Rollback the tile import if Ops Mgrs reports 500 or throws Errors.
