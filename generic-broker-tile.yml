@@ -43,6 +43,9 @@ form_types:                                                # [8]
       - reference: .app_name
         label: Service Broker Application Name
         description: 'Enter the name for the Service Broker App'
+      - reference: .app_version
+        label: Service Broker Application version
+        description: 'Enter the version of the Service Broker App (Final app name would include app version like ${appName}-${appversion}'
       - reference: .app_uri
         label: Service Broker Application URI
         description: 'Enter the uri/endpoint for the Service Broker app (on push to CF)'
@@ -212,7 +215,6 @@ property_blueprints:
 - name: persistence_sb_password
   type: secret
   configurable: true
-  default: s3cr3t
   optional: true
 ### PERSISTENCE_STORE_END_MARKER
 
@@ -237,7 +239,6 @@ property_blueprints:
 - name: target_admin_password
   type: secret
   configurable: true
-  default: s3cr3t
   optional: true
 
 ### TARGET_SERVICE_END_MARKER

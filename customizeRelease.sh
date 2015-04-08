@@ -70,7 +70,8 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     #echo "                  s#${templated_variableName}#\${${variableName}}#g;  \\ " >> $erbTmp2
 
     if [ "${exposable:0:1}" == "y" ]; then
-      echo "      - reference: .properties.${variableName}"  >> $tileTmp1
+#      echo "      - reference: .properties.${variableName}"  >> $tileTmp1
+      echo "      - reference: .${variableName}"  >> $tileTmp1
       echo "        label: ${variableLabel}  "  >> $tileTmp1
       echo "        description: ${variableDescrp}  "  >> $tileTmp1
     fi
