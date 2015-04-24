@@ -58,10 +58,15 @@ function publicize_services() {
     for service in $services; do
       publicize_service $service
     done
-  else
+  else if [ "$BROKER_INTERNAL_SERVICE_NAMES" != "" ]; then
     # Rely on the internal plan names if we cannot get it from the /v2/services on the broker
     for service_name in `echo $BROKER_INTERNAL_SERVICE_NAMES | sed -e 's/,/ /g'`
     do
+      cf enable-service-access $service_name
+    done
+  else
+    services=`cf service-access | awk "/${BROKER_NAME}/{flag=1;next}/broker: /{flag=0}flag" | egrep -v "access *orgs" | grep "."  | awk '{print $1}' `
+    for service_name in $services; do
       cf enable-service-access $service_name
     done
   fi
