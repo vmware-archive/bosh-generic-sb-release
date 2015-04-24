@@ -58,7 +58,7 @@ function publicize_services() {
     for service in $services; do
       publicize_service $service
     done
-  else if [ "$BROKER_INTERNAL_SERVICE_NAMES" != "" ]; then
+  elif [ "$BROKER_INTERNAL_SERVICE_NAMES" != "" ]; then
     # Rely on the internal plan names if we cannot get it from the /v2/services on the broker
     for service_name in `echo $BROKER_INTERNAL_SERVICE_NAMES | sed -e 's/,/ /g'`
     do
