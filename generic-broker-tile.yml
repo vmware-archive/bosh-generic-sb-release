@@ -181,7 +181,7 @@ property_blueprints:
 # This for any internal plans prebuilt into the service broker that needs to be registered with CF
 - name: internal_service_names
   type: string
-  configurable: true
+  configurable: false
   default: "INTERNAL_SERVICE_NAME"
 - name: persistence_store_type
   type: dropdown_select
