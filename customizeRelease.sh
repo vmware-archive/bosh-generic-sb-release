@@ -67,7 +67,7 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     echo "    default: '${defaultValue}'"  >> $specTmp
 
     echo "export ${variableName}=<%= properties.${brokerName}.${variableName} %>" >> $erbTmp1
-    #echo "                  s#${templated_variableName}#\${${variableName}}#g;  \\ " >> $erbTmp2
+    echo "  cf set-env \${APP_NAME}-\${APP_VERSION} $variableName \"\$${variableName}\" " >> $erbTmp2
 
     if [ "${exposable:0:1}" == "y" ]; then
 #      echo "      - reference: .properties.${variableName}"  >> $tileTmp1
@@ -89,7 +89,7 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
 
   sed -i.bak "/CUSTOM_VARIABLE_BEGIN_MARKER/r./${specTmp}" jobs/deploy-service-broker/spec
   sed -i.bak "/CUSTOM_VARIABLE_BEGIN_MARKER/r./${erbTmp1}" jobs/deploy-service-broker/templates/deploy.sh.erb
-  #sed -i.bak "/CUSTOM_VARIABLE_SED_BEGIN_MARKER/r./${erbTmp2}" jobs/deploy-service-broker/templates/deploy.sh.erb
+  sed -i.bak "/CUSTOM_VARIABLE_ENV_BEGIN_MARKER/r./${erbTmp2}" jobs/deploy-service-broker/templates/deploy.sh.erb
 
   sed -i.bak "/CUSTOM_VARIABLE_LABEL_BEGIN_MARKER/r./${tileTmp1}" *tile.yml 
   sed -i.bak "/CUSTOM_VARIABLE_DEFN_BEGIN_MARKER/r./${tileTmp2}" *tile.yml 

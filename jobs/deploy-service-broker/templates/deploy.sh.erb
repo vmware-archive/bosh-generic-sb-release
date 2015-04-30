@@ -144,11 +144,8 @@ function provision_and_bind_db() {
 }
 
 function restart_app() {
-CF_TRACE=true cf restart ${APP_NAME}-${APP_VERSION}
-  if [ "$?" -ne "0" ]; then
-    log_debug "App start failed..."
-    cf logs ${APP_NAME}-${APP_VERSION} --recent
-  fi
+  CF_TRACE=true cf restart ${APP_NAME}-${APP_VERSION}
+  cf logs ${APP_NAME}-${APP_VERSION} --recent
 }
 
 function add_env_vars() {
@@ -173,24 +170,27 @@ function add_env_vars() {
   cf set-env ${APP_NAME}-${APP_VERSION} SECURITY_USER_NAME $SECURITY_USER_NAME
   cf set-env ${APP_NAME}-${APP_VERSION} SECURITY_USER_PASSWORD $SECURITY_USER_PASSWORD
 
+  # CUSTOM_VARIABLE_ENV_BEGIN_MARKER
+  # CUSTOM_VARIABLE_ENV_END_MARKER
+
   # Add app specific env variables using the setup script definition
-  add_parameterized_env_vars
+  #add_parameterized_env_vars
 }
 
-function add_parameterized_env_vars() {
-  pushd $PACKAGE_PATH
-
-    # Source the environment variables before doing a cf set-env using the variable name
-    source $SB_APP_ENV
-    cat $SB_APP_ENV | grep -v "^#" | grep "." | while read env_var_entry
-    do
-      key=`echo $env_var_entry | sed -e 's/export //;s/=.*//';`
-      #formatted_key=`echo $key | sed -e 's/__/\./g' `
-      formatted_env_var=`env | grep "^${key}=" | sed -e 's/^.*=//';`
-      cf set-env ${APP_NAME}-${APP_VERSION} ${key} ${formatted_env_var}
-    done
-  popd
-}
+#function add_parameterized_env_vars() {
+#  pushd $PACKAGE_PATH
+#
+#    # Source the environment variables before doing a cf set-env using the variable name
+#    source $SB_APP_ENV
+#    cat $SB_APP_ENV | grep -v "^#" | grep "." | while read env_var_entry
+#    do
+#      key=`echo $env_var_entry | sed -e 's/export //;s/=.*//';`
+#      #formatted_key=`echo $key | sed -e 's/__/\./g' `
+#      formatted_env_var=`env | grep "^${key}=" | sed -e 's/^.*=//';`
+#      cf set-env ${APP_NAME}-${APP_VERSION} ${key} ${formatted_env_var}
+#    done
+#  popd
+#}
 
 # Use this only to bind any additional files/libraries or modify app contents
 function modify_app() {
@@ -248,42 +248,10 @@ function push_app() {
     <% end %>
 
     CF_TRACE=true cf push ${APP_NAME}-${APP_VERSION} -p ${PACKAGE_PATH}/${TARGET_APP} -n ${APP_URI} -d ${APP_DOMAIN} -t ${APP_PUSH_TIMEOUT} -m ${APP_PUSH_MEMORY}m --no-start
-    if [ "$?" -ne "0" ]; then
-      log_debug "App push failed..."
-      cf logs ${APP_NAME}-${APP_VERSION} --recent
-    fi
+    cf logs ${APP_NAME}-${APP_VERSION} --recent
   popd
 }
 
-# Use the environment variable bindings approach rather than modifying app contents with service endpoints
-#function update_app_with_store_and_target() {
-#  pushd $PACKAGE_PATH
-#    mkdir -p /var/vcap/data/tmp
-#
-#    cp -r templates/config /var/vcap/data/tmp
-#    if [ "${PERSISTENCE_STORE_TYPE}" == "custom" ]; then
-#      sed -i.bak "s#DB_HOST_ADDR#${PERSISTENCE_STORE_HOST}#g;    \
-#            s#DB_SID#${PERSISTENCE_STORE_SID}#g;                 \
-#            s#DB_PARAMS/${PERSISTENCE_STORE_PARAMS}#g;           \
-#            s#DB_USER#${PERSISTENCE_STORE_USER}#g;               \
-#            s#DB_PASSWD#${PERSISTENCE_STORE_PASSWD}#g"           \
-#            /var/vcap/data/tmp/${SB_APP_CONFIG}
-#    fi
-#
-#    sed -i.bak "s#TARGET_HOST_ADDR#${TARGET_HOST}#g;             \
-#            s#TARGET_SID#${TARGET_SID}#g;                        \
-#            s#TARGET_PARAMS#${TARGET_PARAMS}#g;                  \
-#            s#TARGET_ADMIN_USER#${TARGET_ADMIN_USER}#g;          \
-#            s#TARGET_ADMIN_PASSWD#${TARGET_ADMIN_PASSWD}#g"      \
-#            /var/vcap/data/tmp/${SB_APP_CONFIG}
-#
-#    # Dealing with a Jar file here, so unzip and copy over the updated app configs
-#    mkdir -p $PACKAGE_PATH/${EXPLODED_APP_FOLDER}
-#    cd $PACKAGE_PATH/${EXPLODED_APP_FOLDER}
-#    unzip ../lib/${APP_PREFIX_NAME}*jar
-#    cp /var/vcap/data/tmp/${SB_APP_CONFIG} ${SB_APP_CONFIG}
-#  popd
-#}
 
 function update_env_variable_script() {
   pushd $PACKAGE_PATH
@@ -382,7 +350,7 @@ cf -v
 authenticate_and_target
 create_open_security_group
 create_quota
-update_env_variable_script
+#update_env_variable_script
 
 modify_app
 push_app
