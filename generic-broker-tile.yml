@@ -4,11 +4,23 @@ product_version: 1.3.0                                      # [1]
 metadata_version: "1.3"                                    # [2]
 target_installer_version: 1.3
 stemcell:                                                  # [3]
-  name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-  file: bosh-stemcell-2690.3-vsphere-esxi-ubuntu-trusty-go_agent.tgz
+  # Use following stemcell references for Ops Mgr 1.4 and vSphere
+  version: '2865.1'                                                        # UNCOMMENT for Ops Mgr 1.4
+  name: bosh-vsphere-esxi-ubuntu-trusty-go_agent                           # UNCOMMENT for vSphere and Ops Mgr 1.4
+  file: bosh-stemcell-2865.1-vsphere-esxi-ubuntu-trusty-go_agent.tgz       # UNCOMMENT for vSphere and Ops Mgr 1.4
+
+  # Use following stemcell references for Ops Mgr 1.4 and AWS
+  #name: light-bosh-aws-xen-hvm-ubuntu-trusty-go_agent                     # UNCOMMENT for AWS and Ops Mgr 1.4
+  #file: light-bosh-stemcell-2865.1-aws-xen-hvm-ubuntu-trusty-go_agent.tgz # UNCOMMENT for AWS and Ops Mgr 1.4
+
+  # Use following stemcell references for Ops Mgr 1.3 and vSphere
+  # Edit if CF/Elastic Runtime is using a different stemcell version
+  #version: '2690.3'                                                        # UNCOMMENT for Ops Mgr 1.3
+  #name: bosh-vsphere-esxi-ubuntu-trusty-go_agent                           # UNCOMMENT for vSphere and Ops Mgr 1.3
+  #file: bosh-stemcell-2690.3-vsphere-esxi-ubuntu-trusty-go_agent.tgz       # UNCOMMENT for vSphere and Ops Mgr 1.3
+  #
   # Download from https://s3.amazonaws.com/bosh-jenkins-artifacts/bosh-stemcell/vsphere/bosh-stemcell-2690.3-vsphere-esxi-ubuntu-trusty-go_agent.tgz
-  version: '2690.3'
-  #name: bosh-vsphere-esxi-centos-go_agent
+  #name: bosh-vsphere-esxi-centos-go_agent # This is in case of dependency on centos (like for Oracle XE instance)
   #file: bosh-stemcell-2690.2-vsphere-esxi-centos-go_agent.tgz
   #version: '2690.2'
 releases:                                                  # [5]
@@ -389,8 +401,8 @@ job_types:
         admin_user: (( ..cf.uaa.system_services_credentials.identity ))
         admin_password: (( ..cf.uaa.system_services_credentials.password ))
       broker:
-        user: (( .broker_credentials.identity ))
-        password: (( .broker_credentials.password ))
+        user: (( .deploy-service-broker.broker_credentials.identity ))
+        password: (( .deploy-service-broker.broker_credentials.password ))
         internal_service_names: (( .properties.internal_service_names.value ))
 
 - name: register-broker

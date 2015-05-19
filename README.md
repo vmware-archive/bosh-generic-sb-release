@@ -21,7 +21,7 @@ This is purely an experimental release and highly recommended to not test agains
   * destroy-broker would delete/de-register the service broker from CF.
 
 Once the job has been deployed via bosh deploy, one can execute 'bosh run errand deploy-service-broker' to run the named errand.
-* The release along with any necessary stemcells and the modified tile.yml file can be used to create a Pivotal Operations Manager Tile to be imported into PCF Ops Mgr.
+* The release along with any necessary stemcells and the modified tile.yml file can be used to create a Pivotal Operations Manager Tile to be imported into PCF Ops Mgr. Edit the tile to specify the right stemcell version based on Ops Mgr version.
 * The metadata for the errands would be generated based on either user generated deployment manifest or via the Ops Mgr Tile configurations.
 
 ## Build the Release
@@ -222,8 +222,38 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
 
 ## Tile Import into Ops Mgr
 `Important: Backup the Ops Mgr configuration before proceeding to next step.`
-* Change the name of the Tile and versions as necessary. Please also edit the version of Ops Mgr if deploying to non-1.3 version of PCF.
- Note: The version bundled in this repo is for Ops Manager 1.3
+* Change the name of the Tile and versions as necessary. 
+ Note: The version bundled in this repo is for Ops Manager 1.3 but can also be imported into Ops Mgr 1.4. 
+ Stemcell references would change based on version of Ops Mgr used.
+
+ If running on Ops Mgr v1.4, edit the stemcell references inside the tile file:
+ ```
+stemcell:                                                  # [3]
+  # Use following stemcell references for Ops Mgr 1.4 and vSphere
+  version: '2865.1'                                                        # UNCOMMENT for Ops Mgr 1.4
+  name: bosh-vsphere-esxi-ubuntu-trusty-go_agent                           # UNCOMMENT for vSphere and Ops Mgr 1.4
+  file: bosh-stemcell-2865.1-vsphere-esxi-ubuntu-trusty-go_agent.tgz       # UNCOMMENT for vSphere and Ops Mgr 1.4
+
+  # Use following stemcell references for Ops Mgr 1.4 and AWS
+  #name: light-bosh-aws-xen-hvm-ubuntu-trusty-go_agent                     # UNCOMMENT for AWS and Ops Mgr 1.4
+  #file: light-bosh-stemcell-2865.1-aws-xen-hvm-ubuntu-trusty-go_agent.tgz # UNCOMMENT for AWS and Ops Mgr 1.4
+
+ ```
+Uncomment the AWS stemcell reference if running on AWS and comment off the vSphere.
+If the stemcell version available or being used has changed, modify the version accordingly.
+
+ If running on Ops Mgr v1.3, edit the stemcell references inside the tile file (there is no AWS support for Ops Mgr v1.3):
+ ```
+stemcell:                                                  # [3]
+  # Use following stemcell references for Ops Mgr 1.3 and vSphere
+  # Edit if CF/Elastic Runtime is using a different stemcell version
+  version: '2690.3'                                                        # UNCOMMENT for Ops Mgr 1.3
+  name: bosh-vsphere-esxi-ubuntu-trusty-go_agent                           # UNCOMMENT for vSphere and Ops Mgr 1.3
+  file: bosh-stemcell-2690.3-vsphere-esxi-ubuntu-trusty-go_agent.tgz       # UNCOMMENT for vSphere and Ops Mgr 1.3
+
+ ```
+ Comment off the stemcells for Ops Mgr v1.4 if running on Ops Mgr v1.3. If the stemcell version available or being used has changed, modify the version accordingly.
+
 * Import the Tile into non-Production version of Ops Mgr.
 * Verify the Tile works before proceeding with any changes.
  * Rollback the tile import if Ops Mgrs reports 500 or throws Errors.
