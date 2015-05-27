@@ -31,6 +31,8 @@ Steps to building the Bosh Release
 Rename the release and all related files using the renameRelease.sh file (provide desired name as arguments)
 ### Customize the Release
 Customizing release using customizeRelease.sh script
+  * Choose the version of Ops Mgr to deploy to and also the version of the release (for tracking) 
+    * Its okay to go with Ops Mgr 1.3 version of the tile and deploy to a Pivotal Ops Mgr running 1.4 as the Ops Mgr would automatically upgrade that to 1.4 metadata version. But the stemcell should refer to version available to the Ops Mgr 1.4 or later, not 1.3.
   * Add Custom Variables that need to be exposed via the Tile or Manifest which in turn would be consumed by the Service Broker App. For example, the service broker app might require the CF domain information in form of a variable 'CF_DOMAIN_ENDPOINT' or it might need a Github Account access token in form of a variable 'github_accesstoken'. These variables might be having a default value or would be defined later via the Tile by the user. These variables would be bound to default or other user defined values and bound to the service broker application in form of Environment variables (using cf set-env AppName envVariableName envVariableValue) allowing loose coupling/late binding.
   Note: Avoid using env variable names with '.' (period) character as these will cause failures when exporting it in unix shells. Use '_' (underscore) or other options to avoid using spaces, '.' etc.
     * Also, these variables might or might not be exposed to the end-user. The generated tile would have labels exposing the properties based on user responding to the script.
@@ -43,6 +45,23 @@ Customizing release using customizeRelease.sh script
 Sample output:
 ```
 ./customizeRelease.sh
+
+  This script will customize the Service Broker Release and Ops Mgr Tile generation based on user inputs
+  Things that would be customized include:
+     - Custom defined dynamic variables/parameters that would be passed along as environment variables to the application
+     - Expose the user defined parameters via the Tile UI
+     - Use or not use persistence (mysql or custom database persistence)
+     - Allow user to pull down external third party libraries that are required by the service broker app
+     - Allow registration of either in-built or user defined plans
+
+Starting customization........
+
+Version of Pivotal Ops Mgr to deploy on:
+  Reply with 1.3 or 1.4 or other version: 1.4
+
+Version for the Service Broker release
+  Reply with something like 1.0 or 2.0 or 5.1: 5.5
+
 Does the Service Broker Application require any configurable parameter/variables for its functioning
      Externalized parameters can be dynamic or user defined like some github access token
      and needs to be part of the Service Broker App via environment variable
@@ -226,7 +245,7 @@ Remove the variables from the deploy.sh.erb that are not required as absence of 
  Note: The version bundled in this repo is for Ops Manager 1.3 but can also be imported into Ops Mgr 1.4. 
  Stemcell references would change based on version of Ops Mgr used.
 
- If running on Ops Mgr v1.4, edit the stemcell references inside the tile file:
+ If running on Ops Mgr v1.4, edit the stemcell references inside the v1.4 tile file:
  ```
 stemcell:                                                  # [3]
   # Use following stemcell references for Ops Mgr 1.4 and vSphere
@@ -242,7 +261,7 @@ stemcell:                                                  # [3]
 Uncomment the AWS stemcell reference if running on AWS and comment off the vSphere.
 If the stemcell version available or being used has changed, modify the version accordingly.
 
- If running on Ops Mgr v1.3, edit the stemcell references inside the tile file (there is no AWS support for Ops Mgr v1.3):
+ If running on Ops Mgr v1.3, edit the stemcell references inside the v1.3 tile file (there is no AWS support for Ops Mgr v1.3) for vsphere or vcloud:
  ```
 stemcell:                                                  # [3]
   # Use following stemcell references for Ops Mgr 1.3 and vSphere

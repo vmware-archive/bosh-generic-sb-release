@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # For use to create final release tarball
-VERSION=1.3
+VERSION=RELEASE_VERSION
 CREATE_FINAL_TARBALL=true
 RELEASE_NAME=generic_broker
 

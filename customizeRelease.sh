@@ -11,7 +11,20 @@ echo "     - Allow registration of either in-built or user defined plans"
 echo ""
 echo "Starting customization........"
  
+echo ""
+echo "Version of Pivotal Ops Mgr to deploy" 
+printf "  Reply with 1.3 or 1.4 or other version: "
+read opsMgrVersion
+sed -i.bak "s/OPS_MGR_VERSION/${opsMgrVersion}/g" createTile.sh
 
+echo ""
+echo "Version for the Service Broker release" 
+printf "  Reply with something like 1.0 or 1.3 or 1.4: "
+read releaseVersion
+sed -i.bak "s/RELEASE_VERSION/${releaseVersion}/g" createRelease.sh createTile.sh *tile-*.yml
+rm *.bak
+
+echo ""
 echo "  Does the Service Broker Application require any configurable parameter/variables for its functioning"
 echo "     Externalized parameters can be dynamic or user defined like some github access token"
 echo "     and needs to be part of the Service Broker App via environment variable"
