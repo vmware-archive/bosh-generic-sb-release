@@ -26,6 +26,7 @@ export APP_DOMAIN=<%="#{app_domain}" %>
 export APP_NAME=<%= properties.generic_broker.app_name %>
 export APP_VERSION=<%= properties.generic_broker.app_version %>
 export APP_URI=<%= properties.generic_broker.app_uri %>
+export ENABLE_GLOBAL_ACCESS=<%= properties.generic_broker.enable_global_access_to_plans %>
 export ORG=${APP_NAME}-service-org
 export SPACE=${APP_NAME}-service-space
 export BROKER_NAME=${APP_NAME}-${APP_VERSION}-service-broker
@@ -58,9 +59,9 @@ function publicize_services() {
     for service in $services; do
       publicize_service $service
     done
-  elif [ "$BROKER_INTERNAL_SERVICE_NAMES" != "" ]; then
+  elif [ "$BROKER_INTERNAL_SERVICE_NAMES" != "" ] && [ "$BROKER_INTERNAL_SERVICE_NAMES" != "INTERNAL_SERVICE_NAME" ]; then
     # Rely on the internal plan names if we cannot get it from the /v2/services on the broker
-    for service_name in `echo $BROKER_INTERNAL_SERVICE_NAMES | sed -e 's/,/ /g'`
+    for service_name in `echo $BROKER_INTERNAL_SERVICE_NAMES | sed -e 's/,/ /g;s/;/ /g'`
     do
       cf enable-service-access $service_name
     done
@@ -80,4 +81,7 @@ function publicize_service() {
 cf -v
 authenticate_and_target
 register_broker
-publicize_services
+
+<% if  properties.generic_broker.enable_global_access_to_plans %>
+  publicize_services
+<% end %>

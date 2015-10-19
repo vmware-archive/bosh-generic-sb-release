@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function usage() {
   echo "Error!! needs 1 argument: <Name of Blob file> "

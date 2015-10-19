@@ -17,6 +17,8 @@ properties:
     description: 'Version of the Service Broker Application'
   generic_broker.app_uri:
     description: 'Uri of the Service Broker Application'
+  generic_broker.enable_global_access_to_plans:
+    description: 'Enable global access to all service plans'
   generic_broker.cf.admin_user:
     description: 'Username of the CF admin user'
   generic_broker.cf.admin_password:

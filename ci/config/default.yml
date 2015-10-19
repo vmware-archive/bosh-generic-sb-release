@@ -1,0 +1,11 @@
+repo-master-uri: "https://github.com/cf-platform-eng/appdirect-tile.git"
+#repo-master-uri: "git://10.10.10.10/" # For local git daemon testing
+repo-master-branch: "master"
+
+release-bucket: "pivotal-appdirect-boshrelease"
+release-access-key: ~ #{{aws-access-key}}
+release-secret-key: ~ #{{aws-secret-key}}
+
+#test-director-target: "https://192.168.50.4:25555"
+#test-director-username: "admin"
+#test-director-password: "admin"

@@ -1,0 +1,54 @@
+---
+resources:
+- name: repo-master
+  type: git
+  source:
+  uri: https://github.com/cf-platform-eng/appdirect-boshrelease.git
+#    uri: git://10.10.10.10/ # For local git daemon testing
+
+- name: "dev-release"
+  type: s3
+  source:
+    bucket: {{release-bucket}}
+    regexp: "appdirect-dev-(.*).tgz"
+    access_key_id: {{release-access-key}}
+    secret_access_key: {{release-secret-key}}
+
+- name: "tile-dev-release"
+  type: s3
+  source:
+    bucket: {{release-bucket}}
+    regexp: "p-appdirect-dev-(.*).pivotal"
+    access_key_id: {{release-access-key}}
+    secret_access_key: {{release-secret-key}}
+
+jobs:
+- name: create-release
+  public: true
+  plan:
+  - get: repo
+    resource: "repo-master"
+  - task: create-release
+    privileged: true    # Need to run apt-get install wget...
+    file: repo/ci/scripts/create-release/task.yml
+  - put: dev-release
+    params:
+      from: "create-release/repo/dev_releases/appdirect-dev/appdirect-dev(.+).tgz"
+#      to: "dev_releases/"
+
+- name: create-piv-tile
+  public: true
+  plan:
+  - get: "repo"
+    resource: "repo-master"
+  - get: "release"
+    resource: "dev-release"
+#    params:
+#      from: "dev_releases/appdirect-(.+).tgz"
+  - task: create-tile
+    privileged: true    # Need to run apt-get install zip...
+    file: repo/ci/scripts/create-tile/task.yml
+  - put: tile-dev-release
+    params:
+      from: "p-appdirect-dev-(.+).pivotal"
+#      to: "dev_releases/"

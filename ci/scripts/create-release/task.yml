@@ -1,0 +1,13 @@
+---
+platform: "linux"
+image: "docker:///concourse/concourse-ci"  # Run inside a docker image that bundles bosh cli
+params:
+  RELEASE_VERSION:                         # Comes from Environment variable
+  RELEASE_NAME:
+
+inputs:
+  - name: "repo"                           # Source Github repo or other sources to work on as input
+
+run:
+  path: "repo/ci/scripts/create-release/run.sh"
+

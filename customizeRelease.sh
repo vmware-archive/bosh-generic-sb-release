@@ -13,13 +13,13 @@ echo "Starting customization........"
  
 echo ""
 echo "Version of Pivotal Ops Mgr to deploy" 
-printf "  Reply with 1.3 or 1.4 or other version: "
+printf "  Reply with 1.3, 1.4 or 1.5 or other version: "
 read opsMgrVersion
 sed -i.bak "s/OPS_MGR_VERSION/${opsMgrVersion}/g" createTile.sh
 
 echo ""
 echo "Version for the Service Broker release" 
-printf "  Reply with something like 1.0 or 1.3 or 1.4: "
+printf "  Reply with something like 1.0, 1.3, 1.4 or 1.5: "
 read releaseVersion
 sed -i.bak "s/RELEASE_VERSION/${releaseVersion}/g" createRelease.sh createTile.sh *tile-*.yml
 rm *.bak
@@ -104,9 +104,9 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
   sed -i.bak "/CUSTOM_VARIABLE_BEGIN_MARKER/r./${erbTmp1}" jobs/deploy-service-broker/templates/deploy.sh.erb
   sed -i.bak "/CUSTOM_VARIABLE_ENV_BEGIN_MARKER/r./${erbTmp2}" jobs/deploy-service-broker/templates/deploy.sh.erb
 
-  sed -i.bak "/CUSTOM_VARIABLE_LABEL_BEGIN_MARKER/r./${tileTmp1}" *tile.yml 
-  sed -i.bak "/CUSTOM_VARIABLE_DEFN_BEGIN_MARKER/r./${tileTmp2}" *tile.yml 
-  sed -i.bak "/CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER/r./${tileTmp3}" *tile.yml
+  sed -i.bak "/CUSTOM_VARIABLE_LABEL_BEGIN_MARKER/r./${tileTmp1}" *tile*.yml 
+  sed -i.bak "/CUSTOM_VARIABLE_DEFN_BEGIN_MARKER/r./${tileTmp2}" *tile*.yml 
+  sed -i.bak "/CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER/r./${tileTmp3}" *tile*.yml
   sed -i.bak "/CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER/r./${propTmp}" templates/*properties.yml
   rm *.tmp
 fi
@@ -115,7 +115,7 @@ echo ""
 printf "Does the Service Broker need to download any external driver/library? Reply y or n : "
 read downloadDriver
 if [ "${downloadDriver:0:1}" == "n" ]; then
-  sed -i.bak "/DRIVER_DOWNLOAD_BEGIN_MARKER/,/DRIVER_DOWNLOAD_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile.yml
+  sed -i.bak "/DRIVER_DOWNLOAD_BEGIN_MARKER/,/DRIVER_DOWNLOAD_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile*.yml
 fi
 
 echo ""
@@ -126,29 +126,29 @@ if [ "${persistenceStore:0:1}" == "y" ]; then
   read persistenceStoreType
   if [ "${persistenceStoreType:0:1}" == "y" ]; then
     echo "Going with MySQL service binding for persistence"
-    sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: mysql/g" templates/*properties.yml *tile.yml 
-    sed -i.bak "/PERSISTENCE_STORE_BEGIN_MARKER/,/PERSISTENCE_STORE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile.yml
+    sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: mysql/g" templates/*properties.yml *tile*.yml 
+    sed -i.bak "/PERSISTENCE_STORE_BEGIN_MARKER/,/PERSISTENCE_STORE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile*.yml
   else
     echo "Going with Custom persistence"
-    sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: custom/g" templates/*properties.yml *tile.yml 
+    sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: custom/g" templates/*properties.yml *tile*.yml 
   fi
 else 
-  sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: none/g" templates/*properties.yml *tile.yml 
-  sed -i.bak "/PERSISTENCE_STORE_BEGIN_MARKER/,/PERSISTENCE_STORE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile.yml
+  sed -i.bak "s/ persistence_store_type: .*/ persistence_store_type: none/g" templates/*properties.yml *tile*.yml 
+  sed -i.bak "/PERSISTENCE_STORE_BEGIN_MARKER/,/PERSISTENCE_STORE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile*.yml
 fi
 
 echo ""
 printf "Does the Service Broker need to manage a target service? Reply y or n : "
 read targetService
 if [ "${targetService:0:1}" == "n" ]; then
-  sed -i.bak "/TARGET_SERVICE_BEGIN_MARKER/,/TARGET_SERVICE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile.yml
+  sed -i.bak "/TARGET_SERVICE_BEGIN_MARKER/,/TARGET_SERVICE_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile*.yml
 fi
 
 echo ""
 printf "Does the Service Broker allow customized user defined plans? Reply y or n : "
 read userPlans
 if [ "${userPlans:0:1}" == "n" ]; then
-  sed -i.bak "/ON_DEMAND_PLAN_BEGIN_MARKER/,/ON_DEMAND_PLAN_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile.yml
+  sed -i.bak "/ON_DEMAND_PLAN_BEGIN_MARKER/,/ON_DEMAND_PLAN_END_MARKER/ { d; }" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml  *tile*.yml
 fi
 
 echo ""
@@ -158,9 +158,9 @@ if [ "${internalServices:0:1}" == "y" ]; then
   printf "Provide name of the internal service (if multiple services, use comma as separator without spaces) without quotes: "
   read internalServiceNames
   internalServiceNames=`echo $internalServiceNames | sed -e 's/"//g;' | sed -e "s/\'//g;" `
-  sed -i.bak "s/INTERNAL_SERVICE_NAME/${internalServiceNames}/g" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml *tile.yml
+  sed -i.bak "s/INTERNAL_SERVICE_NAME/${internalServiceNames}/g" jobs/deploy-service-broker/spec jobs/deploy-service-broker/templates/deploy.sh.erb templates/*properties.yml *tile*.yml
 else
-  sed -i.bak "s/INTERNAL_SERVICE_NAME//g"  templates/*properties.yml *tile.yml 
+  sed -i.bak "s/INTERNAL_SERVICE_NAME//g"  templates/*properties.yml *tile*.yml 
 fi
 
 find . -name *bak | xargs rm 

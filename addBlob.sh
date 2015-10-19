@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function usage() {
   echo "Error!! Needs 2 arguments: <Path to Blob file> <Directory or folder under ./blobs to save it>"
