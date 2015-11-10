@@ -148,6 +148,21 @@ function restart_app() {
   cf logs ${APP_NAME}-${APP_VERSION} --recent
 }
 
+function wait_till_running() {
+  for i in `seq 1  6`
+  do
+    CF_TRACE=true cf app ${APP_NAME}-${APP_VERSION} | grep RUNNING | grep ${APP_NAME}-${APP_VERSION}
+    if [ "$?" -ne "0" ]; then
+      log_debug "App not running yet..."
+      sleep 10
+    else
+      log_debug "App now up and running ..."
+      break
+    fi
+  done
+}
+
+
 function add_env_vars() {
 #  cf set-env ${APP_NAME}-${APP_VERSION} BASIC_AUTH_PASSWORD <%= properties.generic_broker.broker.password %>
 #  cf set-env ${APP_NAME}-${APP_VERSION} BASIC_AUTH_USERNAME <%= properties.generic_broker.broker.user %>
@@ -361,6 +376,7 @@ if [ "${PERSISTENCE_STORE_TYPE}" == "mysql" ]; then
 fi
 
 restart_app
+wait_till_running
 
 # Remove register_plans if there are already some internal plans
 <% if properties.generic_broker.on_demand_service_plans %>
