@@ -18,9 +18,9 @@ read opsMgrVersion
 sed -i.bak "s/OPS_MGR_VERSION/${opsMgrVersion}/g" createTile.sh
 
 echo ""
-echo "Version for the Service Broker release" 
-printf "  Reply with something like 1.0, 1.3, 1.4 or 1.5: "
-read releaseVersion
+#echo "Version for the Service Broker release" 
+#printf "  Reply with something like 1.0, 1.3, 1.4 or 1.5: "
+releaseVersion=1.5
 sed -i.bak "s/RELEASE_VERSION/${releaseVersion}/g" createRelease.sh createTile.sh *tile-*.yml
 rm *.bak
 
@@ -83,10 +83,9 @@ if [ "${requireEnvVariables:0:1}" == "y" ]; then
     echo "  cf set-env \${APP_NAME}-\${APP_VERSION} $variableName \"\$${variableName}\" " >> $erbTmp2
 
     if [ "${exposable:0:1}" == "y" ]; then
-#      echo "      - reference: .properties.${variableName}"  >> $tileTmp1
-      echo "      - reference: .${variableName}"  >> $tileTmp1
-      echo "        label: ${variableLabel}  "  >> $tileTmp1
-      echo "        description: ${variableDescrp}  "  >> $tileTmp1
+      echo "      - reference: .properties.${variableName}"  >> $tileTmp1
+      echo "    label: ${variableLabel}  "  >> $tileTmp1
+      echo "    description: ${variableDescrp}  "  >> $tileTmp1
     fi
 
     echo "- name: ${variableName}"  >> $tileTmp2

@@ -27,8 +27,17 @@ Once the job has been deployed via bosh deploy, one can execute 'bosh run errand
 ## Build the Release
 Steps to building the Bosh Release
 
+### Pre-Req
+Needs installation of Bosh Cli gems in the local environment to create bosh releases (along with Ruby)
+
 ### Rename the Release
 Rename the release and all related files using the renameRelease.sh file (provide desired name as arguments)
+```
+# Name of the release would be modified from generic to ABCImpl to yield ABCImpl-service-broker
+./renameRelease.sh ABCImpl
+```
+
+
 ### Customize the Release
 Customizing release using customizeRelease.sh script
   * Choose the version of Ops Mgr to deploy to and also the version of the release (for tracking) 
