@@ -9,7 +9,7 @@ property_blueprints:
 - name: app_name
   type: string
   configurable: true
-  default: GenericServiceBroker
+  default: generic-broker
 - name: app_uri
   type: string
   configurable: false
@@ -103,7 +103,7 @@ job_types:
   resource_label: Register Generic Service Broker
   templates:
   - name: register-broker
-    release: generic_broker
+    release: generic_release
   errand: true
   resource_definitions:
   - name: ram
@@ -170,7 +170,7 @@ job_types:
   resource_label: Remove Generic Service Broker
   templates:
   - name: destroy-broker
-    release: generic_broker
+    release: generic_release
   errand: true
   resource_definitions:
   - name: ram

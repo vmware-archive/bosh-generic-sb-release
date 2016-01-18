@@ -23,6 +23,7 @@ export ADMIN_PASSWORD=<%= properties.generic_buildpack.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
 export API_ENDPOINT=$SCHEME://api.${DOMAIN}
 export BUILDPACK_NAME=<%= properties.generic_buildpack.name %>
+export BUILDPACK_ORDER=<%= properties.generic_buildpack.order %>
 
 export CF_HOME=`pwd`/home/cf
 mkdir -p $CF_HOME
@@ -63,9 +64,19 @@ function push_buildpack() {
 
     BUILDPACK_EXISTS=`cf buildpacks | grep ${BUILDPACK_NAME} >/dev/null; echo $?`
     if [ "$BUILDPACK_EXISTS" == "0" ]; then
-      CF_TRACE=true cf create-buildpack ${BUILDPACK_NAME} ${PACKAGE_PATH}/${TARGET_BUILDPACK} --enable
+      if [ "$BUILDPACK_ORDER" -gt 5 ]; then
+        # Let it go to the last position
+        CF_TRACE=true cf create-buildpack ${BUILDPACK_NAME} ${PACKAGE_PATH}/${TARGET_BUILDPACK} --enable
+      else
+        CF_TRACE=true cf create-buildpack ${BUILDPACK_NAME} ${PACKAGE_PATH}/${TARGET_BUILDPACK} $BUILDPACK_ORDER --enable
+      fi
     else
-      CF_TRACE=true cf update-buildpack ${BUILDPACK_NAME} -p ${PACKAGE_PATH}/${TARGET_BUILDPACK} --enable
+      if [ "$BUILDPACK_ORDER" -gt 5 ]; then
+        # Leave it at the same position
+        CF_TRACE=true cf update-buildpack ${BUILDPACK_NAME} -p ${PACKAGE_PATH}/${TARGET_BUILDPACK} --enable
+      else
+        CF_TRACE=true cf update-buildpack ${BUILDPACK_NAME} -p ${PACKAGE_PATH}/${TARGET_BUILDPACK} -i $BUILDPACK_ORDER --enable
+      fi
     fi
   popd
 }

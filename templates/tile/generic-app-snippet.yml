@@ -10,7 +10,7 @@ property_blueprints:
 - name: app_name
   type: string
   configurable: true
-  default: GenericServiceBroker
+  default: generic-app
 - name: app_version
   type: string
   configurable: true
@@ -40,10 +40,6 @@ property_blueprints:
     max: 1024
   default: 512
 # This for any internal plans prebuilt into the service broker that needs to be registered with CF
-- name: internal_service_names
-  type: string
-  configurable: false
-  default: "INTERNAL_SERVICE_NAME"
 - name: persistence_store_type
   type: dropdown_select
   configurable: true
@@ -124,11 +120,11 @@ form_types:                                                # [8]
   ### PERSISTENCE_STORE_END_MARKER
 
 job_types:
-- name: deploy-service-broker
-  resource_label: Deploy Generic Service Broker
+- name: deploy-generic-app
+  resource_label: Deploy Generic App
   errand: true
   templates:
-  - name: deploy-service-broker
+  - name: deploy-generic-app
     release: generic_release
   resource_definitions:
   - name: ram
@@ -160,7 +156,7 @@ job_types:
     type: salted_credentials
     default:
       identity: vcap
-  - name: broker_credentials
+  - name: app_credentials
     type: salted_credentials
 
   manifest: |
@@ -183,6 +179,9 @@ job_types:
         org_quota: (( .properties.org_quota.value ))
         timeout: 180
         memory: (( .properties.memory.value ))
+      app_user: (( .deploy-generic-app.app_credentials.identity ))
+      app_password: (( .deploy-generic-app.app_credentials.password ))
+      # Need to squelch Broker user & password if app is also a broker..
       ### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
       ### CUSTOM_VARIABLE_MANIFEST_END_MARKER
 

@@ -38,10 +38,13 @@ properties:
     description: 'Username of the CF admin user'
   generic_app.cf.admin_password:
     description: 'Password of the CF admin user'
-  generic_app.broker.user:
-    description: 'Broker basic auth user'
-  generic_app.broker.password:
-    description: 'Broker basic auth password'
+  generic_app.app.user:
+    description: 'App basic auth user'
+  generic_app.app.password:
+    description: 'App basic auth password'
+  generic_app.delete_prev_app_instances:
+    description: 'Delete prev instances of app'
+    default: ''
   ### CUSTOM_VARIABLE_BEGIN_MARKER
 
   ### CUSTOM_VARIABLE_END_MARKER
@@ -62,19 +65,6 @@ properties:
   generic_app.persistence_store.persistence_broker_password:
     description: 'Password for connecting to the store'
   ### PERSISTENCE_STORE_END_MARKER
-
-  ### TARGET_SERVICE_BEGIN_MARKER
-  generic_app.target_service.service_addr:
-    description: 'Host Addr and port of target service'
-  generic_app.target_service.service_sid:
-    description: 'Service name of target service'
-  generic_app.target_service.service_params:
-    description: 'Other parameters for connecting to the target service'
-  generic_app.target_service.target_admin_user:
-    description: 'User id for managing the target service'
-  generic_app.target_service.target_admin_password:
-    description: 'Password for managing the target service'
-  ### TARGET_SERVICE_END_MARKER
 
   ### ON_DEMAND_PLAN_BEGIN_MARKER
   generic_app.on_demand_service_plans:
