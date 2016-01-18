@@ -1,7 +1,9 @@
 #!/bin/ksh
-
+set -xv
 SCRIPT_DIR=$(dirname $0)
 . $SCRIPT_DIR/utils.sh
+
+echo $ROOT_DIR
 
 function copyJobsAndPackages {
   targetDir=$1
@@ -14,18 +16,18 @@ function copyJobsAndPackages {
   packageAppName=$(lowerCaseWithUnderscore $appName)
   
   if [ "$isApp" == "true" ]; then
-    mkdir -p $TARGET_DIR/jobs/deploy-$jobAppName $TARGET_DIR/jobs/delete-$jobAppName $TARGET_DIR/packages/$packageAppName
-    touch $TARGET_DIR/jobs/deploy-$jobAppName/monit $TARGET_DIR/jobs/delete-$jobAppName/monit
-    cp -r $ROOT_DIR/templates/packages/generic_package/* $TARGET_DIR/packages/$packageAppName
-    cp -r $ROOT_DIR/templates/jobs/deploy-generic-app/* $TARGET_DIR/jobs/deploy-$jobAppName
-    cp -r $ROOT_DIR/templates/jobs/delete-generic-app/* $TARGET_DIR/jobs/delete-$jobAppName
-    modifyPatternInAppFiles $TARGET_DIR generic_app $appName
+    mkdir -p $targetDir/jobs/deploy-$jobAppName $targetDir/jobs/delete-$jobAppName $targetDir/packages/$packageAppName
+    touch $targetDir/jobs/deploy-$jobAppName/monit $targetDir/jobs/delete-$jobAppName/monit
+    cp -r $ROOT_DIR/templates/packages/generic_package/* $targetDir/packages/$packageAppName
+    cp -r $ROOT_DIR/templates/jobs/deploy-generic-app/* $targetDir/jobs/deploy-$jobAppName
+    cp -r $ROOT_DIR/templates/jobs/delete-generic-app/* $targetDir/jobs/delete-$jobAppName
+    modifyPatternInAppFiles $targetDir generic_app $appName
   fi
 
   if [ "$isBroker" == "true" ]; then
-    cp -r $ROOT_DIR/templates/jobs/register-broker $TARGET_DIR/jobs/register-${jobAppName}-broker
-    cp -r $ROOT_DIR/templates/jobs/destroy-broker $TARGET_DIR/jobs/destroy-${jobAppName}-broker
-    modifyPatternInBrokerFiles $TARGET_DIR generic_app $appName
+    cp -r $ROOT_DIR/templates/jobs/register-broker $targetDir/jobs/register-${jobAppName}-broker
+    cp -r $ROOT_DIR/templates/jobs/destroy-broker $targetDir/jobs/destroy-${jobAppName}-broker
+    modifyPatternInBrokerFiles $targetDir generic_app $appName
   fi
 }
 

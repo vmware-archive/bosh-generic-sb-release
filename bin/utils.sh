@@ -47,7 +47,7 @@ function modifyPatternInAppFiles {
   appName=$(lowerCaseWithUnderscore $3)
   jobAppName=$(lowerCaseWithDash $appName)
 
-  for fileName in ` grep -lr ${templatePattern} $targetdir/jobs/deploy-$jobAppName $targetdir/jobs/delete-$jobAppName ` 
+  for fileName in ` grep -lr ${templatePattern} $targetDir/jobs/deploy-$jobAppName $targetDir/jobs/delete-$jobAppName ` 
   do
      sed -i.bak "s/${templatePattern}/${appName}/g" $fileName
      sed -i.bak "s/${templateJobPattern}/${jobAppName}/g" $fileName
@@ -65,7 +65,7 @@ function modifyPatternInBrokerFiles {
   #sed -i.bak "s/name: register-${templatePattern}/name: register-${jobAppName}/g" jobs/register-${jobAppName}-broker/spec
   #sed -i.bak "s/name: destroy-${templatePattern}/name: destroy-${jobAppName}/g" jobs/destroy-${jobAppName}-broker/spec
 
-  for fileName in ` grep -lr $templatePattern $targetdir/jobs/*${jobName}-broker ` 
+  for fileName in ` grep -lr $templatePattern $targetDir/jobs/*${jobName}-broker ` 
   do
      sed -i.bak "s/${templatePattern}/${name}/g" $fileName
      sed -i.bak "s/${templateJobPattern}/${jobName}/g" $fileName
