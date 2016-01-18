@@ -4,20 +4,22 @@ SCRIPT_DIR=$(dirname $0)
 . $SCRIPT_DIR/utils.sh
 
 function usage {
-  echo "Error!! needs 1 argument: <Name of Blob file> "
+  echo "Error!! needs 1 argument: <ReleaseTargetDir> <Name of Blob file> "
   echo ""
-  echo "Example: ./removeBlob.sh my-app.jar"
-  echo "This would remove all references to the 'my-app.jar' from 'blobs/app.jar', 'config/blobs.yml' and .blobs folder "
+  echo "Example: ./removeBlob.sh target-dir my-app.jar"
+  echo "This would remove all references to the 'my-app.jar' from 'blobs/app.jar', 'config/blobs.yml' and .blobs folder inside target-dir"
   echo ""
 }
 
-if [ "$#" -lt 1 ]; then
+if [ "$#" -lt 2 ]; then
   usage
   exit -1
 fi
 
-blobFileName=$1
+targetDir=$1
+blobFileName=$2
 
+pushd $targetDir
 shaFileId=`grep -A2 $blobFileName config/blobs.yml | grep sha  | awk '{print $2}' `
 if [ "$shaFileId" != "" ]; then
   echo "Deleting the blob entry: $blobFileName, cancel to stop"
@@ -37,3 +39,4 @@ numberOfLines=`cat config/blobs.yml | wc -l | awk '{print $1}' `
 if [ "$numberOfLines" == "1" ]; then
   echo "--- {}" > config/blobs.yml
 fi
+popd

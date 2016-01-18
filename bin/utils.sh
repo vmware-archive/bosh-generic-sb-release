@@ -1,5 +1,12 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+if [ "${SCRIPT_DIR:0:1}" == "." ]; then
+  SCRIPT_DIR=`pwd`/$SCRIPT_DIR
+fi
+
+ROOT_DIR=$(dirname $SCRIPT_DIR)
+
 function capitalizeWords {
    givenWord=$1
    spacer=$2
@@ -23,39 +30,42 @@ function lowerCaseWithDash {
 }
 
 function modifyPatternInPackageFiles {
-  templatePattern=$1
-  packageName=$(lowerCaseWithUnderscore $2)
+  targetDir=$1
+  templatePattern=$2
+  packageName=$(lowerCaseWithUnderscore $3)
 
-  for fileName in ` grep -lr ${templatePattern} packages/* ` 
+  for fileName in ` grep -lr ${templatePattern} $targetDir/packages/* ` 
   do
      sed -i.bak "s/${templatePattern}/${packageName}/g" $fileName
   done
 }
 
 function modifyPatternInAppFiles {
-  templatePattern=$1
+  targetDir=$1
+  templatePattern=$2
   templateJobPattern=$(lowerCaseWithDash $templatePattern)
-  appName=$(lowerCaseWithUnderscore $2)
+  appName=$(lowerCaseWithUnderscore $3)
   jobAppName=$(lowerCaseWithDash $appName)
 
-  for fileName in ` grep -lr ${templatePattern} jobs/deploy-$jobAppName jobs/delete-$jobAppName ` 
+  for fileName in ` grep -lr ${templatePattern} $targetdir/jobs/deploy-$jobAppName $targetdir/jobs/delete-$jobAppName ` 
   do
      sed -i.bak "s/${templatePattern}/${appName}/g" $fileName
      sed -i.bak "s/${templateJobPattern}/${jobAppName}/g" $fileName
   done
-  modifyPatternInPackageFiles generic_package $2
+  modifyPatternInPackageFiles $targetDir generic_package $3
 }
 
 function modifyPatternInBrokerFiles {
-  templatePattern=generic_app
+  targetDir=$1
+  templatePattern=$2
   templateJobPattern=$(lowerCaseWithDash $templatePattern)
-  name=$(lowerCaseWithUnderscore $2)
-  jobName=$(lowerCaseWithDash $2)
+  name=$(lowerCaseWithUnderscore $3)
+  jobName=$(lowerCaseWithDash $3)
 
   #sed -i.bak "s/name: register-${templatePattern}/name: register-${jobAppName}/g" jobs/register-${jobAppName}-broker/spec
   #sed -i.bak "s/name: destroy-${templatePattern}/name: destroy-${jobAppName}/g" jobs/destroy-${jobAppName}-broker/spec
 
-  for fileName in ` grep -lr $templatePattern jobs/*${jobName}-broker ` 
+  for fileName in ` grep -lr $templatePattern $targetdir/jobs/*${jobName}-broker ` 
   do
      sed -i.bak "s/${templatePattern}/${name}/g" $fileName
      sed -i.bak "s/${templateJobPattern}/${jobName}/g" $fileName

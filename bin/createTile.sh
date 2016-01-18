@@ -1,9 +1,12 @@
 #!/bin/ksh
 
 TILE_VERSION=OPS_MGR_VERSION
-TILE_NAME=Generic-Broker-Experimental
+TILE_NAME=Generic-Tile-Experimental
 TILE_FILE=`pwd`/*tile-v${TILE_VERSION}.yml
 RELEASE_TARFILE=`pwd`/releases/*/*.tgz
+
+targetDir=$1
+pushd $targetDir
 
 rm -rf tmp
 mkdir -p tmp
@@ -22,4 +25,6 @@ cp -r ../content_migrations .
 #fi
 zip -r ${TILE_NAME}-${TILE_VERSION}.pivotal metadata releases content_migrations
 mv ${TILE_NAME}-${TILE_VERSION}.pivotal ..
+popd
+
 popd

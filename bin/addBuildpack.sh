@@ -5,16 +5,17 @@ SCRIPT_DIR=$(dirname $0)
 
 function copyJobsAndPackages {
   templatePattern=$1
-  bpName=$2
+  targetDir=$2
+  bpName=$3
 
   jobBPName=$(lowerCaseWithDash $bpName)
   packageBPName=$(lowerCaseWithUnderscore $bpName)
   
-  mkdir -p jobs/deploy-$jobBPName jobs/delete-$jobBPName packages/$packageBPName
-  cp -r templates/packages/generic_package/* packages/$packageBPName
-  cp -r templates/jobs/deploy-buildpack/* jobs/deploy-$jobBPName
-  cp -r templates/jobs/delete-buildpack/* jobs/delete-$jobBPName
-  modifyPatternInAppFiles generic_buildpack $bpName
+  mkdir -p $targetDir/jobs/deploy-$jobBPName jobs/delete-$jobBPName packages/$packageBPName
+  cp -r $ROOT_DIR/templates/packages/generic_package/* $targetDir/packages/$packageBPName
+  cp -r $ROOT_DIR/templates/jobs/deploy-buildpack/* $targetDir/jobs/deploy-$jobBPName
+  cp -r $ROOT_DIR/templates/jobs/delete-buildpack/* $targetDir/jobs/delete-$jobBPName
+  modifyPatternInAppFiles $targetDir generic_buildpack $bpName
 }
 
 function usage {
@@ -34,9 +35,10 @@ fi
 # Changing Project name from generic* to user provided input
 TEMPLATE_PATTERN=generic_buildpack
 #NEW_PATTERN=`echo $1 | tr '[A-]' '[a-z]' | sed -e 's/-/_/g' `
-NEW_PATTERN=$1
+TARGET_DIR=$1
+NEW_PATTERN=$2
 
-copyJobsAndPackages $TEMPLATE_PATTERN $NEW_PATTERN
+copyJobsAndPackages $TEMPLATE_PATTERN $TARGET_DIR $NEW_PATTERN
 
 find . -name "*.bak" 2>/dev/null | xargs rm
 

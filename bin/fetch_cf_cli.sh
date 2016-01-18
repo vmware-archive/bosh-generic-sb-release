@@ -8,7 +8,10 @@ SCRIPT_DIR=$(dirname $0)
 CF_CLI_VERSION=6.13.0
 
 # Remove older references to cf_cli
+targetDir=$1
+pushd $targetDir
 $SCRIPT_DIR/removeBlob.sh cf-linux-amd64.tgz 
 
 wget "https://cli.run.pivotal.io/stable?release=linux64-binary&version=${CF_CLI_VERSION}&source=github-rel" -O cf-linux-amd64.tgz
-echo no | ./$SCRIPT_DIR/addBlob.sh cf-linux-amd64.tgz cf_cli
+$SCRIPT_DIR/addBlob.sh $targetDir cf-linux-amd64.tgz cf_cli
+popd

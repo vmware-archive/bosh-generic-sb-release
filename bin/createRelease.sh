@@ -1,10 +1,12 @@
 #!/bin/ksh
 
 # For use to create final release tarball
-VERSION=RELEASE_VERSION
 CREATE_FINAL_TARBALL=true
-RELEASE_NAME=generic_broker
+RELEASE_NAME=generic_release
+VERSION=RELEASE_VERSION
 
+targetDir=$1
+pushd $targetDir
 echo "Cleanup previous release ..."
 rm -rf releases/* .dev_builds/* .final_builds/*
 
@@ -17,3 +19,4 @@ if [ "$CREATE_FINAL_TARBALL" == "true" ]; then
 fi
 
 echo "Done creating the release ..."
+popd
