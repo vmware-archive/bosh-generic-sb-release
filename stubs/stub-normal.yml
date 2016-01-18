@@ -1,0 +1,18 @@
+---
+meta:
+  environment: NAME
+  service_name: NAME
+  security_groups:
+    - default
+  job_templates:
+    - name: generic_app
+      release: generic_app
+  stemcell:
+    name: STEMCELL
+
+director_uuid: PLACEHOLDER-DIRECTOR-UUID
+releases:
+  - name: generic_app
+    version: latest
+properties:
+  generic_app: {}

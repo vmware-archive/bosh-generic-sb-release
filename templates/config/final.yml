@@ -1,0 +1,6 @@
+---
+blobstore:
+  provider: local
+  options:
+    blobstore_path: /tmp/generic_broker-blobs
+final_name: generic_broker_blobstore

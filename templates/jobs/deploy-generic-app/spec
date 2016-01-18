@@ -1,0 +1,82 @@
+---
+name: deploy-generic-app
+templates:
+  deploy.sh.erb: bin/run
+packages:
+- cf_cli
+- generic_app
+properties:
+  ssl.skip_cert_verify:
+    description: 'Whether to verify SSL certs when making web requests'
+  domain:
+    description: 'CloudFoundry system domain'
+  app_domains:
+    description: 'CloudFoundry application domains'
+  uaa.clients.generic_app.secret:
+    description: 'UAA Client Secret'
+  generic_app.app_name:
+    description: 'Name of the Service Broker Application'
+  generic_app.app_version:
+    description: 'Version of the Service Broker Application'
+  generic_app.app_uri:
+    description: 'Uri of the Service Broker Application'
+  generic_app.create_open_security_group:
+    description: 'Open security group for the app to access outside'
+    default: false
+  generic_app.app_push.org_quota:
+    description: 'Org Memory Quota for the Service Broker Application'
+    default: 1024
+  generic_app.app_push.timeout:
+    description: 'App Push timeout for the Service Broker Application'
+    default: 180
+  generic_app.app_push.memory:
+    description: 'App Push Memory limit for the Service Broker Application'
+    default: 512
+  generic_app.encryption_key:
+    description: 'Specifies the key to be used when encrypting sessions'
+  generic_app.cf.admin_user:
+    description: 'Username of the CF admin user'
+  generic_app.cf.admin_password:
+    description: 'Password of the CF admin user'
+  generic_app.broker.user:
+    description: 'Broker basic auth user'
+  generic_app.broker.password:
+    description: 'Broker basic auth password'
+  ### CUSTOM_VARIABLE_BEGIN_MARKER
+
+  ### CUSTOM_VARIABLE_END_MARKER
+
+  generic_app.persistence_store_type:
+    description: 'Use MySQL or custom DB for persistence store'
+    default: none
+
+  ### PERSISTENCE_STORE_BEGIN_MARKER
+  generic_app.persistence_store.service_addr:
+    description: 'Host Addr and port of custom persistence store'
+  generic_app.persistence_store.service_sid:
+    description: 'Service name of custom persistence store'
+  generic_app.persistence_store.service_params:
+    description: 'Other parameters for connecting to the custom persistence store'
+  generic_app.persistence_store.persistence_broker_user:
+    description: 'User id for connecting to the store'
+  generic_app.persistence_store.persistence_broker_password:
+    description: 'Password for connecting to the store'
+  ### PERSISTENCE_STORE_END_MARKER
+
+  ### TARGET_SERVICE_BEGIN_MARKER
+  generic_app.target_service.service_addr:
+    description: 'Host Addr and port of target service'
+  generic_app.target_service.service_sid:
+    description: 'Service name of target service'
+  generic_app.target_service.service_params:
+    description: 'Other parameters for connecting to the target service'
+  generic_app.target_service.target_admin_user:
+    description: 'User id for managing the target service'
+  generic_app.target_service.target_admin_password:
+    description: 'Password for managing the target service'
+  ### TARGET_SERVICE_END_MARKER
+
+  ### ON_DEMAND_PLAN_BEGIN_MARKER
+  generic_app.on_demand_service_plans:
+      description: 'Placeholder for an array of Service Plans'
+  ### ON_DEMAND_PLAN_END_MARKER
