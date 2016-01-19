@@ -83,6 +83,28 @@ property_blueprints:
   optional: true
 ### PERSISTENCE_STORE_END_MARKER
 
+### ON_DEMAND_PLAN_BEGIN_MARKER
+- name: on_demand_service_plans_collection
+  type: collection
+  configurable: true
+
+  # Needs to have its own inner/nested property_blueprints when its a collection
+  property_blueprints:
+  - name: guid
+    type: uuid
+    optional: false
+    unique: true
+  - name: plan_name
+    type: string
+    configurable: true
+  - name: plan_description
+    type: string
+    configurable: true
+  - name: plan_details
+    type: text
+    configurable: true
+
+### ON_DEMAND_PLAN_END_MARKER
 
 form_types:                                                # [8]
 - property_inputs:                                       # [9]
@@ -126,6 +148,29 @@ form_types:                                                # [8]
   label: Persistence for Service Broker
   description: Persistence store for Service Broker to store its configurations
   ### PERSISTENCE_STORE_END_MARKER
+
+  ### ON_DEMAND_PLAN_BEGIN_MARKER
+- property_inputs:
+  - reference: .properties.on_demand_service_plans_collection
+    label: On-Demand Service Plans
+    property_inputs:
+    - reference: plan_name
+      label: Plan Name
+      description: "Name of Plan"
+      slug: false
+    - reference: plan_description
+      label: Plan Description
+      description: "Description of Plan"
+      slug: false
+    - reference: plan_details
+      label: "Plan Details or bullets (individual line entries, each with Name : Value : Description and ending with ;)"
+      description: "Specify configurations or bullets for the plan. Specify each plan detail or bullet in a separate line with a name, value, description separated by ':' and ending with ';'.
+      Detail1: associated value : description ; <NEWLINE> Detail2: its value : description <NEWLINE>"
+      slug: false
+  name: on_demand_service_plans
+  label: On-Demand Service Plans
+  description: "An on-demand service plan lets Pivotal CF users create their own Service Plans from the Pivotal CF command line interface or developer console. Use this page to configure the service plan's settings."
+  ### ON_DEMAND_PLAN_END_MARKER
 
 job_types:
 - name: deploy-generic-app
@@ -194,6 +239,10 @@ job_types:
       # Need to squelch Broker user & password if app is also a broker..
       ### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
       ### CUSTOM_VARIABLE_MANIFEST_END_MARKER
+
+      ### ON_DEMAND_PLAN_BEGIN_MARKER
+      on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))
+      ### ON_DEMAND_PLAN_END_MARKER
 
       persistence_store_type: (( .properties.persistence_store_type.value ))
       ### PERSISTENCE_STORE_BEGIN_MARKER

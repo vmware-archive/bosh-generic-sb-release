@@ -1,6 +1,6 @@
 #!/bin/ksh
 
-set -xv
+
 SCRIPT_DIR=$(dirname $0)
 . $SCRIPT_DIR/utils.sh
 
