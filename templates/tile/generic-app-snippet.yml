@@ -19,6 +19,14 @@ property_blueprints:
   type: string
   configurable: true
   default: APP_URI
+- name: start_command
+  type: string
+  configurable: false
+  default: ''
+- name: health_monitor
+  type: boolean
+  configurable: false
+  default: true
 - name: create_open_security_group
   type: boolean
   configurable: true
@@ -181,6 +189,8 @@ job_types:
         memory: (( .properties.memory.value ))
       app_user: (( .deploy-generic-app.app_credentials.identity ))
       app_password: (( .deploy-generic-app.app_credentials.password ))
+      start_command: (( .deploy-generic-app.start_command.value ))
+      health_monitor: (( .deploy-generic-app.health_monitor.value ))
       # Need to squelch Broker user & password if app is also a broker..
       ### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
       ### CUSTOM_VARIABLE_MANIFEST_END_MARKER

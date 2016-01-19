@@ -38,13 +38,19 @@ properties:
     description: 'Username of the CF admin user'
   generic_app.cf.admin_password:
     description: 'Password of the CF admin user'
-  generic_app.app.user:
+  generic_app.user:
     description: 'App basic auth user'
-  generic_app.app.password:
+  generic_app.password:
     description: 'App basic auth password'
   generic_app.delete_prev_app_instances:
     description: 'Delete prev instances of app'
     default: ''
+  generic_app.start_command:
+    description: 'App basic auth password'
+    default: ''
+  generic_app.health_monitor:
+    description: 'Change health monitor '
+    default: true
   ### CUSTOM_VARIABLE_BEGIN_MARKER
 
   ### CUSTOM_VARIABLE_END_MARKER

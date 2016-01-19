@@ -63,8 +63,10 @@ export TARGET_ADMIN_PASSWD=<%= properties.generic_app.target_service.target_admi
 
 #export APP_USER=<%= properties.generic_app.broker.user %>
 #export APP_PASSWD=<%= properties.generic_app.broker.password %>
-export SECURITY_USER_NAME=<%= properties.generic_app.app.user %>
-export SECURITY_USER_PASSWORD=<%= properties.generic_app.app.password %>
+export SECURITY_USER_NAME=<%= properties.generic_app.user %>
+export SECURITY_USER_PASSWORD=<%= properties.generic_app.password %>
+export START_COMMAND=<%= properties.generic_app.start_command %>
+export HEALTH_MONITOR=<%= properties.generic_app.health_monitor %>
 
 export CREATE_OPEN_SECURITY_GROUP=<%= properties.generic_app.create_open_security_group %>
 export DELETE_PREV_APP_INSTANCE=<%= properties.generic_app.delete_prev_app_instance %>
@@ -174,6 +176,8 @@ function add_env_vars() {
   cf set-env ${APP_NAME}-${APP_VERSION} SECURITY_USER_NAME $SECURITY_USER_NAME
   cf set-env ${APP_NAME}-${APP_VERSION} SECURITY_USER_PASSWORD $SECURITY_USER_PASSWORD
 
+  cf set-health-check ${APP_NAME}-${APP_VERSION} none <%if !properties.generic_app.health_monitor %>
+
   # CUSTOM_VARIABLE_ENV_BEGIN_MARKER
   # CUSTOM_VARIABLE_ENV_END_MARKER
 
@@ -228,7 +232,16 @@ function push_app() {
     delete_prev_app_instance
     <% end %>
 
-    CF_TRACE=true cf push ${APP_NAME}-${APP_VERSION} -p ${PACKAGE_PATH}/${TARGET_APP} -n ${APP_URI} -d ${APP_DOMAIN} -t ${APP_PUSH_TIMEOUT} -m ${APP_PUSH_MEMORY}m --no-start
+    HEALTH_MONITOR=""
+    <%if !properties.generic_app.health_monitor %>
+      HEALTH_MONITOR="--no-route"
+    <% end %>
+
+    if [ "$START_COMMAND" != "" ]; then
+      START_COMMAND=" -c $START_COMMAND "
+    fi
+
+    CF_TRACE=true cf push ${APP_NAME}-${APP_VERSION} -p ${PACKAGE_PATH}/${TARGET_APP} -n ${APP_URI} -d ${APP_DOMAIN} -t ${APP_PUSH_TIMEOUT} -m ${APP_PUSH_MEMORY}m --no-start $HEALTH_MONITOR $START_COMMMAND
     cf logs ${APP_NAME}-${APP_VERSION} --recent
   popd
 }
