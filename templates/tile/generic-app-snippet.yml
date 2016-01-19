@@ -187,8 +187,8 @@ job_types:
         org_quota: (( .properties.org_quota.value ))
         timeout: 180
         memory: (( .properties.memory.value ))
-      app_user: (( .deploy-generic-app.app_credentials.identity ))
-      app_password: (( .deploy-generic-app.app_credentials.password ))
+      user: (( .deploy-generic-app.app_credentials.identity ))
+      password: (( .deploy-generic-app.app_credentials.password ))
       start_command: (( .deploy-generic-app.start_command.value ))
       health_monitor: (( .deploy-generic-app.health_monitor.value ))
       # Need to squelch Broker user & password if app is also a broker..

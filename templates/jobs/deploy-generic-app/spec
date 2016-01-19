@@ -46,7 +46,7 @@ properties:
     description: 'Delete prev instances of app'
     default: ''
   generic_app.start_command:
-    description: 'App basic auth password'
+    description: 'app start command '
     default: ''
   generic_app.health_monitor:
     description: 'Change health monitor '

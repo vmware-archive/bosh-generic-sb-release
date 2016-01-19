@@ -46,12 +46,6 @@ property_blueprints:
   default: false
 ### CUSTOM_VARIABLE_DEFN_BEGIN_MARKER
 ### CUSTOM_VARIABLE_DEFN_END_MARKER
-### DRIVER_DOWNLOAD_BEGIN_MARKER
-- name: driver_download_url
-  type: string
-  configurable: true
-  default: "https://10.85.29.16/ojdbc.jar"
-### DRIVER_DOWNLOAD_END_MARKER
 - name: org_quota
   type: integer
   configurable: false
@@ -173,11 +167,6 @@ form_types:                                                # [8]
     description: 'Open up access to all service plans across all orgs and spaces'
   ### CUSTOM_VARIABLE_LABEL_BEGIN_MARKER
   ### CUSTOM_VARIABLE_LABEL_END_MARKER
-  ### DRIVER_DOWNLOAD_BEGIN_MARKER
-  - reference: .properties.driver_download_url
-    label: Service Broker Application Depedencies Download Url
-    description: 'Enter the uri/endpoint to download any 3rd party drivers/dependencies (like Oracle jdbc driver) for use by the Service Broker app (before push to CF)'
-  ### DRIVER_DOWNLOAD_END_MARKER
   name: generic_broker_app
   label: Service Broker Application
   description: Service Broker configuration
@@ -314,29 +303,6 @@ job_types:
         memory: (( .properties.memory.value ))
       ### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
       ### CUSTOM_VARIABLE_MANIFEST_END_MARKER
-
-      ### DRIVER_DOWNLOAD_BEGIN_MARKER
-      driver_download_url: (( .properties.driver_download_url.value ))
-      ### DRIVER_DOWNLOAD_END_MARKER
-
-      persistence_store_type: (( .properties.persistence_store_type.value ))
-      ### PERSISTENCE_STORE_BEGIN_MARKER
-      persistence_store:
-        service_addr: (( .properties.persistence_service_addr.value ))
-        service_sid: (( .properties.persistence_service_sid.value ))
-        service_params: (( .properties.persistence_service_params.value ))
-        persistence_broker_user: (( .properties.persistence_sb_user.value ))
-        persistence_broker_password: (( .properties.persistence_sb_password.value ))
-      ### PERSISTENCE_STORE_END_MARKER
-
-      ### TARGET_SERVICE_BEGIN_MARKER
-      target_service:
-        service_addr: (( .properties.target_service_addr.value ))
-        service_sid: (( .properties.target_service_sid.value ))
-        service_params: (( .properties.target_service_params.value ))
-        target_admin_user: (( .properties.target_admin_user.value ))
-        target_admin_password: (( .properties.target_admin_password.value ))
-      ### TARGET_SERVICE_END_MARKER
 
       ### ON_DEMAND_PLAN_BEGIN_MARKER
       on_demand_service_plans: (( .properties.on_demand_service_plans_collection.value ))
