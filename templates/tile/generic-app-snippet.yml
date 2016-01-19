@@ -94,7 +94,7 @@ property_blueprints:
     type: uuid
     optional: false
     unique: true
-  - name: plan_name
+  - name: name
     type: string
     configurable: true
   - name: plan_description

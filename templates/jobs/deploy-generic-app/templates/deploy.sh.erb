@@ -15,11 +15,33 @@ set -e -x
     app_domain = grab_app_domain_name
   %>
 
+  <%
+    def grab_dynamic_plans
+      plansJson = '{ '
+      properties.generic_app.on_demand_service_plans['on_demand_service_plans'].each do | plan|
+
+        planName = plan['name']
+        plansJson << " \"#{planName}\" : { "
+        plan.each_pair do | name, value|
+          if name == planName
+            continue
+          end
+          plansJson <<  " \"#{name}\" : \"#{value}\" ,"
+        end
+        plansJson = plansJson.chomp(",")
+        plansJson << ' },'
+      end
+      plansJson = plansJson.chomp(",") + ' }'
+      plansJson
+    end
+    dynamic_plans = grab_dynamic_plans
+  %>
+
 export PATH="/var/vcap/packages/cf_cli/bin:$PATH"
 
 export SCHEME=https
-export ADMIN_USER=<%= properties.generic_app.cf.admin_user %>
-export ADMIN_PASSWORD=<%= properties.generic_app.cf.admin_password %>
+export ADMIN_USER=<%= properties.cf.admin_user %>
+export ADMIN_PASSWORD=<%= properties.cf.admin_password %>
 export DOMAIN=<%= properties.domain %>
 export APP_DOMAIN=<%="#{app_domain}"%>
 export API_ENDPOINT=$SCHEME://api.${DOMAIN}
@@ -38,6 +60,7 @@ export CF_SKIP_SSL=<%= properties.ssl.skip_cert_verify %>
 export ORG_QUOTA=<%= properties.generic_app.app_push.org_quota %>
 export APP_PUSH_TIMEOUT=<%= properties.generic_app.app_push.timeout %>
 export APP_PUSH_MEMORY=<%= properties.generic_app.app_push.memory %>
+export DYNAMIC_PLANS=<%="#{dynamic_plans}"%>
 
 # Use this only if app needs additional libraries that need to be downloaded
 #
@@ -95,6 +118,10 @@ export DEBUG_LOG=$LOG_DIR/deploy-service-broker.log
 
 mkdir -p $RUN_DIR $LOG_DIR
 chown -R vcap:vcap $RUN_DIR $LOG_DIR
+
+echo  DYNAMIC_PLANS now set to $DYNAMIC_PLANS ....
+
+
 
 function log_debug() {
   echo `date` $1 >> $DEBUG_LOG
@@ -177,6 +204,8 @@ function add_env_vars() {
   cf set-env ${APP_NAME}-${APP_VERSION} SECURITY_USER_PASSWORD $SECURITY_USER_PASSWORD
 
   cf set-health-check ${APP_NAME}-${APP_VERSION} none <%if !properties.generic_app.health_monitor %>
+
+  cf set-env ${APP_NAME}-${APP_VERSION} PLANS $DYNAMIC_PLANS
 
   # CUSTOM_VARIABLE_ENV_BEGIN_MARKER
   # CUSTOM_VARIABLE_ENV_END_MARKER

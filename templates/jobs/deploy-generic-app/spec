@@ -34,9 +34,9 @@ properties:
     default: 512
   generic_app.encryption_key:
     description: 'Specifies the key to be used when encrypting sessions'
-  generic_app.cf.admin_user:
+  cf.admin_user:
     description: 'Username of the CF admin user'
-  generic_app.cf.admin_password:
+  cf.admin_password:
     description: 'Password of the CF admin user'
   generic_app.user:
     description: 'App basic auth user'

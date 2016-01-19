@@ -19,7 +19,7 @@ properties:
   generic_buildpack.order:
     description: 'Position of the Buildpack'
     default: 10
-  generic_buildpack.cf.admin_user:
+  cf.admin_user:
     description: 'Username of the CF admin user'
-  generic_buildpack.cf.admin_password:
+  cf.admin_password:
     description: 'Password of the CF admin user'
