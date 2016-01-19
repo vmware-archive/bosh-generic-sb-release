@@ -12,6 +12,7 @@ function copyJobsAndPackages {
   packageBPName=$(lowerCaseWithUnderscore $bpName)
   
   mkdir -p $targetDir/jobs/deploy-$jobBPName $targetDir/jobs/delete-$jobBPName $targetDir/packages/$packageBPName
+  touch $targetDir/jobs/deploy-${jobBPName}/monit $targetDir/jobs/delete-${jobBPName}/monit $targetDir/packages/$packageBPName
   cp -r $ROOT_DIR/templates/packages/generic_package/* $targetDir/packages/$packageBPName
   cp -r $ROOT_DIR/templates/jobs/deploy-buildpack/* $targetDir/jobs/deploy-$jobBPName
   cp -r $ROOT_DIR/templates/jobs/delete-buildpack/* $targetDir/jobs/delete-$jobBPName

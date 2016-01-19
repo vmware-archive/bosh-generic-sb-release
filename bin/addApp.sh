@@ -25,8 +25,10 @@ function copyJobsAndPackages {
   fi
 
   if [ "$isBroker" == "true" ]; then
-    cp -r $ROOT_DIR/templates/jobs/register-broker $targetDir/jobs/register-${jobAppName}-broker
-    cp -r $ROOT_DIR/templates/jobs/destroy-broker $targetDir/jobs/destroy-${jobAppName}-broker
+    mkdir -p $targetDir/jobs/register-${jobAppName}-broker $targetDir/jobs/destroy-${jobAppName}-broker 
+    touch $targetDir/jobs/*${jobAppName}-broker/monit 
+    cp -r $ROOT_DIR/templates/jobs/register-broker/* $targetDir/jobs/register-${jobAppName}-broker
+    cp -r $ROOT_DIR/templates/jobs/destroy-broker/* $targetDir/jobs/destroy-${jobAppName}-broker
     modifyPatternInBrokerFiles $targetDir generic_app $appName
   fi
 }
