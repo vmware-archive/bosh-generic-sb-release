@@ -18,14 +18,11 @@ set -e -x
   <%
     def grab_dynamic_plans
       plansJson = '{ '
-      properties.generic_app.on_demand_service_plans['on_demand_service_plans'].each do | plan|
+      properties.generic_app.on_demand_service_plans.each do | plan|
 
         planName = plan['name']
         plansJson << " \"#{planName}\" : { "
         plan.each_pair do | name, value|
-          if name == planName
-            continue
-          end
           plansJson <<  " \"#{name}\" : \"#{value}\" ,"
         end
         plansJson = plansJson.chomp(",")
@@ -36,6 +33,7 @@ set -e -x
     end
     dynamic_plans = grab_dynamic_plans
   %>
+
 
 export PATH="/var/vcap/packages/cf_cli/bin:$PATH"
 
@@ -60,7 +58,6 @@ export CF_SKIP_SSL=<%= properties.ssl.skip_cert_verify %>
 export ORG_QUOTA=<%= properties.generic_app.app_push.org_quota %>
 export APP_PUSH_TIMEOUT=<%= properties.generic_app.app_push.timeout %>
 export APP_PUSH_MEMORY=<%= properties.generic_app.app_push.memory %>
-export DYNAMIC_PLANS=<%="#{dynamic_plans}"%>
 
 # Use this only if app needs additional libraries that need to be downloaded
 #
@@ -119,8 +116,33 @@ export DEBUG_LOG=$LOG_DIR/deploy-service-broker.log
 mkdir -p $RUN_DIR $LOG_DIR
 chown -R vcap:vcap $RUN_DIR $LOG_DIR
 
-echo  DYNAMIC_PLANS now set to $DYNAMIC_PLANS ....
+<% if properties.generic_app.on_demand_service_plans %>
+      PLANS="{"
+  <%  p("properties.generic_app.on_demand_service_plans").each do |plan|
+         plan_name=plan['name']
+  %>
+       export PLAN_NAME=<%="#{plan_name}"%>
+       if [[ "$PLANS" == *{ ]]; then
+         export PLANS="${PLANS} \"${PLAN_NAME}\": {"
+      else
+        export PLANS="${PLANS}, \"${PLAN_NAME}\": {"
+      fi
 
+       <% plan.each_pair do | name, value| %>
+          export PLAN_KEY=<%="#{name}"%>
+          export PLAN_VALUE=<%="#{value}"%>
+          if [[ "$PLANS" == *{  ]]; then
+            export PLANS="${PLANS} \"${PLAN_KEY}\" : \"${PLAN_VALUE}\" "
+          else
+            export PLANS="${PLANS}, \"${PLAN_KEY}\" : \"${PLAN_VALUE}\" "
+          fi
+
+       <% end %>
+       export PLANS="${PLANS} }"
+    <% end %>
+    export DYNAMIC_PLANS="${PLANS} }"
+<% end %>
+echo  DYNAMIC_PLANS now set to $DYNAMIC_PLANS ....
 
 
 function log_debug() {
@@ -205,7 +227,7 @@ function add_env_vars() {
 
   cf set-health-check ${APP_NAME}-${APP_VERSION} none <%if !properties.generic_app.health_monitor %>
 
-  cf set-env ${APP_NAME}-${APP_VERSION} PLANS $DYNAMIC_PLANS
+  cf set-env ${APP_NAME}-${APP_VERSION} DYNAMIC_PLANS $DYNAMIC_PLANS <%if properties.generic_app.on_demand_service_plans %>
 
   # CUSTOM_VARIABLE_ENV_BEGIN_MARKER
   # CUSTOM_VARIABLE_ENV_END_MARKER
