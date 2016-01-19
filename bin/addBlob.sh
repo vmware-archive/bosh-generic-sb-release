@@ -1,24 +1,24 @@
 #!/bin/ksh
 
-
+set -xv
 SCRIPT_DIR=$(dirname $0)
 . $SCRIPT_DIR/utils.sh
 
 function usage {
-  echo "Error!! Needs minimum of 2 arguments: <Absolute Path to a Blob file> <BlobPackageName> "
-  echo "        Can be max of 3 arguments: <Absolute Path to a Blob file> <BlobPackageName> <App Name>"
+  echo "Error!! Needs minimum of 3 arguments: <targetDir> <Absolute Path to a Blob file> <BlobPackageName> "
+  echo "        Can be max of 4 arguments: <targetDir> <Absolute Path to a Blob file> <BlobPackageName> <App Name>"
   echo ""
-  echo "Example: ./addBlob.sh my-generic-app.jar my-app-java-blob"
-  echo "This would add the 'my-generic-app.jar' as blob under 'blobs/my-app-java-blob'"
+  echo "Example: addBlob.sh test-release-dir my-generic-app.jar my-app-java-blob"
+  echo "This would add the 'my-generic-app.jar' as blob under 'test-release-dir/blobs/my-app-java-blob'"
   echo ""
   echo "A third argument denoting a job can be specified if the blob is related to a job"
-  echo "Example: ./addBlob.sh my-generic-app.jar my-app-java-blob my-app "
-  echo "This would add the 'my-generic-app.jar' as blob under 'blobs/my-app-java-blob' "
+  echo "Example: ./addBlob.sh test-release-dir my-generic-app.jar my-app-java-blob my-app "
+  echo "This would add the 'my-generic-app.jar' as blob under 'test-release-dir/blobs/my-app-java-blob' "
   echo  " and update its related 'my-app' package folder to refer to this blob"
   echo ""
 }
 
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 3 ]; then
   usage
   exit -1
 fi
@@ -39,8 +39,8 @@ cd $targetDir
 bosh -n add blob $givenBlobFile $blobPath
 bosh -n upload blobs
 
-if [[ ! -z "$3" ]]; then 
-  appName=$3
+if [[ ! -z "$4" ]]; then 
+  appName=$4
   packageName=$(lowerCaseWithUnderscore $appName )
   jobName=$(lowerCaseWithDash $appName )
 
