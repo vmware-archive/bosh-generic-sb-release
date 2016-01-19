@@ -8,7 +8,7 @@ RELEASE_NAME=generic_broker
 DEPLOYMENT_NAME=generic-broker-${TARGET_PLATFORM}
 
 targetDir=$1
-pushd $targetDir
+cd $targetDir
 echo "Running against bosh target platform $TARGET_PLATFORM"
 echo "Please create the manifest using ./make_manifest.sh <platform> before proceeding with full deploy"
 echo "Edit the templates/*properties.yml file to tweak any deployment attributes"
@@ -35,5 +35,4 @@ echo "Done uploading the release ..."
 echo "Going to deploy against bosh target: $bosh_target ..."
 bosh -n deploy
 echo "Done deploying ..."
-popd
 

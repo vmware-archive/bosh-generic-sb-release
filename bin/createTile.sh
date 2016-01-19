@@ -6,11 +6,11 @@ TILE_FILE=`pwd`/*tile-v${TILE_VERSION}.yml
 RELEASE_TARFILE=`pwd`/releases/*/*.tgz
 
 targetDir=$1
-pushd $targetDir
+cd $targetDir
 
 rm -rf tmp
 mkdir -p tmp
-pushd tmp
+cd tmp
 #Dont bundle the stemcell into the .pivotal Tile file as the stemcell must already be available in the Ops Mgr.
 mkdir -p metadata releases #stemcells
 cp $TILE_FILE metadata
@@ -25,6 +25,5 @@ cp -r ../content_migrations .
 #fi
 zip -r ${TILE_NAME}-${TILE_VERSION}.pivotal metadata releases content_migrations
 mv ${TILE_NAME}-${TILE_VERSION}.pivotal ..
-popd
+cd ..
 
-popd

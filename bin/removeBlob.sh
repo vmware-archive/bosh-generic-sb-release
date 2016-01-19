@@ -19,7 +19,7 @@ fi
 targetDir=$1
 blobFileName=$2
 
-pushd $targetDir
+cd $targetDir
 shaFileId=`grep -A2 $blobFileName config/blobs.yml | grep sha  | awk '{print $2}' `
 if [ "$shaFileId" != "" ]; then
   echo "Deleting the blob entry: $blobFileName, cancel to stop"
@@ -39,4 +39,3 @@ numberOfLines=`cat config/blobs.yml | wc -l | awk '{print $1}' `
 if [ "$numberOfLines" == "1" ]; then
   echo "--- {}" > config/blobs.yml
 fi
-popd

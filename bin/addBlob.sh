@@ -34,7 +34,7 @@ blobFile=`echo $givenBlobFile | awk  -F '/' '{print $NF } '`
 echo "Removing older versions of the $blobFile previously added"
 $SCRIPT_DIR/removeBlob.sh $targetDir $blobFile
 
-pushd $targetDir
+cd $targetDir
 bosh -n add blob $givenBlobFile $blobPath
 bosh -n upload blobs
 
@@ -77,6 +77,5 @@ if [[ ! -z "$3" ]]; then
 
 fi
 
-popd
 
 echo ""

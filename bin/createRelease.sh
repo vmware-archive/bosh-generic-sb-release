@@ -6,7 +6,7 @@ RELEASE_NAME=generic_release
 VERSION=RELEASE_VERSION
 
 targetDir=$1
-pushd $targetDir
+cd $targetDir
 echo "Cleanup previous release ..."
 rm -rf releases/* .dev_builds/* .final_builds/*
 
@@ -19,4 +19,3 @@ if [ "$CREATE_FINAL_TARBALL" == "true" ]; then
 fi
 
 echo "Done creating the release ..."
-popd
