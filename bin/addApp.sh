@@ -1,9 +1,9 @@
 #!/bin/ksh
-set -xv
+
 SCRIPT_DIR=$(dirname $0)
 . $SCRIPT_DIR/utils.sh
 
-echo $ROOT_DIR
+#echo $ROOT_DIR
 
 function copyJobsAndPackages {
   targetDir=$1
@@ -46,7 +46,7 @@ if [ "$#" -ne 4 ]; then
 fi
 
 # Changing Project name from generic* to user provided input
-TARGET_DIR=$1
+TARGET_DIR=$(getAbsolutePath $1)
 TEMPLATE_PATTERN=generic_app
 NEW_PATTERN=`echo $2 | tr '[A-]' '[a-z]' | sed -e 's/-/_/g' `
 IS_APP=$3

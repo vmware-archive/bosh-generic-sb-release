@@ -1,5 +1,8 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+. $SCRIPT_DIR/utils.sh
+
 echo ""
 echo "  This script will customize the Service Broker Release and Ops Mgr Tile generation based on user inputs"
 echo "  Things that would be customized include:"

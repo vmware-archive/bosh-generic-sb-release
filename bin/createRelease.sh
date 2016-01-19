@@ -1,11 +1,15 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+. $SCRIPT_DIR/utils.sh
+
 # For use to create final release tarball
 CREATE_FINAL_TARBALL=true
 RELEASE_NAME=generic_release
 VERSION=RELEASE_VERSION
 
-targetDir=$1
+targetDir=$(getAbsolutePath $1)
+
 cd $targetDir
 echo "Cleanup previous release ..."
 rm -rf releases/* .dev_builds/* .final_builds/*

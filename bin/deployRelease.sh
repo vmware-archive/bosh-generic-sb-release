@@ -1,5 +1,8 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+. $SCRIPT_DIR/utils.sh
+
 # Cleanup existing deployment and release
 CLEAN_UP=true
 

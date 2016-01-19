@@ -1,5 +1,8 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+. $SCRIPT_DIR/utils.sh
+
 function capitalizeWords {
    givenWord=$1
    spacer=$2

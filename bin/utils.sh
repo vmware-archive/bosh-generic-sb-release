@@ -1,11 +1,19 @@
 #!/bin/ksh
 
 SCRIPT_DIR=$(dirname $0)
-if [ "${SCRIPT_DIR:0:1}" == "." ]; then
+if [ "${SCRIPT_DIR:0:1}" != "/" ]; then
   SCRIPT_DIR=`pwd`/$SCRIPT_DIR
 fi
 
 ROOT_DIR=$(dirname $SCRIPT_DIR)
+
+function getAbsolutePath {
+  targetDir=$1
+  if [ "${targetDir:0:1}" != "/" ]; then
+    targetDir=`pwd`/$targetDir
+  fi
+  echo $targetDir
+}
 
 function capitalizeWords {
    givenWord=$1

@@ -16,7 +16,7 @@ if [ "$#" -lt 2 ]; then
   exit -1
 fi
 
-targetDir=$1
+targetDir=$(getAbsolutePath $1)
 blobFileName=$2
 
 cd $targetDir

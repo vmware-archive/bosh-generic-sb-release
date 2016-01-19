@@ -1,5 +1,8 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+. $SCRIPT_DIR/utils.sh
+
 # Download the latest Linux 64 bit CF CLI binary from https://github.com/cloudfoundry/cli/releases
 # Edit the link as newer releases are published
 
@@ -8,7 +11,7 @@ SCRIPT_DIR=$(dirname $0)
 CF_CLI_VERSION=6.13.0
 
 # Remove older references to cf_cli
-targetDir=$1
+targetDir=$(getAbsolutePath $1)
 cd $targetDir
 $SCRIPT_DIR/removeBlob.sh cf-linux-amd64.tgz 
 

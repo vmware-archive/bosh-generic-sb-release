@@ -2,7 +2,7 @@
 
 SCRIPT_DIR=$(dirname $0)
 . $SCRIPT_DIR/utils.sh
-set -xv
+
 function copyJobsAndPackages {
   targetDir=$1
   templatePattern=$2
@@ -33,7 +33,7 @@ if [ "$#" -ne 2 ]; then
 fi
 
 # Changing Project name from generic* to user provided input
-TARGET_DIR=$1
+TARGET_DIR=$(getAbsolutePath $1)
 TEMPLATE_PATTERN=generic_buildpack
 #NEW_PATTERN=`echo $1 | tr '[A-]' '[a-z]' | sed -e 's/-/_/g' `
 NEW_PATTERN=$2

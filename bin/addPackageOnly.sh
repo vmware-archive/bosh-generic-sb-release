@@ -39,6 +39,7 @@ if [ "$#" -ne 3 ]; then
 fi
 
 # Changing Project name from generic* to user provided input
+TARGET_DIR=$(getAbsolutePath $1)
 PACKAGE_NAME=`echo $1 | tr '[A-]' '[a-z]' | sed -e 's/-/_/g' `
 APP_NAME=`echo $2 | tr '[A-]' '[a-z]' | sed -e 's/_/-/g' `
 

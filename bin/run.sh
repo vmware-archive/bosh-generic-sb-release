@@ -1,5 +1,8 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+. $SCRIPT_DIR/utils.sh
+
 
 # Use '_' for release and deployment names as ruby can trip on '-'
 TARGET_PLATFORM=warden
@@ -7,8 +10,6 @@ TARGET_PLATFORM=warden
 RELEASE_NAME=generic_broker
 DEPLOYMENT_NAME=generic-broker-${TARGET_PLATFORM}
 
-targetDir=$1
-cd $targetDir
 echo "Running against bosh target platform $TARGET_PLATFORM"
 echo "Please create the manifest using ./make_manifest.sh <platform> before proceeding with full deploy"
 echo "Edit the templates/*properties.yml file to tweak any deployment attributes"

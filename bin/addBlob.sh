@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+
 SCRIPT_DIR=$(dirname $0)
 . $SCRIPT_DIR/utils.sh
 
@@ -22,7 +23,7 @@ if [ "$#" -lt 2 ]; then
   exit -1
 fi
 
-targetDir=$1
+targetDir=$(getAbsolutePath $1)
 givenBlobFile=$2
 blobPath=$3
 
@@ -44,8 +45,8 @@ if [[ ! -z "$3" ]]; then
   jobName=$(lowerCaseWithDash $appName )
 
   if [ "$blobPath" != "cf_cli" ]; then
-    PACKAGE_SPEC_FILE=`echo $targetDir/packages/$packageName/spec`
-    blobExists=`grep "$targetDir/$blobPath/$blobFile" $PACKAGE_SPEC_FILE | awk '{print $NF}' `
+    PACKAGE_SPEC_FILE=`echo packages/$packageName/spec`
+    blobExists=`grep "$blobPath/$blobFile" $PACKAGE_SPEC_FILE | awk '{print $NF}' `
     if [ "$blobExists" == "" ]; then
       echo "- ${blobPath}/${blobFile}" >> $PACKAGE_SPEC_FILE
     fi
@@ -56,14 +57,14 @@ if [[ ! -z "$3" ]]; then
 
   templateNeedsModification=`grep TEMPLATE_APP jobs/deploy-${jobName}/templates/deploy.sh.erb > /dev/null; echo $?`
   if [ "$templateNeedsModification" == "0" ]; then
-    sed -i.bak "s/TEMPLATE_APP_FILE/${blobFile}/g" $targetDir/jobs/deploy-${jobName}/templates/deploy.sh.erb 2>/dev/null
+    sed -i.bak "s/TEMPLATE_APP_FILE/${blobFile}/g" jobs/deploy-${jobName}/templates/deploy.sh.erb 2>/dev/null
     echo "Modified the $targetDir/jobs/deploy-${jobName}r/templates/deloy.sh.erb to refer to the correct app archive or file"
     echo ""
   fi
 
-  packagingNeedsModification=`grep TEMPLATE_APP $targetDir/packages/$packageName/packaging > /dev/null; echo $?`
+  packagingNeedsModification=`grep TEMPLATE_APP packages/$packageName/packaging > /dev/null; echo $?`
   if [ "$packagingNeedsModification" == "0" ]; then
-    sed -i.bak "s/TEMPLATE_APP_BLOB_PATH/${blobPath}/g; s/TEMPLATE_APP_BLOB_FILE/${blobFile}/g" $targetDir/packages/$packageName/packaging 2>/dev/null
+    sed -i.bak "s/TEMPLATE_APP_BLOB_PATH/${blobPath}/g; s/TEMPLATE_APP_BLOB_FILE/${blobFile}/g" packages/$packageName/packaging 2>/dev/null
     echo "Modified the packages/$packageName/packaging file to refer to the correct app blob bits"
     echo ""
   else
@@ -72,8 +73,8 @@ if [[ ! -z "$3" ]]; then
     echo ""
   fi
 
-  find $targetDir/jobs/deploy-$jobName -name "*.bak" 2>/dev/null | xargs rm  
-  find $targetDir/packages/$packageName -name "*.bak"  2>/dev/null | xargs rm  
+  find jobs/deploy-$jobName -name "*.bak" 2>/dev/null | xargs rm  
+  find packages/$packageName -name "*.bak"  2>/dev/null | xargs rm  
 
 fi
 

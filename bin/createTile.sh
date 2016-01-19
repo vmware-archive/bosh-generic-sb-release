@@ -1,11 +1,14 @@
 #!/bin/ksh
 
+SCRIPT_DIR=$(dirname $0)
+. $SCRIPT_DIR/utils.sh
+
 TILE_VERSION=OPS_MGR_VERSION
 TILE_NAME=Generic-Tile-Experimental
 TILE_FILE=`pwd`/*tile-v${TILE_VERSION}.yml
 RELEASE_TARFILE=`pwd`/releases/*/*.tgz
 
-targetDir=$1
+targetDir=$(getAbsolutePath $1)
 cd $targetDir
 
 rm -rf tmp
