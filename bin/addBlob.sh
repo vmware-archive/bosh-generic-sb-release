@@ -44,33 +44,33 @@ if [[ ! -z "$4" ]]; then
   packageName=$(lowerCaseWithUnderscore $appName )
   jobName=$(lowerCaseWithDash $appName )
 
-  if [ "$blobPath" != "cf_cli" ]; then
-    PACKAGE_SPEC_FILE=`echo packages/$packageName/spec`
-    blobExists=`grep "$blobPath/$blobFile" $PACKAGE_SPEC_FILE | awk '{print $NF}' `
-    if [ "$blobExists" == "" ]; then
-      echo "- ${blobPath}/${blobFile}" >> $PACKAGE_SPEC_FILE
-    fi
+  PACKAGE_SPEC_FILE=`echo packages/$packageName/spec`
+  blobExists=`grep "$blobPath/$blobFile" $PACKAGE_SPEC_FILE | awk '{print $NF}' `
+  if [ "$blobExists" == "" ]; then
+    echo "- ${blobPath}/${blobFile}" >> $PACKAGE_SPEC_FILE
   fi
 
   app_prefix_name=`echo $blobFile | awk -F . '{ print $1}' `
   app_extn=`echo $blobFile  | awk -F . '{ print $NF}' `
 
-  templateNeedsModification=`grep TEMPLATE_APP jobs/deploy-${jobName}/templates/deploy.sh.erb > /dev/null; echo $?`
-  if [ "$templateNeedsModification" == "0" ]; then
-    sed -i.bak "s/TEMPLATE_APP_FILE/${blobFile}/g" jobs/deploy-${jobName}/templates/deploy.sh.erb 2>/dev/null
-    echo "Modified the $targetDir/jobs/deploy-${jobName}r/templates/deloy.sh.erb to refer to the correct app archive or file"
-    echo ""
-  fi
+  if [ "$blobPath" != "cf_cli" ]; then
+    templateNeedsModification=`grep TEMPLATE_APP jobs/deploy-${jobName}/templates/deploy.sh.erb > /dev/null; echo $?`
+    if [ "$templateNeedsModification" == "0" ]; then
+      sed -i.bak "s/TEMPLATE_APP_FILE/${blobFile}/g" jobs/deploy-${jobName}/templates/deploy.sh.erb 2>/dev/null
+      echo "Modified the $targetDir/jobs/deploy-${jobName}r/templates/deloy.sh.erb to refer to the correct app archive or file"
+      echo ""
+    fi
 
-  packagingNeedsModification=`grep TEMPLATE_APP packages/$packageName/packaging > /dev/null; echo $?`
-  if [ "$packagingNeedsModification" == "0" ]; then
-    sed -i.bak "s/TEMPLATE_APP_BLOB_PATH/${blobPath}/g; s/TEMPLATE_APP_BLOB_FILE/${blobFile}/g" packages/$packageName/packaging 2>/dev/null
-    echo "Modified the packages/$packageName/packaging file to refer to the correct app blob bits"
-    echo ""
-  else
-    echo "Could not modify the packages/$packageName/packaging file to refer to the correct app blob file/path!!"
-    echo "Verify $blobPath/$blobFile is specified inside the $targetDir/packages/$packageName/packaging file"
-    echo ""
+    packagingNeedsModification=`grep TEMPLATE_APP packages/$packageName/packaging > /dev/null; echo $?`
+    if [ "$packagingNeedsModification" == "0" ]; then
+      sed -i.bak "s/TEMPLATE_APP_BLOB_PATH/${blobPath}/g; s/TEMPLATE_APP_BLOB_FILE/${blobFile}/g" packages/$packageName/packaging 2>/dev/null
+      echo "Modified the packages/$packageName/packaging file to refer to the correct app blob bits"
+      echo ""
+    else
+      echo "Could not modify the packages/$packageName/packaging file to refer to the correct app blob file/path!!"
+      echo "Verify $blobPath/$blobFile is specified inside the $targetDir/packages/$packageName/packaging file"
+      echo ""
+    fi
   fi
 
   find jobs/deploy-$jobName -name "*.bak" 2>/dev/null | xargs rm  
