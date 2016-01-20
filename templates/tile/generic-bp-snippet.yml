@@ -74,13 +74,13 @@ job_types:
       clients:
         generic_broker:
           secret: test
+    cf:
+      admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+      admin_password: (( ..cf.uaa.system_services_credentials.password ))
     generic_broker:
       buildpack_name: (( .properties.buildpack_name.value ))
       buildpack_version: (( .properties.buildpack_version.value ))
 
-      cf:
-        admin_user: (( ..cf.uaa.system_services_credentials.identity ))
-        admin_password: (( ..cf.uaa.system_services_credentials.password ))
 
 - name: delete-generic-buildpack
   resource_label: Delete buildpack
@@ -122,11 +122,11 @@ job_types:
   manifest: |
     ssl:
       skip_cert_verify: (( ..cf.ha_proxy.skip_cert_verify.value ))
+    cf:
+      admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+      admin_password: (( ..cf.uaa.system_services_credentials.password ))
     generic_buildpack:
       name: (( .properties.buildpack_name.value ))
-      cf:
-        admin_user: (( ..cf.uaa.system_services_credentials.identity ))
-        admin_password: (( ..cf.uaa.system_services_credentials.password ))
 
 post_deploy_errands:
 - name: deploy-generic-buildpack

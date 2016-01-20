@@ -149,15 +149,15 @@ job_types:
       clients:
         generic_broker:
           secret: test
+    cf:
+      admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+      admin_password: (( ..cf.uaa.system_services_credentials.password ))
     generic_broker:
       app_name: (( .properties.app_name.value ))
   ### INTERNAL_APP_URI_BEGIN_MARKER
       app_uri: (( .properties.app_uri.value ))
   ### INTERNAL_APP_URI_END_MARKER
       enable_global_access_to_plans: (( .properties.enable_global_access_to_plans.value ))
-      cf:
-        admin_user: (( ..cf.uaa.system_services_credentials.identity ))
-        admin_password: (( ..cf.uaa.system_services_credentials.password ))
       broker:
         user: (( .deploy-service-broker.broker_credentials.identity ))
         password: (( .deploy-service-broker.broker_credentials.password ))
@@ -214,12 +214,12 @@ job_types:
       clients:
         generic_broker:
           secret: test
+    cf:
+      admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+      admin_password: (( ..cf.uaa.system_services_credentials.password ))
     generic_broker:
       app_name: (( .properties.app_name.value ))
       app_uri: (( .properties.app_uri.value ))
-      cf:
-        admin_user: (( ..cf.uaa.system_services_credentials.identity ))
-        admin_password: (( ..cf.uaa.system_services_credentials.password ))
       broker:
         user: (( .deploy-service-broker.broker_credentials.identity ))
         password: (( .deploy-service-broker.broker_credentials.password ))
