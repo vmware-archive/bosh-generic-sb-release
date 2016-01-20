@@ -237,8 +237,8 @@ job_types:
         memory: (( .properties.memory.value ))
       user: (( .deploy-generic-app.app_credentials.identity ))
       password: (( .deploy-generic-app.app_credentials.password ))
-      start_command: (( .deploy-generic-app.start_command.value ))
-      health_monitor: (( .deploy-generic-app.health_monitor.value ))
+      start_command: (( .properties.start_command.value ))
+      health_monitor: (( .properties.health_monitor.value ))
       # Need to squelch Broker user & password if app is also a broker..
       ### CUSTOM_VARIABLE_MANIFEST_BEGIN_MARKER
       ### CUSTOM_VARIABLE_MANIFEST_END_MARKER
