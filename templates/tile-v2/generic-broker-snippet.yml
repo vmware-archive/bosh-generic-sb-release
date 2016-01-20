@@ -1,0 +1,236 @@
+---
+property_blueprints:
+- name: generic_broker_encryption_key
+  type: secret
+- name: generic_broker_vm_credentials
+  type: salted_credentials
+  default:
+    identity: vcap
+- name: generic_broker_app_name
+  type: string
+  configurable: true
+  default: generic-broker
+- name: generic_broker_app_uri
+  type: string
+  configurable: false
+  default: APP_URI
+- name: generic_broker_enable_global_access_to_plans
+  type: boolean
+  configurable: true
+  default: false
+- name: generic_broker_internal_service_names
+  type: string
+  configurable: false
+  default: "INTERNAL_SERVICE_NAME"
+
+# SQUELCH THESE 2 variables if app is also a service broker, go wtih the app_credentials
+- name: generic_broker_broker_user
+  type: string
+  configurable: true
+- name: generic_broker_broker_password
+  type: secret
+  configurable: true
+
+### ON_DEMAND_PLAN_BEGIN_MARKER
+#- name: generic_broker_on_demand_service_plans_collection
+#  type: collection
+#  configurable: true
+
+  # Needs to have its own inner/nested property_blueprints when its a collection
+#  property_blueprints:
+#  - name: guid
+#    type: uuid
+#    optional: false
+#    unique: true
+#  - name: plan_name
+#    type: string
+#    configurable: true
+#  - name: plan_description
+#    type: string
+#    configurable: true
+#  - name: plan_details
+#    type: text
+#    configurable: true
+
+### ON_DEMAND_PLAN_END_MARKER
+
+form_types:                                                # [8]
+- property_inputs:                                       # [9]
+  - reference: .properties.generic_broker_app_name
+    label: Service Broker Application Name
+    description: 'Enter the name for the Service Broker App'
+  ### INTERNAL_APP_URI_LABEL_BEGIN_MARKER
+  - reference: .properties.generic_broker_app_uri
+    label: Service Broker Application URI
+    description: 'Enter the uri/endpoint for the Service Broker app'
+  ### INTERNAL_APP_URI_LABEL_END_MARKER
+  - reference: .properties.generic_broker_enable_global_access_to_plans
+    label: Enable Global access to all Services and Plans
+    description: 'Open up access to all service plans across all orgs and spaces'
+  name: generic_broker
+  label: Service Broker Application
+  description: Service Broker configuration
+- property_inputs:                                       # [9]
+  - reference: .properties.generic_broker_broker_user
+    label: Service Broker User Name
+    description: 'Enter the username for the Service Broker App'
+  - reference: .properties.generic_broker_broker_password
+    label: Service Broker Credential
+    description: 'Enter the credential for the Service Broker app'
+  name: generic_broker_credentials
+  label: Service Broker Credentials
+  description: Service Broker Credentials
+
+#  ### ON_DEMAND_PLAN_BEGIN_MARKER
+#- property_inputs:
+#  - reference: .properties.on_demand_service_plans_collection
+#    label: On-Demand Service Plans
+#    property_inputs:
+#    - reference: plan_name
+#      label: Plan Name
+#      description: "Name of Plan"
+#      slug: false
+#    - reference: plan_description
+#      label: Plan Description
+#      description: "Description of Plan"
+#      slug: false
+#    - reference: plan_details
+#      label: "Plan Details or bullets (individual line entries, each with Name : Value : Description and ending with ;)"
+#      description: "Specify configurations or bullets for the plan. Specify each plan detail or bullet in a separate line with a name, value, description separated by ':' and ending with ';'.
+#      Detail1: associated value : description ; <NEWLINE> Detail2: its value : description <NEWLINE>"
+#      slug: false
+#  name: on_demand_service_plans
+#  label: On-Demand Service Plans
+#  description: "An on-demand service plan lets Pivotal CF users create their own Service Plans from the Pivotal CF command line interface or developer console. Use this page to configure the service plan's settings."
+#  ### ON_DEMAND_PLAN_END_MARKER
+
+job_types:
+
+- name: register-generic-broker
+  resource_label: Register Service Broker
+  templates:
+  - name: register-generic-broker
+    release: generic_release
+  errand: true
+  resource_definitions:
+  - name: ram
+    type: integer
+    configurable: false
+    default: 512
+  - name: ephemeral_disk
+    type: integer
+    configurable: false
+    default: 2048
+  - name: persistent_disk
+    type: integer
+    configurable: false
+    default: 0
+  - name: cpu
+    type: integer
+    configurable: false
+    default: 1
+  static_ip: 0
+  dynamic_ip: 1
+  max_in_flight: 1
+  instance_definitions:
+  - name: instances
+    type: integer
+    configurable: false
+    default: 1
+  property_blueprints:
+  - name: vm_credentials
+    type: salted_credentials
+    default:
+      identity: vcap
+
+  manifest: |
+    domain: (( ..cf.cloud_controller.system_domain.value ))
+    app_domains:
+      - (( ..cf.cloud_controller.apps_domain.value ))
+    ssl:
+      skip_cert_verify: (( ..cf.ha_proxy.skip_cert_verify.value ))
+    uaa:
+      url: https://uaa.(( ..cf.cloud_controller.system_domain.value ))
+      clients:
+        generic_broker:
+          secret: test
+    cf:
+      admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+      admin_password: (( ..cf.uaa.system_services_credentials.password ))
+    generic_broker:
+      app_name: (( .properties.generic_broker_app_name.value ))
+  ### INTERNAL_APP_URI_BEGIN_MARKER
+      app_uri: (( .properties.generic_broker_app_uri.value ))
+  ### INTERNAL_APP_URI_END_MARKER
+      enable_global_access_to_plans: (( .properties.generic_broker_enable_global_access_to_plans.value ))
+      broker:
+        # SQUELCH THESE 2 variables if app is also a service broker, go wtih the app_credentials
+        user: (( .deploy-service-broker.generic_broker_broker_user.value ))
+        password: (( .deploy-service-broker.generic_broker_broker_password.value ))
+        internal_service_names: (( .properties.generic_broker_internal_service_names.value ))
+  ### EXTERNAL_URI_END_MARKER
+
+- name: destroy-generic-broker
+  resource_label: Remove Generic Service Broker
+  templates:
+  - name: destroy-generic-broker
+    release: generic_release
+  errand: true
+  resource_definitions:
+  - name: ram
+    type: integer
+    configurable: false
+    default: 512
+  - name: ephemeral_disk
+    type: integer
+    configurable: false
+    default: 1024
+  - name: persistent_disk
+    type: integer
+    configurable: false
+    default: 0
+  - name: cpu
+    type: integer
+    configurable: false
+    default: 1
+  static_ip: 0
+  dynamic_ip: 1
+  max_in_flight: 1
+  instance_definitions:
+  - name: instances
+    type: integer
+    configurable: false
+    default: 1
+  property_blueprints:
+  - name: vm_credentials
+    type: salted_credentials
+    default:
+      identity: vcap
+
+  manifest: |
+    domain: (( ..cf.cloud_controller.system_domain.value ))
+    app_domains:
+      - (( ..cf.cloud_controller.apps_domain.value ))
+    ssl:
+      skip_cert_verify: (( ..cf.ha_proxy.skip_cert_verify.value ))
+    uaa:
+      url: https://uaa.(( ..cf.cloud_controller.system_domain.value ))
+      clients:
+        generic_broker:
+          secret: test
+    cf:
+      admin_user: (( ..cf.uaa.system_services_credentials.identity ))
+      admin_password: (( ..cf.uaa.system_services_credentials.password ))
+    generic_broker:
+      app_name: (( .properties.generic_broker_app_name.value ))
+      app_uri: (( .properties.generic_broker_app_uri.value ))
+      broker:
+        user: (( .deploy-service-broker.generic_broker_broker_credentials.identity ))
+        password: (( .deploy-service-broker.generic_broker_broker_credentials.password ))
+        internal_service_names: (( .properties.generic_broker_internal_service_names.value ))
+
+post_deploy_errands:
+- name: register-generic-broker
+pre_delete_errands:
+- name: destroy-generic-broker
+
