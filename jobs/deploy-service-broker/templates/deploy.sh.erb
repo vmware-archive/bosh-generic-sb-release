@@ -129,7 +129,7 @@ function create_open_security_group() {
     echo "Creating open security group"
 
     cf create-security-group all_open $PACKAGE_PATH/templates/all_open.json
-    cf bind-running-security-group all_open
+    cf bind-security-group all_open $ORG $SPACE
   else
     echo "Not creating open security group"
   fi

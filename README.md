@@ -2,6 +2,8 @@
 
 A [Bosh release](http://docs.cloudfoundry.org/bosh/create-release.html) for any generic service broker that would be deployed as an application on [Cloud Foundry](http://www.pivotal.io/platform-as-a-service/cloud-foundry), along with scripts to generate an Ops Mgr Tile of the [Service Broker](http://docs.cloudfoundry.org/services/api.html).
 
+NOTE: This tools is deprecated and not supported. Kindly use [tile-generator](https://github.com/cf-platform-eng/tile-generator) to wrap brokers/apps with bosh releases and create Pivotal Tiles.
+
 This is a scaffolding to generate a bosh release that would be used to deploy a service broker as an application to Cloud Foundry. 
 It also includes scripts to generate an Operations Manager Tile (in form of .pivotal file).
 
