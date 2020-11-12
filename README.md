@@ -1,3 +1,5 @@
+# bosh-generic-sb-release is no longer actively maintained by VMware.
+
 # Bosh-generic-sb-release
 
 A [Bosh release](http://docs.cloudfoundry.org/bosh/create-release.html) for any generic service broker that would be deployed as an application on [Cloud Foundry](http://www.pivotal.io/platform-as-a-service/cloud-foundry), along with scripts to generate an Ops Mgr Tile of the [Service Broker](http://docs.cloudfoundry.org/services/api.html).
